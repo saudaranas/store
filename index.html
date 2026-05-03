@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>POSKedai</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(145deg, #fff7ed 0%, #fed7aa 30%, #fdba74 60%, #fb923c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .splash {
+            text-align: center;
+            padding: 40px 24px;
+            max-width: 360px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 2.4rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .logo span:first-child { color: #ea580c; }
+        .logo span:last-child  { color: #1e293b; }
+        .tagline {
+            font-size: 0.85rem;
+            color: #92400e;
+            font-weight: 500;
+            margin-bottom: 32px;
+        }
+        .status-box {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(249,115,22,0.2);
+            border-top-color: #f97316;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+        .status-sub {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: 14px;
+            padding: 20px;
+            display: none;
+        }
+        .error-icon { font-size: 2rem; margin-bottom: 10px; }
+        .error-title {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #dc2626;
+            margin-bottom: 6px;
+        }
+        .error-msg {
+            font-size: 0.8rem;
+            color: #7f1d1d;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+        .error-url {
+            margin-top: 12px;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 6px 10px;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="splash">
+    <div class="logo"><span>POS</span><span>Kedai</span></div>
+    <p class="tagline">🍽️ Sistem POS untuk Kedai Makan</p>
+
+    <div class="status-box" id="statusBox">
+        <div class="spinner"></div>
+        <div class="status-text" id="statusText">Memuatkan...</div>
+        <div class="status-sub" id="statusSub">Sila tunggu sebentar</div>
+    </div>
+
+    <div class="error-box" id="errorBox">
+        <div class="error-icon">⚠️</div>
+        <div class="error-title" id="errorTitle">Kedai tidak dijumpai</div>
+        <div class="error-msg" id="errorMsg">Sila semak URL anda atau hubungi POSKedai.</div>
+        <div class="error-url" id="errorUrl"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// MASTER REGISTRY — POSKedai
+// ============================================================
+const MASTER_URL = 'https://script.google.com/macros/s/AKfycbwC2rY8Nn8lDYNX_SuZTNnGvbo3m54-MtaX1WpBNP5xLphQipfwL0_BvJeEdZYOZEVZ/exec';
+const MASTER_KEY = 'poskedai-master-2025';
+
+async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const slug   = (params.get('kedai') || '').toLowerCase().trim();
+
+    if (!slug) {
+        showError(
+            'URL tidak lengkap',
+            'Contoh URL yang betul:\nposkedai.store/?kedai=nama-kedai-anda',
+            window.location.href
+        );
+        return;
+    }
+
+    updateStatus('🔍 Mencari kedai...', slug);
+
+    try {
+        const res = await fetchWithTimeout(MASTER_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body:    JSON.stringify({
+                apiKey: MASTER_KEY,
+                action: 'lookup',
+                data:   { slug }
+            })
+        }, 15000);
+
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); }
+        catch (e) {
+            showError('Ralat Server', 'Respons tidak sah. Cuba semula.', slug);
+            return;
+        }
+
+        if (!data.success) {
+            showError(
+                data.status === 'expired' ? '⏰ Langganan Tamat' : '❌ Kedai Tidak Dijumpai',
+                data.error || 'URL tidak sah. Hubungi POSKedai.',
+                '?kedai=' + slug
+            );
+            return;
+        }
+
+        // ✅ Jumpa — simpan dalam session & redirect ke app
+        document.title = 'POSKedai - ' + (data.shopName || slug);
+        updateStatus('✅ Memuatkan...', data.shopName || slug);
+
+        sessionStorage.setItem('_pk_gasUrl',   data.gasUrl);
+        sessionStorage.setItem('_pk_shopName', data.shopName || '');
+
+        window.location.replace(
+            'app.html?gasUrl=' + encodeURIComponent(data.gasUrl) +
+            '&shop='           + encodeURIComponent(data.shopName || '')
+        );
+
+    } catch (err) {
+        if (err.name === 'AbortError') {
+            showError('Timeout', 'Sambungan terlalu lama. Semak internet anda.', slug);
+        } else {
+            showError('Gagal Sambung', err.message, slug);
+        }
+    }
+}
+
+function updateStatus(text, sub) {
+    document.getElementById('statusText').textContent = text;
+    document.getElementById('statusSub').textContent  = sub || '';
+}
+
+function showError(title, msg, url) {
+    document.getElementById('statusBox').style.display = 'none';
+    document.getElementById('errorBox').style.display  = 'block';
+    document.getElementById('errorTitle').textContent  = title;
+    document.getElementById('errorMsg').textContent    = msg;
+    document.getElementById('errorUrl').textContent    = url || '';
+}
+
+function fetchWithTimeout(url, opts, ms) {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { ...opts, signal: ctrl.signal })
+           .finally(() => clearTimeout(tid));
+}
+
+init();
+</script>
+</body>
+</html>
