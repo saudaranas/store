@@ -435,6 +435,38 @@ const MASTER_KEY = 'poskedai-master-2026';
 // ROUTER — baca slug, fetch GAS URL, load app
 // URL KEKAL: poskedai.store/?kedai=nama-kedai
 // ============================================================
+// Preload data semasa splash masih showing — so app ready instantly
+async function preloadAppData(gasUrl) {
+    const shopKey = '_pk_shopinfo_' + gasUrl;
+    const menuKey = '_pk_menu_' + gasUrl;
+    try {
+        // Fetch shopInfo if not cached
+        const shopCached = localStorage.getItem(shopKey);
+        if (!shopCached) {
+            const r = await fetch(gasUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'text/plain'},
+                body: JSON.stringify({apiKey: C.KEY, action: 'getShopInfo', data: {}})
+            });
+            const text = await r.text();
+            const data = JSON.parse(text);
+            if (data.success) localStorage.setItem(shopKey, JSON.stringify(data));
+        }
+        // Fetch menu if not cached
+        const menuCached = localStorage.getItem(menuKey);
+        if (!menuCached) {
+            const r2 = await fetch(gasUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'text/plain'},
+                body: JSON.stringify({apiKey: C.KEY, action: 'getMenu', data: {}})
+            });
+            const text2 = await r2.text();
+            const data2 = JSON.parse(text2);
+            if (data2.success) localStorage.setItem(menuKey, JSON.stringify(data2.menu));
+        }
+    } catch(e) { console.log('[Preload] Error:', e.message); }
+}
+
 async function routerInit() {
     const params = new URLSearchParams(window.location.search);
     const slug   = (params.get('kedai') || '').toLowerCase().trim();
@@ -447,12 +479,14 @@ async function routerInit() {
     // ── Semak cache dulu ──────────────────────────────────
     const cacheKey = '_pk_reg_' + slug;
     try {
-        const cached = sessionStorage.getItem(cacheKey);
+        const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const data = JSON.parse(cached);
             if (data && data.gasUrl) {
                 window.__PK_GAS_URL__ = data.gasUrl;
                 updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
+                // Preload dalam background
+                preloadAppData(data.gasUrl);
                 setTimeout(() => {
                     document.getElementById('splashScreen').classList.add('hide');
                     setTimeout(() => { document.getElementById('splashScreen').style.display = 'none'; }, 400);
@@ -490,9 +524,10 @@ async function routerInit() {
                 return;
             }
             // ✅ Simpan cache
-            try { sessionStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
+            try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
             window.__PK_GAS_URL__ = data.gasUrl;
             updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
+            preloadAppData(data.gasUrl);
             setTimeout(() => {
                 document.getElementById('splashScreen').classList.add('hide');
                 setTimeout(() => { document.getElementById('splashScreen').style.display = 'none'; }, 400);
@@ -560,16 +595,16 @@ async function enterApp(){const isAdmin=S.staff.role==='admin';document.getEleme
 function doLogout(){if(S.cart.length>0&&!confirm('Ada item dalam troli. Keluar?'))return;if(dapurInterval){clearInterval(dapurInterval);dapurInterval=null}clearSession();document.getElementById('loginScreen').style.display='flex';document.getElementById('appContainer').classList.remove('show');document.getElementById('pinInput').value='';S.cart=[];['tabSales','tabMenu','tabSettings','tabDapur'].forEach(id=>document.getElementById(id).style.display='')}
 function go(tab,el){document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('tab-'+tab).classList.add('active');if(tab==='list')loadOrders();if(tab==='dapur'){const dEl=document.getElementById('dapurDate');if(dEl&&!dEl.value)dEl.value=today();loadDapur();}if(tab==='sales'){initSalesTab();if(S.reportMode==='daily')loadDailySales();else if(S.reportMode==='weekly')loadWeeklySales();else loadMonthlySales()}if(tab==='menu')loadMenuManage();if(tab==='settings'){loadStaffList();loadSettingsForm()}}
 async function loadMenu(){
-    // Try sessionStorage cache for instant render
+    // Try localStorage cache for instant render
     try{
-        const mc=sessionStorage.getItem('_pk_menu_'+window.__PK_GAS_URL__);
+        const mc=localStorage.getItem('_pk_menu_'+window.__PK_GAS_URL__);
         if(mc){const cached=JSON.parse(mc);if(cached&&cached.length){S.menu=cached;renderCats();renderMenu();}}
     }catch(e){}
     // Always fetch fresh in background
     const r=await cachedApi('getMenu',{},60000);
     if(r.success){
         S.menu=r.menu;
-        try{sessionStorage.setItem('_pk_menu_'+window.__PK_GAS_URL__,JSON.stringify(r.menu))}catch(e){}
+        try{localStorage.setItem('_pk_menu_'+window.__PK_GAS_URL__,JSON.stringify(r.menu))}catch(e){}
         renderCats();renderMenu();
     }else if(!S.menu.length){
         document.getElementById('menuGrid').innerHTML='<div class="api-error-box"><strong>❌ Gagal muatkan menu</strong>'+esc(r.error)+'</div>';
@@ -839,11 +874,11 @@ async function init(){
     document.getElementById('orderDate').value=today();
     // Cuba dari cache dulu
     let info=null;
-    try{const cached=sessionStorage.getItem('_pk_shopinfo');if(cached){info=JSON.parse(cached);console.log('[Init] Using cached shopInfo')}}catch(e){}
+    try{const cached=localStorage.getItem('_pk_shopinfo_'+(window.__PK_GAS_URL__||''));if(cached){info=JSON.parse(cached);console.log('[Init] Using cached shopInfo')}}catch(e){}
     if(!info||!info.success){
         info=await api('getShopInfo');
         if(!info.success){document.getElementById('loginShopName').textContent='⏳ Cuba semula...';await new Promise(r=>setTimeout(r,2000));info=await api('getShopInfo')}
-        if(info.success){try{sessionStorage.setItem('_pk_shopinfo',JSON.stringify(info))}catch(e){}}
+        if(info.success){try{localStorage.setItem('_pk_shopinfo_'+(window.__PK_GAS_URL__||''),JSON.stringify(info))}catch(e){}}
     }
     if(info.success){
         S.shop=info;document.getElementById('loginShopName').textContent='🍽️ '+info.shopName;document.title='POSKedai - '+info.shopName;
