@@ -386,7 +386,12 @@
             <div class="dapur-header"><div class="card-title" style="margin-bottom:0">🔔 Papan Dapur</div><span class="dapur-count-badge" id="dapurCount">0 pesanan</span></div>
             <div id="stationToggle" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
             <div class="form-group" style="margin-bottom:10px"><input type="date" class="form-input" id="dapurDate" onchange="loadDapur()"></div>
-            <div class="auto-refresh-bar"><div class="refresh-dot"></div><span id="dapurAutoRefreshLabel">🟢 Live — kemaskini setiap 8 saat</span><button onclick="loadDapur()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--primary);font-weight:700;font-size:0.78rem;font-family:var(--font)">🔄 Muat Semula</button></div>
+            <div class="auto-refresh-bar">
+                <div class="refresh-dot"></div>
+                <span id="dapurAutoRefreshLabel">🟢 Live — kemaskini setiap 8 saat</span>
+                <button onclick="loadDapur()" style="background:none;border:none;cursor:pointer;color:var(--primary);font-weight:700;font-size:0.78rem;font-family:var(--font)">🔄</button>
+                <button id="btnUnlockAudio" onclick="unlockAudio()" style="background:var(--warning-dark);color:white;border:none;border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:var(--font);margin-left:4px">🔕 Aktifkan Bunyi</button>
+            </div>
         </div>
         <div id="dapurList"><div class="loading"><div class="spinner"></div>Memuatkan...</div></div>
     </div>
@@ -567,7 +572,7 @@ function showSplashError(title, msg, url) {
 // ============================================================
 // CONFIG — AMBIL GAS URL DARI ROUTER (index.html)
 // ============================================================
-let S={menu:[],cart:[],orders:[],staff:{name:'Admin',role:'admin'},pay:'cash',cat:'Semua',editOid:null,editItems:[],shop:{shopName:'Kedai Makan',shopAddress:'',shopPhone:''},count:0,reportMode:'daily',orderFilter:'all',qrImage:'',bankName:'',bankAccount:'',bankHolder:'',completePay:'cash',completeOid:null,qrBase64:'',featuredCat:'',editPendingOid:null,editPendingItems:[],waReceiptText:'',completeOrderData:null,dapurStation:'semua',stations:[],itemTicks:{}};
+let S={menu:[],cart:[],orders:[],staff:{name:'Admin',role:'admin'},pay:'cash',cat:'Semua',editOid:null,editItems:[],shop:{shopName:'Kedai Makan',shopAddress:'',shopPhone:''},count:0,reportMode:'daily',orderFilter:'all',qrImage:'',bankName:'',bankAccount:'',bankHolder:'',completePay:'cash',completeOid:null,qrBase64:'',featuredCat:'',editPendingOid:null,editPendingItems:[],waReceiptText:'',completeOrderData:null,dapurStation:'semua',stations:[],itemTicks:{},audioUnlocked:false};
 // ============================================================
 // APP CONFIG
 // ============================================================
@@ -595,41 +600,28 @@ async function doLogin(){const pin=document.getElementById('pinInput').value;if(
 function skipLogin(){S.staff={name:'Admin',role:'admin'};saveSession();enterApp()}
 async function enterApp(){const isAdmin=S.staff.role==='admin';document.getElementById('tabSales').style.display=isAdmin?'':'none';document.getElementById('tabSettings').style.display=isAdmin?'':'none';document.getElementById('tabMenu').style.display=isAdmin?'':'none';document.getElementById('tabDapur').style.display='';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tabOrder=document.querySelector('#appContainer .nav-tabs .nav-tab:first-child');if(tabOrder)tabOrder.classList.add('active');document.getElementById('tab-order').classList.add('active');document.getElementById('loginScreen').style.display='none';document.getElementById('appContainer').classList.add('show');document.getElementById('staffBadge').textContent='👤 '+esc(S.staff.name);await Promise.all([loadMenu(),loadCount(),loadPaymentInfo()]);applyPakejLimits()}
 function doLogout(){if(S.cart.length>0&&!confirm('Ada item dalam troli. Keluar?'))return;if(dapurInterval){clearInterval(dapurInterval);dapurInterval=null}clearSession();document.getElementById('loginScreen').style.display='flex';document.getElementById('appContainer').classList.remove('show');document.getElementById('pinInput').value='';S.cart=[];['tabSales','tabMenu','tabSettings','tabDapur'].forEach(id=>document.getElementById(id).style.display='')}
-function go(tab,el){document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('tab-'+tab).classList.add('active');if(tab==='list')loadOrders();if(tab==='dapur'){const dEl=document.getElementById('dapurDate');if(dEl&&!dEl.value)dEl.value=today();loadDapur();}if(tab==='sales'){initSalesTab();if(S.reportMode==='daily')loadDailySales();else if(S.reportMode==='weekly')loadWeeklySales();else loadMonthlySales()}if(tab==='menu')loadMenuManage();if(tab==='settings'){loadStaffList();loadSettingsForm()}}
-async function loadMenu(){
-    const menuKey = '_pk_menu_' + (window.__PK_GAS_URL__||'');
-    // ✅ INSTANT: Render dari cache dulu
-    try{
-        const mc = localStorage.getItem(menuKey);
-        if(mc){
-            const cached = JSON.parse(mc);
-            if(cached && cached.length){
-                S.menu = cached;
-                renderCats();
-                renderMenu();
-                console.log('[Menu] Cache hit — ' + cached.length + ' items');
-                // Fetch fresh dalam background
-                api('getMenu').then(r => {
-                    if(r.success && r.menu.length){
-                        S.menu = r.menu;
-                        try{localStorage.setItem(menuKey, JSON.stringify(r.menu))}catch(e){}
-                        renderCats();renderMenu();
-                    }
-                }).catch(()=>{});
-                return; // Terus return — tak perlu tunggu network
-            }
-        }
-    }catch(e){}
-    // ❌ Tiada cache — fetch dan tunggu (kali pertama)
-    document.getElementById('menuGrid').innerHTML='<div class="loading"><div class="spinner"></div>Memuatkan menu...</div>';
-    const r = await cachedApi('getMenu',{},60000);
-    if(r.success){
-        S.menu = r.menu;
-        try{localStorage.setItem(menuKey, JSON.stringify(r.menu))}catch(e){}
-        renderCats();renderMenu();
-    }else{
-        document.getElementById('menuGrid').innerHTML='<div class="api-error-box"><strong>❌ Gagal muatkan menu</strong>'+esc(r.error)+'</div>';
+function go(tab,el){
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-'+tab).classList.add('active');
+    if(tab==='list'){
+        if(S.orders&&S.orders.length)renderOrders();
+        loadOrders();
     }
+    if(tab==='dapur'){
+        const dEl=document.getElementById('dapurDate');
+        if(dEl&&!dEl.value)dEl.value=today();
+        if(S.orders&&S.orders.length){
+            const pending=S.orders.filter(o=>o.status==='pending');
+            if(S.stations&&S.stations.length>0)renderDapurSplit(pending);
+            else renderDapurOrders(pending);
+        }
+        loadDapur();
+    }
+    if(tab==='sales'){initSalesTab();if(S.reportMode==='daily')loadDailySales();else if(S.reportMode==='weekly')loadWeeklySales();else loadMonthlySales()}
+    if(tab==='menu'){loadMenuManage();}
+    if(tab==='settings'){loadStaffList();loadSettingsForm()}
 }
 function renderCats(){const featured=S.featuredCat||'';const allCats=[...new Set(S.menu.map(m=>m.category))];const others=allCats.filter(c=>c!==featured);const ordered=featured?[featured,...others]:others;const cats=['Semua',...ordered];const ic={Semua:'🍽️',Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};document.getElementById('catFilter').innerHTML=cats.map(c=>{const isF=featured&&c===featured;const icon=isF?'⭐':(ic[c]||'📦');return'<button class="cat-chip'+(isF?' featured':'')+' '+(c===S.cat?'active':'')+'" onclick="pickCat(\''+esc(c)+'\',this)">'+icon+' '+esc(c)+'</button>'}).join('')}
 function pickCat(c,el){S.cat=c;document.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderMenu()}
@@ -755,7 +747,7 @@ function startDapurAutoRefresh(){
         if(dapurTab&&dapurTab.classList.contains('active')&&isToday){
             await dapurSilentRefresh();
         }
-    },8000);
+    },5000);
 }
 
 async function dapurSilentRefresh(){
@@ -764,26 +756,18 @@ async function dapurSilentRefresh(){
         if(!r.success)return;
         const orders=r.orders||[];
         const pending=orders.filter(o=>o.status==='pending');
-        
-        // Store for station filter
         S.orders=orders;
-        // Semak ada order baru tak
         const currentIds=new Set(pending.map(o=>o.orderId));
         const newOrders=pending.filter(o=>!dapurLastOrderIds.has(o.orderId));
-        
-        if(!dapurFirstLoad && newOrders.length>0){
-            // Ada order baru! Bunyikan loceng & refresh UI
+        if(!dapurFirstLoad&&newOrders.length>0){
             ringDapurBell(newOrders.length);
             showDapurNotif(newOrders.length);
         }
-        
         dapurLastOrderIds=currentIds;
         dapurFirstLoad=false;
-        
         // Update count badge
         const dapurBadge=document.getElementById('dapurCount');
-        if(dapurBadge)countEl.textContent=pending.length+' menunggu';
-        
+        if(dapurBadge)dapurBadge.textContent=pending.length+' menunggu';
         // Update tab badge
         const tabDapur=document.getElementById('tabDapur');
         if(tabDapur){
@@ -797,40 +781,18 @@ async function dapurSilentRefresh(){
                 tabDapur.appendChild(badge);
             }
         }
-        
-        // Kalau tab dapur aktif, refresh UI
-        const dapurTab=document.getElementById('tab-dapur');
-        if(dapurTab&&dapurTab.classList.contains('active')){
-            if(S.stations&&S.stations.length>0){
-                renderDapurSplit(pending);
-            }else{
-                renderDapurOrders(pending);
-            }
+        // Refresh UI ikut tab aktif
+        const activeTab=document.querySelector('.tab-content.active');
+        if(!activeTab)return;
+        const tabId=activeTab.id;
+        if(tabId==='tab-dapur'){
+            if(S.stations&&S.stations.length>0)renderDapurSplit(pending);
+            else renderDapurOrders(pending);
+        }else if(tabId==='tab-list'){
+            renderOrders();
         }
-        
-    }catch(e){console.log('[Dapur] Poll error:',e.message)}
+    }catch(e){console.log('[Poll] Error:',e.message)}
 }
-
-function ringDapurBell(count){
-    try{
-        const ctx=new(window.AudioContext||window.webkitAudioContext)();
-        // Bunyikan loceng 2x
-        function ding(time){
-            const o=ctx.createOscillator();
-            const g=ctx.createGain();
-            o.connect(g);g.connect(ctx.destination);
-            o.frequency.value=880;
-            o.type='sine';
-            g.gain.setValueAtTime(0.3,time);
-            g.gain.exponentialRampToValueAtTime(0.001,time+0.8);
-            o.start(time);o.stop(time+0.8);
-        }
-        ding(ctx.currentTime);
-        ding(ctx.currentTime+0.9);
-        if(count>1)ding(ctx.currentTime+1.8);
-    }catch(e){}
-}
-
 function showDapurNotif(count){
     const toast=document.createElement('div');
     toast.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--danger-dark),#c0392b);color:white;padding:14px 24px;border-radius:16px;font-weight:800;font-size:0.95rem;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;text-align:center';
