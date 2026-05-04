@@ -1298,6 +1298,37 @@ function filterOrderByStation(order){
 // ============================================================// ============================================================
 // ITEM TICK FUNCTIONS
 // ============================================================
+function allItemsTicked(orderId,stationIdx,items){
+    const key=stationIdx>=0?orderId+'_st'+stationIdx:orderId;
+    if(!S.itemTicks[key])return false;
+    return items.every((_,i)=>S.itemTicks[key][i]);
+}
+
+function allStationsDone(orderId){
+    const stations=S.stations||[];
+    if(!stations.length){
+        const order=S.orders.find(o=>o.orderId===orderId);
+        if(!order)return false;
+        return allItemsTicked(orderId,-1,order.items||[]);
+    }
+    return stations.every((st,si)=>{
+        const key=orderId+'_st'+si;
+        const ticks=S.itemTicks[key]||{};
+        const order=S.orders.find(o=>o.orderId===orderId);
+        if(!order)return true;
+        const menuCatMap={};
+        S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase()});
+        const cats=(st.categories||[]).map(c=>c.toLowerCase());
+        const stItems=order.items.filter(item=>{
+            if(!cats.length)return true;
+            return cats.includes(menuCatMap[item.name.toLowerCase()]||'');
+        });
+        if(!stItems.length)return true;
+        return stItems.every((_,i)=>ticks[i]);
+    });
+}
+
+
 function tickItem(orderId,stIdx,itemIdx){
     const key=stIdx>=0?orderId+'_st'+stIdx:orderId;
     if(!S.itemTicks[key])S.itemTicks[key]={};
@@ -1306,4 +1337,14 @@ function tickItem(orderId,stIdx,itemIdx){
     const pending=orders.filter(o=>o.status==='pending');
     if(S.stations&&S.stations.length>0)renderDapurSplit(pending);
     else renderDapurOrders(pending);
-}>
+}
+
+// ============================================================
+// STATION SETTINGS FORM LOAD
+// ============================================================
+
+// Start router bila page load
+routerInit();
+</script>
+</body>
+</html>
