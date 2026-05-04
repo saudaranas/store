@@ -623,6 +623,99 @@ function go(tab,el){
     if(tab==='menu'){loadMenuManage();}
     if(tab==='settings'){loadStaffList();loadSettingsForm()}
 }
+// ============================================================
+// LOAD MENU — with localStorage cache for instant render
+// ============================================================
+async function loadMenu(){
+    const menuKey='_pk_menu_'+(window.__PK_GAS_URL__||'');
+    // Instant: render dari cache dulu
+    try{
+        const mc=localStorage.getItem(menuKey);
+        if(mc){
+            const cached=JSON.parse(mc);
+            if(cached&&cached.length){
+                S.menu=cached;
+                renderCats();
+                renderMenu();
+                // Fetch fresh dalam background
+                api('getMenu').then(r=>{
+                    if(r.success&&r.menu.length){
+                        S.menu=r.menu;
+                        try{localStorage.setItem(menuKey,JSON.stringify(r.menu))}catch(e){}
+                        renderCats();renderMenu();
+                    }
+                }).catch(()=>{});
+                return;
+            }
+        }
+    }catch(e){}
+    // Tiada cache — fetch dan tunggu
+    const r=await cachedApi('getMenu',{},60000);
+    if(r.success){
+        S.menu=r.menu;
+        try{localStorage.setItem(menuKey,JSON.stringify(r.menu))}catch(e){}
+        renderCats();renderMenu();
+    }else{
+        document.getElementById('menuGrid').innerHTML='<div class="api-error-box"><strong>❌ Gagal muatkan menu</strong>'+esc(r.error)+'</div>';
+    }
+}
+
+// ============================================================
+// AUDIO ENGINE — mobile-compatible
+// ============================================================
+let _audioCtx=null;
+
+function getAudioCtx(){
+    if(!_audioCtx) _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(_audioCtx.state==='suspended') _audioCtx.resume();
+    return _audioCtx;
+}
+
+function ringDapurBell(count){
+    if(!S.audioUnlocked)return;
+    try{
+        const ctx=getAudioCtx();
+        function ding(time,freq,vol){
+            const o=ctx.createOscillator();
+            const g=ctx.createGain();
+            o.connect(g);g.connect(ctx.destination);
+            o.frequency.value=freq||880;
+            o.type='sine';
+            g.gain.setValueAtTime(vol||0.3,time);
+            g.gain.exponentialRampToValueAtTime(0.001,time+0.6);
+            o.start(time);o.stop(time+0.6);
+        }
+        ding(ctx.currentTime,880,0.3);
+        ding(ctx.currentTime+0.15,660,0.2);
+        ding(ctx.currentTime+0.5,880,0.25);
+        if(count>1){
+            ding(ctx.currentTime+0.65,660,0.2);
+            ding(ctx.currentTime+1.1,880,0.2);
+        }
+    }catch(e){console.log('Bell:',e);}
+}
+
+function unlockAudio(){
+    try{
+        const ctx=getAudioCtx();
+        const buf=ctx.createBuffer(1,1,22050);
+        const src=ctx.createBufferSource();
+        src.buffer=buf;
+        src.connect(ctx.destination);
+        src.start(0);
+        S.audioUnlocked=true;
+        const btn=document.getElementById('btnUnlockAudio');
+        if(btn){
+            btn.innerHTML='🔔 Bunyi Aktif';
+            btn.style.background='var(--success-dark)';
+            btn.style.cursor='default';
+            btn.onclick=null;
+        }
+        toast('🔔 Bunyi dapur diaktifkan!');
+        setTimeout(()=>ringDapurBell(1),300);
+    }catch(e){console.log('Audio unlock:',e);}
+}
+
 function renderCats(){const featured=S.featuredCat||'';const allCats=[...new Set(S.menu.map(m=>m.category))];const others=allCats.filter(c=>c!==featured);const ordered=featured?[featured,...others]:others;const cats=['Semua',...ordered];const ic={Semua:'🍽️',Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};document.getElementById('catFilter').innerHTML=cats.map(c=>{const isF=featured&&c===featured;const icon=isF?'⭐':(ic[c]||'📦');return'<button class="cat-chip'+(isF?' featured':'')+' '+(c===S.cat?'active':'')+'" onclick="pickCat(\''+esc(c)+'\',this)">'+icon+' '+esc(c)+'</button>'}).join('')}
 function pickCat(c,el){S.cat=c;document.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderMenu()}
 function renderMenu(){const g=document.getElementById('menuGrid');const q=document.getElementById('menuSearch').value.toLowerCase();let l=S.menu;if(S.cat!=='Semua')l=l.filter(m=>m.category===S.cat);if(q)l=l.filter(m=>m.name.toLowerCase().includes(q));if(!l.length){g.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}g.innerHTML=l.map(m=>{const c=S.cart.find(x=>x.id===m.id);return'<div class="menu-item '+(c?'selected':'')+'" onclick="addCart(\''+esc(m.id)+'\')" data-id="'+esc(m.id)+'">'+(c?'<div class="item-badge">'+c.qty+'</div>':'')+'<div class="item-cat">'+esc(m.category)+'</div><div class="item-name">'+esc(m.name)+'</div><div class="item-price">RM '+m.price.toFixed(2)+'</div></div>'}).join('')}
