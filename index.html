@@ -431,6 +431,9 @@
 const MASTER_URL = 'https://script.google.com/macros/s/AKfycbznU2RPkvryyNLyRrbT5iRtA1HTdazlgia_7HcN1-_OpE15pMhr7t1ZRsoqjIWNFAsY/exec';
 const MASTER_KEY = 'poskedai-master-2026';
 
+// API config — perlu ada di sini supaya preloadAppData boleh guna C.KEY
+const PK_API_KEY = 'aca6f58aac70a3c722e74b9e0488bd693637e056de95a296f6b40613104b1df7';
+
 // ============================================================
 // ROUTER — baca slug, fetch GAS URL, load app
 // URL KEKAL: poskedai.store/?kedai=nama-kedai
@@ -439,30 +442,26 @@ const MASTER_KEY = 'poskedai-master-2026';
 async function preloadAppData(gasUrl) {
     const shopKey = '_pk_shopinfo_' + gasUrl;
     const menuKey = '_pk_menu_' + gasUrl;
+    // Fetch both in parallel
+    const apiKey = PK_API_KEY;
+    const fetchGas = (action) => fetch(gasUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify({apiKey, action, data: {}})
+    }).then(r => r.text()).then(t => JSON.parse(t)).catch(() => null);
+
     try {
-        // Fetch shopInfo if not cached
-        const shopCached = localStorage.getItem(shopKey);
-        if (!shopCached) {
-            const r = await fetch(gasUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'text/plain'},
-                body: JSON.stringify({apiKey: C.KEY, action: 'getShopInfo', data: {}})
-            });
-            const text = await r.text();
-            const data = JSON.parse(text);
-            if (data.success) localStorage.setItem(shopKey, JSON.stringify(data));
+        const [shopData, menuData] = await Promise.all([
+            localStorage.getItem(shopKey) ? null : fetchGas('getShopInfo'),
+            localStorage.getItem(menuKey) ? null : fetchGas('getMenu')
+        ]);
+        if (shopData && shopData.success) {
+            localStorage.setItem(shopKey, JSON.stringify(shopData));
+            console.log('[Preload] shopInfo cached');
         }
-        // Fetch menu if not cached
-        const menuCached = localStorage.getItem(menuKey);
-        if (!menuCached) {
-            const r2 = await fetch(gasUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'text/plain'},
-                body: JSON.stringify({apiKey: C.KEY, action: 'getMenu', data: {}})
-            });
-            const text2 = await r2.text();
-            const data2 = JSON.parse(text2);
-            if (data2.success) localStorage.setItem(menuKey, JSON.stringify(data2.menu));
+        if (menuData && menuData.success) {
+            localStorage.setItem(menuKey, JSON.stringify(menuData.menu));
+            console.log('[Preload] menu cached (' + menuData.menu.length + ' items)');
         }
     } catch(e) { console.log('[Preload] Error:', e.message); }
 }
@@ -479,7 +478,7 @@ async function routerInit() {
     // ── Semak cache dulu ──────────────────────────────────
     const cacheKey = '_pk_reg_' + slug;
     try {
-        const cached = localStorage.getItem(cacheKey);
+        const cached = localStorage.getItem(cacheKey); // registry cache
         if (cached) {
             const data = JSON.parse(cached);
             if (data && data.gasUrl) {
@@ -568,12 +567,6 @@ function showSplashError(title, msg, url) {
 // ============================================================
 // CONFIG — AMBIL GAS URL DARI ROUTER (index.html)
 // ============================================================
-// C.URL diisi oleh router sebelum init() dipanggil
-const C={
-    get URL(){ return window.__PK_GAS_URL__ || ''; },
-    KEY:'aca6f58aac70a3c722e74b9e0488bd693637e056de95a296f6b40613104b1df7',
-    PAKEJ:'premium'
-};
 let S={menu:[],cart:[],orders:[],staff:{name:'Admin',role:'admin'},pay:'cash',cat:'Semua',editOid:null,editItems:[],shop:{shopName:'Kedai Makan',shopAddress:'',shopPhone:''},count:0,reportMode:'daily',orderFilter:'all',qrImage:'',bankName:'',bankAccount:'',bankHolder:'',completePay:'cash',completeOid:null,qrBase64:'',featuredCat:'',editPendingOid:null,editPendingItems:[],waReceiptText:'',completeOrderData:null,dapurStation:'semua',stations:[],itemTicks:{}};
 let salesCache={daily:null,weekly:null,monthly:null};
 const clientCache={};
@@ -595,18 +588,37 @@ async function enterApp(){const isAdmin=S.staff.role==='admin';document.getEleme
 function doLogout(){if(S.cart.length>0&&!confirm('Ada item dalam troli. Keluar?'))return;if(dapurInterval){clearInterval(dapurInterval);dapurInterval=null}clearSession();document.getElementById('loginScreen').style.display='flex';document.getElementById('appContainer').classList.remove('show');document.getElementById('pinInput').value='';S.cart=[];['tabSales','tabMenu','tabSettings','tabDapur'].forEach(id=>document.getElementById(id).style.display='')}
 function go(tab,el){document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('tab-'+tab).classList.add('active');if(tab==='list')loadOrders();if(tab==='dapur'){const dEl=document.getElementById('dapurDate');if(dEl&&!dEl.value)dEl.value=today();loadDapur();}if(tab==='sales'){initSalesTab();if(S.reportMode==='daily')loadDailySales();else if(S.reportMode==='weekly')loadWeeklySales();else loadMonthlySales()}if(tab==='menu')loadMenuManage();if(tab==='settings'){loadStaffList();loadSettingsForm()}}
 async function loadMenu(){
-    // Try localStorage cache for instant render
+    const menuKey = '_pk_menu_' + (window.__PK_GAS_URL__||'');
+    // ✅ INSTANT: Render dari cache dulu
     try{
-        const mc=localStorage.getItem('_pk_menu_'+window.__PK_GAS_URL__);
-        if(mc){const cached=JSON.parse(mc);if(cached&&cached.length){S.menu=cached;renderCats();renderMenu();}}
+        const mc = localStorage.getItem(menuKey);
+        if(mc){
+            const cached = JSON.parse(mc);
+            if(cached && cached.length){
+                S.menu = cached;
+                renderCats();
+                renderMenu();
+                console.log('[Menu] Cache hit — ' + cached.length + ' items');
+                // Fetch fresh dalam background
+                api('getMenu').then(r => {
+                    if(r.success && r.menu.length){
+                        S.menu = r.menu;
+                        try{localStorage.setItem(menuKey, JSON.stringify(r.menu))}catch(e){}
+                        renderCats();renderMenu();
+                    }
+                }).catch(()=>{});
+                return; // Terus return — tak perlu tunggu network
+            }
+        }
     }catch(e){}
-    // Always fetch fresh in background
-    const r=await cachedApi('getMenu',{},60000);
+    // ❌ Tiada cache — fetch dan tunggu (kali pertama)
+    document.getElementById('menuGrid').innerHTML='<div class="loading"><div class="spinner"></div>Memuatkan menu...</div>';
+    const r = await cachedApi('getMenu',{},60000);
     if(r.success){
-        S.menu=r.menu;
-        try{localStorage.setItem('_pk_menu_'+window.__PK_GAS_URL__,JSON.stringify(r.menu))}catch(e){}
+        S.menu = r.menu;
+        try{localStorage.setItem(menuKey, JSON.stringify(r.menu))}catch(e){}
         renderCats();renderMenu();
-    }else if(!S.menu.length){
+    }else{
         document.getElementById('menuGrid').innerHTML='<div class="api-error-box"><strong>❌ Gagal muatkan menu</strong>'+esc(r.error)+'</div>';
     }
 }
@@ -624,7 +636,7 @@ function renderQuickCash(t){if(!t||t<=0){document.getElementById('quickCash').in
 function setCash(v){document.getElementById('cashIn').value=v.toFixed(2);calcChange()}
 function pickPay(m,el){S.pay=m;document.querySelectorAll('#cartContent .pay-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('cashCalc').classList.toggle('show',m==='cash');document.getElementById('qrBox').classList.toggle('show',m==='qr');document.getElementById('transferBox').classList.toggle('show',m==='transfer')}
 function calcChange(){const t=parseFloat(document.getElementById('cartTotal').textContent)||0;const g=parseFloat(document.getElementById('cashIn').value)||0;const b=document.getElementById('changeBox');if(!g){b.textContent='-';b.className='change-box';return}const c=g-t;if(c>=0){b.textContent='Baki: RM '+c.toFixed(2);b.className='change-box ok'}else{b.textContent='Kurang: RM '+Math.abs(c).toFixed(2);b.className='change-box bad'}}
-async function loadPaymentInfo(){const r=await cachedApi('getSettings',{},120000);if(r.success){S.qrImage=r.qrImage||'';S.bankName=r.bankName||'';S.bankAccount=r.bankAccount||'';S.bankHolder=r.bankHolder||'';renderPaymentInfo();loadStationConfig(r);}}
+async function loadPaymentInfo(){const r=await cachedApi('getSettings',{},120000);if(r.success){S.qrImage=r.qrImage||'';S.bankName=r.bankName||'';S.bankAccount=r.bankAccount||'';S.bankHolder=r.bankHolder||'';renderPaymentInfo();}}
 function renderPaymentInfo(){const qC=document.getElementById('qrContent'),cq=document.getElementById('completeQrBox');if(S.qrImage){qC.innerHTML='<img src="'+S.qrImage+'" alt="QR Payment" onerror="this.style.display=\'none\'">';cq.innerHTML='<p style="font-weight:700;margin-bottom:8px">📱 Scan QR</p><img src="'+S.qrImage+'" alt="QR" style="max-width:160px;border-radius:10px;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'}else{qC.innerHTML='<p style="color:var(--gray)">QR belum disetup.</p>';cq.innerHTML='<p style="color:var(--gray)">QR belum disetup.</p>'}const tC=document.getElementById('transferContent'),ct=document.getElementById('completeTransferBox');if(S.bankAccount){const h='<div class="bank-detail"><strong>'+esc(S.bankName||'Bank')+'</strong><div class="bank-acc">'+esc(S.bankAccount)+'</div><div>a/n: <strong>'+esc(S.bankHolder||'-')+'</strong></div></div>';tC.innerHTML=h;ct.innerHTML='<p style="font-weight:700;margin-bottom:8px">🏦 Transfer</p>'+h}else{tC.innerHTML='<p style="color:var(--gray)">Bank belum disetup.</p>';ct.innerHTML='<p style="color:var(--gray)">Bank belum disetup.</p>'}}
 async function saveQRUrl(){const url=document.getElementById('qrUrl').value.trim();if(!url){toast('Masukkan URL!','error');return}if(!url.startsWith('http')){toast('URL tidak sah!','error');return}const btn=event.target;btn.disabled=true;btn.textContent='⏳...';const r=await api('saveSettings',{qrImage:url});btn.disabled=false;btn.textContent='💾 Simpan URL';if(r.success){S.qrImage=url;S.qrBase64='';clearClientCache('getSettings');renderPaymentInfo();document.getElementById('qrPreview').innerHTML='<img src="'+url+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.parentNode.innerHTML=\'<p style=color:red>⚠️ URL tidak boleh dipapar</p>\'">';toast('✅ URL QR disimpan!')}else toast('❌ '+r.error,'error')}
 function previewQR(input){if(input.files&&input.files[0]){const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const MAX=350;let w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);let q=0.7,b64=canvas.toDataURL('image/jpeg',q);while(b64.length>120000&&q>0.2){q-=0.1;b64=canvas.toDataURL('image/jpeg',q)}S.qrBase64=b64;const sk=(b64.length*0.75/1024).toFixed(0);document.getElementById('qrPreview').innerHTML='<img src="'+b64+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)"><p style="font-size:0.75rem;color:var(--success-dark);margin-top:6px">✅ Preview ('+sk+'KB)</p>'};img.src=e.target.result};reader.readAsDataURL(input.files[0])}}
@@ -872,23 +884,69 @@ window.addEventListener('beforeunload',e=>{if(S.cart.length){e.preventDefault();
 async function init(){
     updateClock();setInterval(updateClock,1000);
     document.getElementById('orderDate').value=today();
-    // Cuba dari cache dulu
-    let info=null;
-    try{const cached=localStorage.getItem('_pk_shopinfo_'+(window.__PK_GAS_URL__||''));if(cached){info=JSON.parse(cached);console.log('[Init] Using cached shopInfo')}}catch(e){}
-    if(!info||!info.success){
-        info=await api('getShopInfo');
-        if(!info.success){document.getElementById('loginShopName').textContent='⏳ Cuba semula...';await new Promise(r=>setTimeout(r,2000));info=await api('getShopInfo')}
-        if(info.success){try{localStorage.setItem('_pk_shopinfo_'+(window.__PK_GAS_URL__||''),JSON.stringify(info))}catch(e){}}
+    
+    // ── INSTANT: Load dari cache dulu, tunjuk login terus ──
+    const shopKey = '_pk_shopinfo_' + (window.__PK_GAS_URL__||'');
+    let info = null;
+    try {
+        const cached = localStorage.getItem(shopKey);
+        if (cached) {
+            info = JSON.parse(cached);
+            console.log('[Init] Cache hit — instant load');
+        }
+    } catch(e) {}
+
+    if (info && info.success) {
+        // ✅ Ada cache — tunjuk login terus TANPA tunggu network
+        applyShopInfo(info);
+        // Fetch fresh data dalam background (silent)
+        api('getShopInfo').then(fresh => {
+            if (fresh.success) {
+                try { localStorage.setItem(shopKey, JSON.stringify(fresh)); } catch(e) {}
+                applyShopInfo(fresh);
+            }
+        }).catch(() => {});
+    } else {
+        // ❌ Tiada cache — kena fetch (kali pertama)
+        document.getElementById('loginShopName').textContent='⏳ Menyambung...';
+        info = await api('getShopInfo');
+        if (!info.success) {
+            await new Promise(r => setTimeout(r, 2000));
+            info = await api('getShopInfo');
+        }
+        if (info.success) {
+            try { localStorage.setItem(shopKey, JSON.stringify(info)); } catch(e) {}
+            applyShopInfo(info);
+        } else {
+            document.getElementById('loginShopName').innerHTML = '⚠️ Gagal sambung<br><span style="font-size:0.75rem;color:var(--danger-dark)">' + esc(info.error||'Periksa URL API') + '</span>';
+        }
     }
-    if(info.success){
-        S.shop=info;document.getElementById('loginShopName').textContent='🍽️ '+info.shopName;document.title='POSKedai - '+info.shopName;
-        if(info.pakej)C.PAKEJ=info.pakej.toLowerCase();
-        if(info.qrImage)S.qrImage=info.qrImage;if(info.bankName)S.bankName=info.bankName;if(info.bankAccount)S.bankAccount=info.bankAccount;if(info.bankHolder)S.bankHolder=info.bankHolder;if(info.featuredCategory)S.featuredCat=info.featuredCategory;
-        if(C.PAKEJ==='premium'&&info.brandColor&&info.brandColor!=='#f97316'){document.documentElement.style.setProperty('--primary',info.brandColor);document.documentElement.style.setProperty('--primary-dark',info.brandColor)}
-    }else{document.getElementById('loginShopName').innerHTML='⚠️ Gagal sambung<br><span style="font-size:0.75rem;color:var(--danger-dark)">'+esc(info.error||'Periksa URL API')+'</span>'}
+    // Apply shop info and start app
+    if(info && info.success){
+        applyShopInfo(info);
+    }
     if(C.PAKEJ==='asas')skipLogin();
     else if(loadSession()){enterApp()}
     startDapurAutoRefresh();
+}
+
+function applyShopInfo(info){
+    if(!info||!info.success)return;
+    S.shop=info;
+    const nameEl=document.getElementById('loginShopName');
+    if(nameEl)nameEl.textContent='🍽️ '+info.shopName;
+    document.title='POSKedai - '+info.shopName;
+    if(info.pakej)C.PAKEJ=info.pakej.toLowerCase();
+    if(info.qrImage)S.qrImage=info.qrImage;
+    if(info.bankName)S.bankName=info.bankName;
+    if(info.bankAccount)S.bankAccount=info.bankAccount;
+    if(info.bankHolder)S.bankHolder=info.bankHolder;
+    if(info.featuredCategory)S.featuredCat=info.featuredCategory;
+    if(C.PAKEJ==='premium'&&info.brandColor&&info.brandColor!=='#f97316'){
+        document.documentElement.style.setProperty('--primary',info.brandColor);
+        document.documentElement.style.setProperty('--primary-dark',info.brandColor);
+    }
+    loadStationConfig(info);
 }
 init();
 
