@@ -274,6 +274,80 @@
         @media(max-width:868px){.order-layout{flex-direction:column;gap:14px}.order-left{width:100%;max-width:100%;overflow-x:clip;overflow-y:visible}.order-right{width:100%;position:static;max-height:none}.order-right .card{max-height:none}.cart-scroll{max-height:400px}.menu-grid{grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:100%;overflow:visible;padding-top:8px}}
         @media(max-width:600px){body{font-size:14px}.header{padding:12px 14px}.header-logo{font-size:1rem}.header-staff{max-width:90px;font-size:0.68rem;padding:3px 10px}.header-counter{font-size:0.7rem;padding:3px 10px}.btn-logout{padding:5px 10px;font-size:0.68rem}.nav-tabs{top:48px;padding:2px}.nav-tab{padding:6px 3px 5px;font-size:0.6rem;min-width:48px}.nav-tab .tab-icon{font-size:1rem}.tab-content{padding:10px;padding-bottom:70px}.order-left{width:100%;max-width:100%;overflow-x:clip;overflow-y:visible}.menu-grid{grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:100%;overflow:visible;padding-top:6px}.menu-item{padding:10px 5px;border-radius:12px;max-width:100%;overflow:visible}.menu-item .item-cat{font-size:0.5rem}.menu-item .item-name{font-size:0.68rem;min-height:2.4em;-webkit-line-clamp:2}.menu-item .item-price{font-size:0.8rem}.menu-item .item-badge{width:18px;height:18px;font-size:0.6rem;top:-4px;right:-4px}.card{padding:12px;margin-bottom:10px;border-radius:14px}.card-title{font-size:0.85rem;margin-bottom:12px;padding:14px 14px 10px!important}.search-bar input{padding:10px 14px 10px 36px;font-size:0.85rem}.search-bar::before{left:12px;font-size:0.8rem}.cat-chip{padding:6px 12px;font-size:0.7rem}.cart-scroll{padding:0 12px;max-height:none;overflow-y:visible}.cart-footer{padding:12px 12px 14px}.cart-item{flex-wrap:wrap;padding:8px 0}.cart-info{flex:1 1 100%;margin-bottom:4px}.cart-name{font-size:0.8rem}.cart-price{font-size:0.7rem}.cart-controls{gap:5px}.qty-btn{width:28px;height:28px;font-size:0.9rem}.cart-subtotal{font-size:0.82rem;flex-basis:auto;margin-left:auto}.table-row{flex-wrap:wrap;margin:10px 0 12px}.table-row label{width:100%;margin-bottom:4px;font-size:0.78rem}.table-input{width:100%}.discount-section{flex-wrap:wrap}.discount-section label{width:100%;margin-bottom:4px;font-size:0.78rem}.discount-input{width:100%}.total-bar{padding:14px 16px;margin-bottom:10px}.total-label{font-size:0.8rem}.total-amount{font-size:1.35rem}.payment-methods{gap:5px}.pay-btn{padding:10px 4px;font-size:0.7rem;border-radius:10px}.pay-btn .pay-icon{font-size:1.1rem}.cash-calc{padding:10px}.cash-row{flex-wrap:wrap}.cash-row label{width:100%;margin-bottom:4px;font-size:0.78rem}.cash-input{width:100%}.quick-cash-btn{padding:5px 10px;font-size:0.68rem}.change-box{font-size:1rem;padding:10px}.btn-row{flex-direction:column;gap:8px}.btn-row .btn{width:100%}.btn-save-order{padding:12px;font-size:0.85rem}.btn-primary{padding:13px;font-size:0.9rem}.order-filter-btn{padding:6px 3px;font-size:0.68rem;min-width:50px}.order-card{padding:12px}.order-num{font-size:1rem}.order-items{font-size:0.72rem}.order-total{font-size:0.95rem}.order-actions{margin-top:8px;width:100%;justify-content:flex-end}.order-actions .btn{padding:5px 10px;font-size:0.68rem}.report-header{flex-direction:column;align-items:stretch}.report-tabs{max-width:100%}.report-tab{padding:7px 5px;font-size:0.7rem}.btn-export{width:100%;justify-content:center}.sales-grid{grid-template-columns:1fr 1fr;gap:8px}.stat-card{padding:14px}.stat-value{font-size:1.2rem}.stat-card.hero-stat{padding:20px}.stat-card.hero-stat .stat-value{font-size:1.8rem}.pay-stats{gap:6px}.pay-stat{min-width:calc(33.333% - 6px);padding:10px 6px}.ps-icon{font-size:1.1rem}.ps-val{font-size:0.8rem}.donut-container{flex-direction:column;align-items:center;gap:14px}.donut-chart{width:120px;height:120px}.donut-hole{width:60px;height:60px}.donut-hole-val{font-size:0.9rem}.pie-legend-item{font-size:0.72rem}.cal-day .cal-val{display:none}.hourly-label{font-size:0.38rem}.top-bar-bg{width:60px}.form-row{flex-direction:column}.modal{padding:20px;max-height:90vh}.modal-title{font-size:1rem}.receipt{padding:18px 14px;font-size:0.72rem}.login-card{padding:32px 24px;max-width:340px}.login-logo{font-size:1.8rem}.login-shop-name{font-size:0.95rem;padding:12px 16px}.pin-input{padding:14px;font-size:1.3rem;letter-spacing:10px}.btn-login{padding:15px;font-size:0.95rem}#qrBox img{max-width:220px}.dapur-grid{grid-template-columns:1fr}.orders-grid{grid-template-columns:1fr}}
         @media(max-width:380px){.menu-grid{grid-template-columns:repeat(2,1fr)}.qty-btn{width:26px;height:26px}.cart-name{font-size:0.75rem}.cart-subtotal{font-size:0.78rem}.total-amount{font-size:1.25rem}}
+
+        /* ===== RENEW POPUP & EXPIRED SCREEN ===== */
+        .renew-overlay{
+            position:fixed;inset:0;background:rgba(15,23,42,0.7);
+            backdrop-filter:blur(6px);z-index:9998;
+            display:flex;align-items:center;justify-content:center;
+            padding:20px;animation:fadeInOverlay 0.3s ease;
+        }
+        @keyframes fadeInOverlay{from{opacity:0}to{opacity:1}}
+        .renew-modal{
+            background:white;border-radius:24px;
+            width:100%;max-width:420px;
+            box-shadow:0 30px 80px rgba(0,0,0,0.25);
+            overflow:hidden;
+            animation:slideUpModal 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes slideUpModal{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .renew-header-warning{background:linear-gradient(135deg,#f59e0b,#d97706);padding:20px 24px;color:white;}
+        .renew-header-expired{background:linear-gradient(135deg,#ef4444,#dc2626);padding:20px 24px;color:white;}
+        .renew-header h3{font-size:1.1rem;font-weight:900;margin-bottom:4px;}
+        .renew-header p{font-size:0.82rem;opacity:0.9;}
+        .renew-body{padding:20px 24px;}
+        .renew-info{background:#f8fafc;border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid #e2e8f0;}
+        .renew-info-row{display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;margin-bottom:6px;}
+        .renew-info-row:last-child{margin-bottom:0;}
+        .renew-info-label{color:#64748b;font-weight:600;}
+        .renew-info-value{font-weight:800;color:#1e293b;}
+        .renew-price{font-size:2rem;font-weight:900;color:#f97316;text-align:center;margin:12px 0 4px;}
+        .renew-price-note{font-size:0.78rem;color:#64748b;text-align:center;margin-bottom:16px;}
+        .btn-renew{
+            display:block;width:100%;padding:14px;
+            background:linear-gradient(135deg,#f97316,#ea580c);
+            color:white;border:none;border-radius:12px;
+            font-weight:800;font-size:1rem;cursor:pointer;
+            font-family:var(--font);text-align:center;text-decoration:none;
+            box-shadow:0 6px 20px rgba(249,115,22,0.35);
+            transition:all 0.2s;margin-bottom:10px;
+        }
+        .btn-renew:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(249,115,22,0.45);}
+        .btn-renew-wa{
+            display:flex;align-items:center;justify-content:center;gap:8px;
+            width:100%;padding:12px;
+            background:#25D366;color:white;border:none;border-radius:12px;
+            font-weight:700;font-size:0.88rem;cursor:pointer;
+            font-family:var(--font);text-decoration:none;
+            transition:all 0.2s;margin-bottom:8px;
+        }
+        .btn-renew-dismiss{
+            display:block;width:100%;padding:10px;
+            background:none;border:none;color:#94a3b8;
+            font-size:0.8rem;cursor:pointer;font-family:var(--font);
+        }
+        .expired-screen{
+            position:fixed;inset:0;
+            background:linear-gradient(145deg,#fff7ed 0%,#fed7aa 50%,#fb923c 100%);
+            z-index:9999;display:flex;align-items:center;justify-content:center;
+            padding:24px;
+        }
+        .expired-card{
+            background:white;border-radius:28px;
+            width:100%;max-width:440px;
+            box-shadow:0 30px 80px rgba(0,0,0,0.15);
+            overflow:hidden;text-align:center;
+        }
+        .expired-header{
+            background:linear-gradient(135deg,#ef4444,#dc2626);
+            padding:28px 24px;color:white;
+        }
+        .expired-icon{font-size:3rem;margin-bottom:8px;}
+        .expired-header h2{font-size:1.3rem;font-weight:900;margin-bottom:6px;}
+        .expired-header p{font-size:0.85rem;opacity:0.9;}
+        .expired-body{padding:24px;}
+        .expired-shop{font-size:1.1rem;font-weight:800;color:#1e293b;margin-bottom:4px;}
+        .expired-date{font-size:0.82rem;color:#64748b;margin-bottom:20px;}
         @media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{position:absolute;top:0;left:0}}
         /* ===== DAPUR SPLIT VIEW ===== */
         .dapur-split{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px;align-items:flex-start}
@@ -554,8 +628,8 @@ async function routerInit() {
             const data = JSON.parse(cached);
             if (data && data.gasUrl) {
                 window.__PK_GAS_URL__ = data.gasUrl;
+                window.__PK_RENEW_DATA__ = data; // simpan untuk renew check
                 updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
-                // Preload dalam background
                 preloadAppData(data.gasUrl);
                 setTimeout(() => {
                     document.getElementById('splashScreen').classList.add('hide');
@@ -586,16 +660,17 @@ async function routerInit() {
                 return;
             }
             if (!data.success) {
-                showSplashError(
-                    data.status === 'expired' ? '⏰ Langganan Tamat' : '❌ Kedai Tidak Dijumpai',
-                    data.error || 'Hubungi POSKedai.',
-                    '?kedai=' + slug
-                );
+                if (data.status === 'expired') {
+                    showExpiredScreen(data);
+                } else {
+                    showSplashError('❌ Kedai Tidak Dijumpai', data.error || 'Hubungi POSKedai.', '?kedai=' + slug);
+                }
                 return;
             }
             // ✅ Simpan cache
             try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
             window.__PK_GAS_URL__ = data.gasUrl;
+            window.__PK_RENEW_DATA__ = data;
             updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
             preloadAppData(data.gasUrl);
             setTimeout(() => {
@@ -664,7 +739,11 @@ function toast(msg,type='success'){const w=document.getElementById('toastWrap');
 function beep(ok){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);g.gain.value=0.08;if(ok){o.frequency.value=800;o.start();setTimeout(()=>o.frequency.value=1200,100);setTimeout(()=>{o.stop();ctx.close()},250)}else{o.frequency.value=400;o.start();setTimeout(()=>o.frequency.value=250,120);setTimeout(()=>{o.stop();ctx.close()},250)}}catch(e){}}
 async function doLogin(){const pin=document.getElementById('pinInput').value;if(!pin){toast('Masukkan PIN!','error');return}const btn=document.querySelector('.btn-login');btn.textContent='⏳...';btn.disabled=true;const r=await api('login',{pin});btn.textContent='🔓 Masuk';btn.disabled=false;if(r.success){S.staff=r.staff;saveSession();enterApp()}else{beep(false);toast('❌ '+(r.error||'PIN tidak sah'),'error')}}
 function skipLogin(){S.staff={name:'Admin',role:'admin'};saveSession();enterApp()}
-async function enterApp(){const isAdmin=S.staff.role==='admin';document.getElementById('tabSales').style.display=isAdmin?'':'none';document.getElementById('tabSettings').style.display=isAdmin?'':'none';document.getElementById('tabMenu').style.display=isAdmin?'':'none';document.getElementById('tabDapur').style.display='';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tabOrder=document.querySelector('#appContainer .nav-tabs .nav-tab:first-child');if(tabOrder)tabOrder.classList.add('active');document.getElementById('tab-order').classList.add('active');document.getElementById('loginScreen').style.display='none';document.getElementById('appContainer').classList.add('show');document.getElementById('staffBadge').textContent='👤 '+esc(S.staff.name);await Promise.all([loadMenu(),loadCount(),loadPaymentInfo()]);applyPakejLimits()}
+async function enterApp(){
+    // Semak renew warning
+    if(window.__PK_RENEW_DATA__){
+        checkAndShowRenewPopup(window.__PK_RENEW_DATA__);
+    }const isAdmin=S.staff.role==='admin';document.getElementById('tabSales').style.display=isAdmin?'':'none';document.getElementById('tabSettings').style.display=isAdmin?'':'none';document.getElementById('tabMenu').style.display=isAdmin?'':'none';document.getElementById('tabDapur').style.display='';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tabOrder=document.querySelector('#appContainer .nav-tabs .nav-tab:first-child');if(tabOrder)tabOrder.classList.add('active');document.getElementById('tab-order').classList.add('active');document.getElementById('loginScreen').style.display='none';document.getElementById('appContainer').classList.add('show');document.getElementById('staffBadge').textContent='👤 '+esc(S.staff.name);await Promise.all([loadMenu(),loadCount(),loadPaymentInfo()]);applyPakejLimits()}
 function doLogout(){if(S.cart.length>0&&!confirm('Ada item dalam troli. Keluar?'))return;if(dapurInterval){clearInterval(dapurInterval);dapurInterval=null}clearSession();document.getElementById('loginScreen').style.display='flex';document.getElementById('appContainer').classList.remove('show');document.getElementById('pinInput').value='';S.cart=[];['tabSales','tabMenu','tabSettings','tabDapur'].forEach(id=>document.getElementById(id).style.display='')}
 function go(tab,el){
     document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -1417,8 +1496,146 @@ function tickItem(orderId,stIdx,itemIdx){
 // STATION SETTINGS FORM LOAD
 // ============================================================
 
+
+// ============================================================
+// RENEW & EXPIRY SYSTEM
+// ============================================================
+const BCL_RENEW_RM30 = 'https://nucleusriver.bcl.my/form/poskedai-renew-rm30';
+const BCL_RENEW_RM80 = 'https://nucleusriver.bcl.my/form/poskedai-renew-rm80';
+const RENEW_WARNING_DAYS = 7; // popup mula keluar 7 hari sebelum luput
+
+function showExpiredScreen(data) {
+    const shop = data.shopName || 'POSKedai';
+    const renewType = data.renewType || 'standard';
+    const price = renewType === 'setup' ? 'RM80' : 'RM30';
+    const priceNote = renewType === 'setup' ? 'Renew + setup (bulan pertama)' : 'Renew bulanan';
+    const bclLink = renewType === 'setup' ? BCL_RENEW_RM80 : BCL_RENEW_RM30;
+
+    document.getElementById('expiredShopName').textContent = '🍽️ ' + shop;
+    document.getElementById('expiredDate').textContent = data.expiryDate
+        ? 'Tarikh luput: ' + data.expiryDate
+        : 'Langganan telah tamat';
+    document.getElementById('expiredPrice').textContent = price;
+    document.getElementById('expiredPriceNote').textContent = priceNote;
+    document.getElementById('btnExpiredRenew').href = bclLink;
+
+    // Hide splash, show expired screen
+    const splash = document.getElementById('splashScreen');
+    if (splash) splash.style.display = 'none';
+    document.getElementById('expiredScreen').style.display = 'flex';
+}
+
+function checkAndShowRenewPopup(data) {
+    // Semak daysLeft — tunjuk popup kalau <= 7 hari
+    if (!data || !data.daysLeft) return;
+    if (data.daysLeft > RENEW_WARNING_DAYS) return;
+
+    // Semak sama ada user dah dismiss hari ni
+    const dismissKey = '_pk_renew_dismiss_' + (window.__PK_GAS_URL__ || '');
+    try {
+        const dismissed = localStorage.getItem(dismissKey);
+        if (dismissed === new Date().toDateString()) return;
+    } catch(e) {}
+
+    const renewType = data.renewType || 'standard';
+    const price = renewType === 'setup' ? 'RM80' : 'RM30';
+    const priceNote = renewType === 'setup' ? 'Renew + setup (bulan pertama)' : 'Renew bulanan';
+    const bclLink = renewType === 'setup' ? BCL_RENEW_RM80 : BCL_RENEW_RM30;
+    const daysText = data.daysLeft <= 0 ? 'Hari ini!' :
+                     data.daysLeft === 1 ? 'Esok!' :
+                     data.daysLeft + ' hari lagi';
+
+    document.getElementById('renewPopupShop').textContent = data.shopName || '-';
+    document.getElementById('renewPopupDate').textContent = data.expiryDate || '-';
+    document.getElementById('renewPopupDays').textContent = daysText;
+    document.getElementById('renewPopupPrice').textContent = price;
+    document.getElementById('renewPopupPriceNote').textContent = priceNote;
+    document.getElementById('renewPopupSubtitle').textContent =
+        'Langganan anda akan tamat dalam ' + daysText + '. Renew sekarang untuk elak gangguan.';
+    document.getElementById('btnRenewNow').href = bclLink;
+
+    // Tunjuk popup selepas app load
+    setTimeout(() => {
+        document.getElementById('renewPopup').style.display = 'flex';
+    }, 1500);
+}
+
+function dismissRenewPopup() {
+    document.getElementById('renewPopup').style.display = 'none';
+    // Simpan dismiss untuk hari ini
+    const dismissKey = '_pk_renew_dismiss_' + (window.__PK_GAS_URL__ || '');
+    try {
+        localStorage.setItem(dismissKey, new Date().toDateString());
+    } catch(e) {}
+}
+
 // Start router bila page load
 routerInit();
 </script>
+
+<!-- ===== EXPIRED SCREEN ===== -->
+<div id="expiredScreen" class="expired-screen" style="display:none">
+    <div class="expired-card">
+        <div class="expired-header">
+            <div class="expired-icon">⏰</div>
+            <h2>Langganan Telah Tamat</h2>
+            <p>Sila renew untuk teruskan menggunakan POSKedai</p>
+        </div>
+        <div class="expired-body">
+            <div class="expired-shop" id="expiredShopName"></div>
+            <div class="expired-date" id="expiredDate"></div>
+            <div class="renew-price" id="expiredPrice">RM30</div>
+            <div class="renew-price-note" id="expiredPriceNote">Renew bulanan</div>
+            <a id="btnExpiredRenew" href="https://nucleusriver.bcl.my/form/poskedai-renew-rm30" target="_blank" class="btn-renew">
+                💳 Renew Sekarang
+            </a>
+            <a href="https://wa.me/60167388358?text=Saya%20nak%20renew%20langganan%20POSKedai" 
+               target="_blank" class="btn-renew-wa">
+                💬 WhatsApp Kami
+            </a>
+            <p style="font-size:0.75rem;color:#94a3b8;margin-top:12px">
+                Selepas bayar, akaun akan diaktifkan dalam masa 1-2 jam waktu perniagaan
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== RENEW WARNING POPUP (7 hari sebelum luput) ===== -->
+<div id="renewPopup" class="renew-overlay" style="display:none">
+    <div class="renew-modal">
+        <div class="renew-header renew-header-warning">
+            <h3>⚠️ Langganan Hampir Tamat</h3>
+            <p id="renewPopupSubtitle">Langganan anda akan tamat dalam beberapa hari</p>
+        </div>
+        <div class="renew-body">
+            <div class="renew-info">
+                <div class="renew-info-row">
+                    <span class="renew-info-label">Kedai</span>
+                    <span class="renew-info-value" id="renewPopupShop">-</span>
+                </div>
+                <div class="renew-info-row">
+                    <span class="renew-info-label">Tarikh Luput</span>
+                    <span class="renew-info-value" id="renewPopupDate">-</span>
+                </div>
+                <div class="renew-info-row">
+                    <span class="renew-info-label">Baki Hari</span>
+                    <span class="renew-info-value" style="color:#f59e0b" id="renewPopupDays">-</span>
+                </div>
+            </div>
+            <div class="renew-price" id="renewPopupPrice">RM30</div>
+            <div class="renew-price-note" id="renewPopupPriceNote">Renew bulanan</div>
+            <a id="btnRenewNow" href="https://nucleusriver.bcl.my/form/poskedai-renew-rm30" target="_blank" class="btn-renew">
+                💳 Renew Sekarang
+            </a>
+            <a href="https://wa.me/60167388358?text=Saya%20nak%20renew%20langganan%20POSKedai" 
+               target="_blank" class="btn-renew-wa">
+                💬 WhatsApp Kami
+            </a>
+            <button class="btn-renew-dismiss" onclick="dismissRenewPopup()">
+                Ingatkan saya kemudian
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
