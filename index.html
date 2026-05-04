@@ -276,36 +276,69 @@
         @media(max-width:380px){.menu-grid{grid-template-columns:repeat(2,1fr)}.qty-btn{width:26px;height:26px}.cart-name{font-size:0.75rem}.cart-subtotal{font-size:0.78rem}.total-amount{font-size:1.25rem}}
         @media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{position:absolute;top:0;left:0}}
         /* ===== DAPUR SPLIT VIEW ===== */
-        .dapur-split{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;align-items:flex-start}
+        .dapur-split{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px;align-items:flex-start}
         .dapur-split::-webkit-scrollbar{height:4px}.dapur-split::-webkit-scrollbar-thumb{background:var(--gray-lighter);border-radius:4px}
-        .dapur-station-col{flex:0 0 300px;min-width:280px;max-width:340px;display:flex;flex-direction:column;gap:10px}
+        .dapur-station-col{flex:0 0 320px;min-width:290px;max-width:360px;display:flex;flex-direction:column;gap:10px}
+
+        /* Station header — unique color per station */
         .dapur-station-header{
-            padding:12px 16px;border-radius:12px;
+            padding:14px 18px;border-radius:14px;
             display:flex;align-items:center;justify-content:space-between;
-            font-weight:800;font-size:0.9rem;
+            font-weight:800;font-size:0.92rem;
             position:sticky;top:0;z-index:10;
-            background:#1e293b;color:white;
-            border-left:4px solid #f97316;
-            box-shadow:0 4px 12px rgba(0,0,0,0.15);
+            box-shadow:0 4px 16px rgba(0,0,0,0.18);
+            letter-spacing:0.2px;
         }
         .dapur-station-count{
-            background:rgba(249,115,22,0.25);
-            color:#fdba74;
-            padding:3px 10px;border-radius:10px;
-            font-size:0.72rem;font-weight:700;
+            padding:4px 12px;border-radius:20px;
+            font-size:0.72rem;font-weight:800;
+            background:rgba(255,255,255,0.2);
+            color:white;
         }
-        /* Dapur card status colors */
-        .dk-fresh{background:#fffbeb;border:2px solid #f59e0b;}          /* < 5min amber */
-        .dk-cooking{background:#fff7ed;border:2px solid #f97316;}        /* 5-15min oren */
-        .dk-urgent{background:#fef2f2;border:2px solid #ef4444;}         /* > 15min merah */
-        .dk-done{background:#ecfdf5;border:2px solid #065f46;}           /* siap hijau */
-        .dk-kitchen-done{background:#f0fdf4;border:2px solid #16a34a;opacity:0.85;}
-        /* Time badge colors */
-        .tb-fresh{background:#fef3c7;color:#92400e;font-weight:700;}
-        .tb-cooking{background:#ffedd5;color:#9a3412;font-weight:700;}
-        .tb-urgent{background:#fee2e2;color:#991b1b;font-weight:800;}
-        .tb-done{background:#dcfce7;color:#065f46;font-weight:700;}
-        @media(min-width:700px){.dapur-station-col{flex:1;min-width:220px}}
+
+        /* Card status — color strip on left */
+        .dk-card{
+            background:white;
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow:0 2px 12px rgba(0,0,0,0.06);
+            border:1px solid rgba(0,0,0,0.06);
+            position:relative;
+        }
+        .dk-card::before{
+            content:'';
+            position:absolute;
+            left:0;top:0;bottom:0;
+            width:5px;
+            border-radius:16px 0 0 16px;
+        }
+        .dk-fresh::before{background:#f59e0b;}
+        .dk-cooking::before{background:#f97316;}
+        .dk-urgent::before{background:#ef4444;}
+        .dk-done::before{background:#16a34a;}
+        .dk-kitchen-done::before{background:#16a34a;}
+        .dk-kitchen-done{opacity:0.75;}
+
+        /* Time badge */
+        .tb-fresh{background:#fef3c7;color:#78350f;font-weight:700;border:1px solid #fde68a;}
+        .tb-cooking{background:#ffedd5;color:#9a3412;font-weight:700;border:1px solid #fed7aa;}
+        .tb-urgent{background:#fee2e2;color:#991b1b;font-weight:800;border:1px solid #fca5a5;animation:pulseRed 1.5s infinite;}
+        .tb-done{background:#dcfce7;color:#065f46;font-weight:700;border:1px solid #86efac;}
+        @keyframes pulseRed{0%,100%{opacity:1}50%{opacity:0.6}}
+
+        /* Item row */
+        .dk-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all 0.2s;border:1.5px solid transparent;margin-bottom:5px;}
+        .dk-item:active{transform:scale(0.98)}
+        .dk-item-unticked{background:#f8fafc;border-color:#e2e8f0;}
+        .dk-item-ticked{background:#f0fdf4;border-color:#86efac;}
+        .dk-qty{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.82rem;flex-shrink:0;transition:all 0.2s;}
+        .dk-qty-unticked{background:#1e293b;color:white;}
+        .dk-qty-ticked{background:#16a34a;color:white;}
+        .dk-item-name-unticked{font-weight:600;font-size:0.85rem;color:#1e293b;}
+        .dk-item-name-ticked{font-weight:600;font-size:0.85rem;color:#94a3b8;text-decoration:line-through;}
+
+        @media(min-width:700px){.dapur-station-col{flex:1;min-width:250px}}
+        @media(max-width:600px){.dapur-station-col{flex:0 0 280px;min-width:260px}}
     
     </style>
 </head>
@@ -406,15 +439,24 @@
         <div id="salesDash"></div>
     </div>
     <div class="tab-content" id="tab-dapur">
-        <div class="card">
-            <div class="dapur-header"><div class="card-title" style="margin-bottom:0">🔔 Papan Dapur</div><span class="dapur-count-badge" id="dapurCount">0 pesanan</span></div>
-            <div id="stationToggle" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
-            <div class="form-group" style="margin-bottom:10px"><input type="date" class="form-input" id="dapurDate" onchange="loadDapur()"></div>
-            <div class="auto-refresh-bar">
-                <div class="refresh-dot"></div>
-                <span id="dapurAutoRefreshLabel">🟢 Live — kemaskini setiap 8 saat</span>
-                <button onclick="loadDapur()" style="background:none;border:none;cursor:pointer;color:var(--primary);font-weight:700;font-size:0.78rem;font-family:var(--font)">🔄</button>
-                <button id="btnUnlockAudio" onclick="unlockAudio()" style="background:var(--warning-dark);color:white;border:none;border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:var(--font);margin-left:4px">🔕 Aktifkan Bunyi</button>
+        <div style="background:white;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.04)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                    <div style="background:linear-gradient(135deg,#f97316,#ea580c);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem">🔔</div>
+                    <div>
+                        <div style="font-weight:800;font-size:1rem;color:#0f172a">Papan Dapur</div>
+                        <div style="font-size:0.72rem;color:#64748b" id="dapurAutoRefreshLabel">🟢 Live — kemaskini setiap 5 saat</div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <span id="dapurCount" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:800;box-shadow:0 4px 12px rgba(239,68,68,0.3)">0 pesanan</span>
+                </div>
+            </div>
+            <div id="stationToggle" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="date" class="form-input" id="dapurDate" onchange="loadDapur()" style="flex:1">
+                <button onclick="loadDapur()" style="background:#f1f5f9;border:none;border-radius:10px;padding:10px 12px;cursor:pointer;font-size:1rem;color:#64748b">🔄</button>
+                <button id="btnUnlockAudio" onclick="unlockAudio()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;padding:10px 14px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap">🔕 Aktifkan Bunyi</button>
             </div>
         </div>
         <div id="dapurList"><div class="loading"><div class="spinner"></div>Memuatkan...</div></div>
@@ -837,7 +879,7 @@ function updateFeaturedDropdown(){const fc=S.featuredCat||'';const opt=document.
 async function saveFeaturedCat(){const newName=document.getElementById('featuredCatInput').value.trim();if(!newName){toast('Masukkan nama kategori!','error');return}const oldName=S.featuredCat||'';const r=await api('saveFeaturedCategory',{newName,oldName});if(r.success){S.featuredCat=newName;updateFeaturedDropdown();clearClientCache('getMenu');await loadMenu();toast('✅ Kategori Utama: "'+newName+'"'+(r.updated>0?' ('+r.updated+' menu dikemaskini)':''))}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function saveBankInfo(){const bn=document.getElementById('setBankName').value.trim(),ba=document.getElementById('setBankAcc').value.trim(),bh=document.getElementById('setBankHolder').value.trim();if(!ba){toast('Isi no. akaun!','error');return}const r=await api('saveSettings',{bankName:bn,bankAccount:ba,bankHolder:bh});if(r.success){S.bankName=bn;S.bankAccount=ba;S.bankHolder=bh;clearClientCache('getSettings');renderPaymentInfo();toast('✅ Disimpan!')}else toast('❌ '+(r.error||'Gagal'),'error')}
 let dapurInterval=null;
-async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dEl.value)dEl.value=today();const selectedDate=dEl.value;const isToday=selectedDate===today();const arLabel=document.getElementById('dapurAutoRefreshLabel');if(arLabel)arLabel.textContent=isToday?'Auto kemaskini setiap 30 saat':'Paparan arkib — auto kemaskini dinyahaktif';document.getElementById('dapurList').innerHTML='<div class="loading"><div class="spinner"></div>Memuatkan...</div>';const r=await api('getOrders',{date:selectedDate});if(!r.success){document.getElementById('dapurList').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong><br>'+esc(r.error||'Cuba semula')+'</div>';return}const orders=r.orders||[];const isToday2=document.getElementById('dapurDate').value===today();const pending=isToday2?orders.filter(o=>o.status==='pending'):orders.filter(o=>o.status!=='cancelled');let dapurCountEl=document.getElementById('dapurCount');if(dapurCountEl)dapurCountEl.textContent=pending.length+(isToday2?' menunggu':' pesanan');const el=document.getElementById('dapurList');if(!pending.length){el.innerHTML='<div class="dapur-empty"><div class="dapur-empty-icon">'+(isToday2?'✅':'📋')+'</div><div style="font-weight:700;font-size:1rem;color:var(--success-dark)">'+(isToday2?'Semua pesanan selesai!':'Tiada rekod pesanan.')+'</div><div style="font-size:0.82rem;margin-top:6px">'+(isToday2?'Tiada pesanan menunggu.':'Cuba pilih tarikh lain.')+'</div></div>';return}const now=Date.now();    // Store orders & init tracking
+async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dEl.value)dEl.value=today();const selectedDate=dEl.value;const isToday=selectedDate===today();const arLabel=document.getElementById('dapurAutoRefreshLabel');if(arLabel)arLabel.textContent=isToday?'🟢 Live — kemaskini setiap 5 saat':'Paparan arkib — auto kemaskini dinyahaktif';document.getElementById('dapurList').innerHTML='<div class="loading"><div class="spinner"></div>Memuatkan...</div>';const r=await api('getOrders',{date:selectedDate});if(!r.success){document.getElementById('dapurList').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong><br>'+esc(r.error||'Cuba semula')+'</div>';return}const orders=r.orders||[];const isToday2=document.getElementById('dapurDate').value===today();const pending=isToday2?orders.filter(o=>o.status==='pending'):orders.filter(o=>o.status!=='cancelled');let dapurCountEl=document.getElementById('dapurCount');if(dapurCountEl)dapurCountEl.textContent=pending.length+(isToday2?' menunggu':' pesanan');const el=document.getElementById('dapurList');if(!pending.length){el.innerHTML='<div class="dapur-empty"><div class="dapur-empty-icon">'+(isToday2?'✅':'📋')+'</div><div style="font-weight:700;font-size:1rem;color:var(--success-dark)">'+(isToday2?'Semua pesanan selesai!':'Tiada rekod pesanan.')+'</div><div style="font-size:0.82rem;margin-top:6px">'+(isToday2?'Tiada pesanan menunggu.':'Cuba pilih tarikh lain.')+'</div></div>';return}const now=Date.now();    // Store orders & init tracking
     S.orders=orders;
     dapurLastOrderIds=new Set(pending.map(o=>o.orderId));
     dapurFirstLoad=false;
@@ -1090,99 +1132,131 @@ function getStationEmoji(idx){return STATION_EMOJIS[idx%STATION_EMOJIS.length]}
 function renderDapurSplit(pending){
     const el=document.getElementById('dapurList');
     if(!el)return;
-    
+    renderStationToggle();
+
     const hasStations=S.stations&&S.stations.length>0;
-    
-    // If no stations configured, show normal single view
-    if(!hasStations){
-        renderDapurOrders(pending);
-        return;
-    }
-    
-    // Build split column view
+    if(!hasStations){renderDapurOrders(pending);return;}
+
+    const COLORS=[
+        {bg:'linear-gradient(135deg,#f97316,#ea580c)',shadow:'rgba(249,115,22,0.3)'},
+        {bg:'linear-gradient(135deg,#3b82f6,#2563eb)',shadow:'rgba(59,130,246,0.3)'},
+        {bg:'linear-gradient(135deg,#8b5cf6,#7c3aed)',shadow:'rgba(139,92,246,0.3)'},
+        {bg:'linear-gradient(135deg,#10b981,#059669)',shadow:'rgba(16,185,129,0.3)'},
+    ];
+
+    const menuCatMap={};
+    S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase()});
+
     const cols=S.stations.map((st,si)=>{
-        const color=getStationColor(si);
-        const emoji=st.emoji||getStationEmoji(si);
+        const color=COLORS[si%COLORS.length];
+        const emoji=st.emoji||['🍚','🥤','🔥','⭐'][si]||'🍽️';
         const cats=(st.categories||[]).map(c=>c.toLowerCase());
-        const menuCatMap={};
-        S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase()});
-        
-        // Filter orders for this station
+
         const stOrders=pending.map(o=>{
             const filteredItems=(o.items||[]).filter(item=>{
                 if(!cats.length)return true;
-                const cat=menuCatMap[item.name.toLowerCase()]||'';
-                return cats.includes(cat);
+                return cats.includes(menuCatMap[item.name.toLowerCase()]||'');
             });
             if(!filteredItems.length)return null;
             return{...o,items:filteredItems};
         }).filter(Boolean);
-        
+
         const cards=stOrders.map(o=>{
             const now=Date.now();
-            let minsAgo='-',urgency='fresh';
-            try{const tStr=String(o.time||'');const dStr=String(o.date||today());const tParts=tStr.split(':');const dParts=dStr.split('-');if(tParts.length>=2&&dParts.length===3){const ot=new Date(+dParts[0],+dParts[1]-1,+dParts[2],+tParts[0],+tParts[1]||0);const diff=Math.floor((now-ot.getTime())/60000);minsAgo=diff<1?'Baru':diff+'min';if(diff>=15)urgency='urgent';else if(diff>=8)urgency='medium'}}catch(e){}
-            
+            let minsAgo=0,minsStr='Baru',urgency='fresh';
+            try{
+                const tStr=String(o.time||'');
+                const dStr=String(o.date||today());
+                const tParts=tStr.split(':');
+                const dParts=dStr.split('-');
+                if(tParts.length>=2&&dParts.length===3){
+                    const ot=new Date(+dParts[0],+dParts[1]-1,+dParts[2],+tParts[0],+tParts[1]||0);
+                    minsAgo=Math.floor((now-ot.getTime())/60000);
+                    minsStr=minsAgo<1?'Baru':minsAgo+'min';
+                    if(minsAgo>=15)urgency='urgent';
+                    else if(minsAgo>=5)urgency='cooking';
+                }
+            }catch(e){}
+
             const stKey=o.orderId+'_st'+si;
             const ticks=S.itemTicks[stKey]||{};
             const allTicked=o.items.every((_,i)=>ticks[i]);
             const kitchenDone=o.kitchenDone===true;
-            
-            // Color system: fresh=amber, cooking=oren, urgent=merah, done=hijau
-            let cardClass;
-            if(kitchenDone) cardClass='dk-kitchen-done';
-            else if(allTicked) cardClass='dk-done';
-            else if(urgency==='urgent') cardClass='dk-urgent';
-            else if(urgency==='medium') cardClass='dk-cooking';
-            else cardClass='dk-fresh';
-            const urgencyBg=''; const urgencyBorder=''; // now handled by CSS class
-            
-            const safeOid=String(o.orderId||'').replace(/'/g,"\'");
-            
-            const itemsHtml=o.items.map((item,idx)=>{
-                const ticked=ticks[idx]||false;
-                const noteHtml=item.note?'<div style="font-size:0.68rem;color:var(--warning-dark);font-weight:600;margin-top:2px">📝 '+esc(item.note)+'</div>':'';
-                return'<div onclick="tickItemStation(\''+safeOid+'\','+si+','+idx+')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;background:'+(ticked?color.light:'var(--bg-2)')+';border:1px solid '+(ticked?color.bg:'transparent')+';transition:all 0.2s;margin-bottom:4px">'
-                    +'<div style="width:24px;height:24px;border-radius:7px;background:'+(ticked?color.bg:'var(--gray-lighter)')+';color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;flex-shrink:0">'+(ticked?'✓':item.qty)+'</div>'
-                    +'<div style="flex:1"><div style="font-weight:600;font-size:0.82rem;color:'+(ticked?'var(--gray)':'var(--dark-2)')+';text-decoration:'+(ticked?'line-through':'none')+'">'+esc(item.name)+'</div>'+noteHtml+'</div>'
-                    +'</div>';
-            }).join('');
-            
             const doneCount=Object.values(ticks).filter(Boolean).length;
             const totalCount=o.items.length;
-            
+            const allDone=allStationsDone(o.orderId);
+
+            // Card class
+            let cardStatus;
+            if(kitchenDone)cardStatus='dk-kitchen-done';
+            else if(allTicked)cardStatus='dk-done';
+            else if(urgency==='urgent')cardStatus='dk-urgent';
+            else if(urgency==='cooking')cardStatus='dk-cooking';
+            else cardStatus='dk-fresh';
+
+            // Time badge
+            const tbClass=urgency==='urgent'?'tb-urgent':urgency==='cooking'?'tb-cooking':allTicked?'tb-done':'tb-fresh';
+
+            const safeOid=String(o.orderId||'').replace(/'/g,"\'");
+
+            // Items
+            const itemsHtml=o.items.map((item,idx)=>{
+                const ticked=ticks[idx]||false;
+                const noteHtml=item.note?'<div style="font-size:0.68rem;color:#f59e0b;font-weight:600;margin-top:2px;padding-left:38px">📝 '+esc(item.note)+'</div>':'';
+                return'<div class="dk-item '+(ticked?'dk-item-ticked':'dk-item-unticked')+'" onclick="tickItemStation(\''+safeOid+'\','+si+','+idx+')">'
+                    +'<div class="dk-qty '+(ticked?'dk-qty-ticked':'dk-qty-unticked')+'">'+(ticked?'✓':item.qty)+'</div>'
+                    +'<div class="'+(ticked?'dk-item-name-ticked':'dk-item-name-unticked')+'">'+esc(item.name)+'</div>'
+                    +'</div>'
+                    +(item.note?noteHtml:'');
+            }).join('');
+
+            // Status banner
+            const bannerHtml=kitchenDone
+                ?'<div style="display:flex;align-items:center;gap:6px;background:#065f46;color:white;padding:8px 14px;margin:-16px -16px 12px;font-weight:700;font-size:0.8rem">✅ Siap — Tunggu Cashier</div>'
+                :allTicked&&!allDone
+                ?'<div style="display:flex;align-items:center;gap:6px;background:#f59e0b;color:white;padding:8px 14px;margin:-16px -16px 12px;font-weight:700;font-size:0.8rem">⏳ Stesen ini siap — tunggu stesen lain</div>'
+                :'';
+
+            // Action button
             const btnHtml=kitchenDone
-                ?'<button style="width:100%;padding:8px;background:#6b7280;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:not-allowed;font-family:var(--font)">✅ Siap</button>'
+                ?'<div style="background:#f1f5f9;color:#94a3b8;padding:10px;border-radius:10px;text-align:center;font-weight:700;font-size:0.82rem">✅ Telah Dihantar</div>'
+                :allTicked&&allDone
+                ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:11px;background:linear-gradient(135deg,#065f46,#16a34a);color:white;border:none;border-radius:10px;font-weight:800;font-size:0.85rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(6,95,70,0.35);letter-spacing:0.3px">🍳 Hantar ke Cashier</button>'
                 :allTicked
-                    ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:8px;background:#065f46;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(6,95,70,0.3)">🍳 Hantar ke Cashier ✓</button>'
-                    :'<div style="width:100%;padding:6px 10px;background:var(--bg);border-radius:8px;font-size:0.72rem;color:var(--gray);text-align:center;font-weight:600">'+doneCount+'/'+totalCount+' siap — tap item untuk tick</div>';
-            
-            return'<div class="'+cardClass+'" style="border-radius:14px;padding:12px;transition:all 0.3s">'
-                +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px">'
-                +'<span style="font-weight:900;font-size:1rem;color:var(--dark)">Pesanan #'+(o.orderNo||o.orderId)+'</span>'
-                +'<div style="display:flex;gap:5px;align-items:center">'
-                +'<span style="background:'+color.bg+';color:white;padding:3px 8px;border-radius:8px;font-size:0.72rem;font-weight:700">🪑 '+esc(o.tableNo||'-')+'</span>'
-                +'<span class="'+(urgency==='urgent'?'tb-urgent':urgency==='medium'?'tb-cooking':'tb-fresh')+'" style="font-size:0.7rem;padding:3px 8px;border-radius:8px">🕐 '+minsAgo+'</span>'
-                +'</div></div>'
-                +'<div style="font-size:0.7rem;color:var(--gray);margin-bottom:8px">👤 '+esc(o.staffName||'-')+'</div>'
-                +'<div style="margin-bottom:10px">'+itemsHtml+'</div>'
+                ?'<div style="background:#fef3c7;color:#92400e;padding:10px;border-radius:10px;text-align:center;font-weight:700;font-size:0.78rem;border:1px solid #fde68a">⏳ Tunggu stesen lain ('+doneCount+'/'+totalCount+')</div>'
+                :'<div style="background:#f8fafc;color:#64748b;padding:10px;border-radius:10px;text-align:center;font-weight:600;font-size:0.78rem;border:1px solid #e2e8f0">Tick item untuk tandakan siap ('+doneCount+'/'+totalCount+')</div>';
+
+            return'<div class="dk-card '+cardStatus+'" style="padding:16px">'
+                +bannerHtml
+                +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">'
+                +'<div>'
+                +'<div style="font-weight:900;font-size:1.05rem;color:#0f172a">Pesanan #'+(o.orderNo||o.orderId)+'</div>'
+                +'<div style="font-size:0.72rem;color:#64748b;margin-top:2px">👤 '+esc(o.staffName||'-')+'</div>'
+                +'</div>'
+                +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
+                +'<span style="background:#1e293b;color:white;padding:4px 10px;border-radius:8px;font-size:0.72rem;font-weight:700">🪑 '+esc(o.tableNo||'-')+'</span>'
+                +'<span class="'+tbClass+'" style="font-size:0.7rem;padding:3px 9px;border-radius:8px">🕐 '+minsStr+'</span>'
+                +'</div>'
+                +'</div>'
+                +'<div style="margin-bottom:12px">'+itemsHtml+'</div>'
                 +btnHtml
                 +'</div>';
         }).join('');
-        
+
         return{html:cards,count:stOrders.length,st,si,color,emoji};
     });
-    
-    // Check if any station has orders
-    const totalOrders=cols.reduce((s,c)=>s+c.count,0);
-    
+
     el.innerHTML='<div class="dapur-split">'
         +cols.map(({html,count,st,si,color,emoji})=>'<div class="dapur-station-col">'
-            +'<div class="dapur-station-header">'
-            +'<span>'+emoji+' '+esc(st.name||'Stesen '+(si+1))+'</span>'
+            +'<div class="dapur-station-header" style="background:'+color.bg+';box-shadow:0 6px 20px '+color.shadow+'">'
+            +'<span style="display:flex;align-items:center;gap:8px">'+emoji+' '+esc(st.name||'Stesen '+(si+1))+'</span>'
             +'<span class="dapur-station-count">'+count+' pesanan</span>'
             +'</div>'
-            +(html||'<div style="padding:20px;text-align:center;color:var(--gray-light);font-size:0.82rem;background:var(--bg-2);border-radius:12px">✅ Tiada pesanan</div>')
+            +(html||'<div style="padding:24px 20px;text-align:center;background:white;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">'
+                +'<div style="font-size:2rem;margin-bottom:8px">✅</div>'
+                +'<div style="font-weight:700;color:#16a34a;font-size:0.9rem">Semua siap!</div>'
+                +'<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px">Tiada pesanan menunggu</div>'
+                +'</div>')
             +'</div>').join('')
         +'</div>';
 }
