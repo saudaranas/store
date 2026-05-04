@@ -275,6 +275,13 @@
         @media(max-width:600px){body{font-size:14px}.header{padding:12px 14px}.header-logo{font-size:1rem}.header-staff{max-width:90px;font-size:0.68rem;padding:3px 10px}.header-counter{font-size:0.7rem;padding:3px 10px}.btn-logout{padding:5px 10px;font-size:0.68rem}.nav-tabs{top:48px;padding:2px}.nav-tab{padding:6px 3px 5px;font-size:0.6rem;min-width:48px}.nav-tab .tab-icon{font-size:1rem}.tab-content{padding:10px;padding-bottom:70px}.order-left{width:100%;max-width:100%;overflow-x:clip;overflow-y:visible}.menu-grid{grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:100%;overflow:visible;padding-top:6px}.menu-item{padding:10px 5px;border-radius:12px;max-width:100%;overflow:visible}.menu-item .item-cat{font-size:0.5rem}.menu-item .item-name{font-size:0.68rem;min-height:2.4em;-webkit-line-clamp:2}.menu-item .item-price{font-size:0.8rem}.menu-item .item-badge{width:18px;height:18px;font-size:0.6rem;top:-4px;right:-4px}.card{padding:12px;margin-bottom:10px;border-radius:14px}.card-title{font-size:0.85rem;margin-bottom:12px;padding:14px 14px 10px!important}.search-bar input{padding:10px 14px 10px 36px;font-size:0.85rem}.search-bar::before{left:12px;font-size:0.8rem}.cat-chip{padding:6px 12px;font-size:0.7rem}.cart-scroll{padding:0 12px;max-height:none;overflow-y:visible}.cart-footer{padding:12px 12px 14px}.cart-item{flex-wrap:wrap;padding:8px 0}.cart-info{flex:1 1 100%;margin-bottom:4px}.cart-name{font-size:0.8rem}.cart-price{font-size:0.7rem}.cart-controls{gap:5px}.qty-btn{width:28px;height:28px;font-size:0.9rem}.cart-subtotal{font-size:0.82rem;flex-basis:auto;margin-left:auto}.table-row{flex-wrap:wrap;margin:10px 0 12px}.table-row label{width:100%;margin-bottom:4px;font-size:0.78rem}.table-input{width:100%}.discount-section{flex-wrap:wrap}.discount-section label{width:100%;margin-bottom:4px;font-size:0.78rem}.discount-input{width:100%}.total-bar{padding:14px 16px;margin-bottom:10px}.total-label{font-size:0.8rem}.total-amount{font-size:1.35rem}.payment-methods{gap:5px}.pay-btn{padding:10px 4px;font-size:0.7rem;border-radius:10px}.pay-btn .pay-icon{font-size:1.1rem}.cash-calc{padding:10px}.cash-row{flex-wrap:wrap}.cash-row label{width:100%;margin-bottom:4px;font-size:0.78rem}.cash-input{width:100%}.quick-cash-btn{padding:5px 10px;font-size:0.68rem}.change-box{font-size:1rem;padding:10px}.btn-row{flex-direction:column;gap:8px}.btn-row .btn{width:100%}.btn-save-order{padding:12px;font-size:0.85rem}.btn-primary{padding:13px;font-size:0.9rem}.order-filter-btn{padding:6px 3px;font-size:0.68rem;min-width:50px}.order-card{padding:12px}.order-num{font-size:1rem}.order-items{font-size:0.72rem}.order-total{font-size:0.95rem}.order-actions{margin-top:8px;width:100%;justify-content:flex-end}.order-actions .btn{padding:5px 10px;font-size:0.68rem}.report-header{flex-direction:column;align-items:stretch}.report-tabs{max-width:100%}.report-tab{padding:7px 5px;font-size:0.7rem}.btn-export{width:100%;justify-content:center}.sales-grid{grid-template-columns:1fr 1fr;gap:8px}.stat-card{padding:14px}.stat-value{font-size:1.2rem}.stat-card.hero-stat{padding:20px}.stat-card.hero-stat .stat-value{font-size:1.8rem}.pay-stats{gap:6px}.pay-stat{min-width:calc(33.333% - 6px);padding:10px 6px}.ps-icon{font-size:1.1rem}.ps-val{font-size:0.8rem}.donut-container{flex-direction:column;align-items:center;gap:14px}.donut-chart{width:120px;height:120px}.donut-hole{width:60px;height:60px}.donut-hole-val{font-size:0.9rem}.pie-legend-item{font-size:0.72rem}.cal-day .cal-val{display:none}.hourly-label{font-size:0.38rem}.top-bar-bg{width:60px}.form-row{flex-direction:column}.modal{padding:20px;max-height:90vh}.modal-title{font-size:1rem}.receipt{padding:18px 14px;font-size:0.72rem}.login-card{padding:32px 24px;max-width:340px}.login-logo{font-size:1.8rem}.login-shop-name{font-size:0.95rem;padding:12px 16px}.pin-input{padding:14px;font-size:1.3rem;letter-spacing:10px}.btn-login{padding:15px;font-size:0.95rem}#qrBox img{max-width:220px}.dapur-grid{grid-template-columns:1fr}.orders-grid{grid-template-columns:1fr}}
         @media(max-width:380px){.menu-grid{grid-template-columns:repeat(2,1fr)}.qty-btn{width:26px;height:26px}.cart-name{font-size:0.75rem}.cart-subtotal{font-size:0.78rem}.total-amount{font-size:1.25rem}}
         @media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{position:absolute;top:0;left:0}}
+        /* ===== DAPUR SPLIT VIEW ===== */
+        .dapur-split{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;align-items:flex-start}
+        .dapur-split::-webkit-scrollbar{height:4px}.dapur-split::-webkit-scrollbar-thumb{background:var(--gray-lighter);border-radius:4px}
+        .dapur-station-col{flex:0 0 300px;min-width:280px;max-width:340px;display:flex;flex-direction:column;gap:10px}
+        .dapur-station-header{padding:10px 14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:0.88rem;position:sticky;top:0;z-index:10}
+        .dapur-station-count{background:rgba(255,255,255,0.3);padding:2px 8px;border-radius:10px;font-size:0.72rem;font-weight:700}
+        @media(min-width:700px){.dapur-station-col{flex:1;min-width:220px}}
     
     </style>
 </head>
@@ -395,22 +402,11 @@
         <div class="card"><div class="card-title">⭐ Kategori Utama</div><p style="font-size:0.8rem;color:var(--gray);margin-bottom:12px">Kategori ini akan muncul pertama dalam tab Pesanan dan Menu.</p><div class="form-group"><label>Nama Kategori Utama</label><input type="text" class="form-input" id="featuredCatInput" placeholder="contoh: Amazy, Chef Special, Signature..."></div><p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:10px">⚠️ Tukar nama akan auto-kemaskini semua menu dalam kategori ini.</p><button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveFeaturedCat()">💾 Simpan Kategori Utama</button></div>
         <div class="card">
             <div class="card-title">🍳 Stesen Dapur</div>
-            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:16px">Pilih kategori untuk setiap stesen. Biarkan kosong jika tidak guna stesen.</p>
-            <div class="form-group">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px">🍚 <span>Stesen Makanan</span></label>
-                <div id="stationMakananCheck" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--bg-2);border-radius:12px;border:1px solid var(--border);min-height:44px">
-                    <span style="font-size:0.78rem;color:var(--gray-light)">Memuatkan kategori...</span>
-                </div>
-            </div>
-            <div class="form-group" style="margin-top:4px">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px">🥤 <span>Stesen Minuman</span></label>
-                <div id="stationMinumanCheck" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--bg-2);border-radius:12px;border:1px solid var(--border);min-height:44px">
-                    <span style="font-size:0.78rem;color:var(--gray-light)">Memuatkan kategori...</span>
-                </div>
-            </div>
+            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:14px">Tambah stesen dapur dan pilih kategori menu untuk setiap stesen. Max 4 stesen.</p>
+            <div id="stationBuilderList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+            <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:12px" onclick="addNewStation()" id="btnAddStation">➕ Tambah Stesen</button>
             <p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:12px">💡 Setiap kategori hanya boleh dipilih untuk satu stesen</p>
-            <button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveStationConfig()">💾 Simpan Stesen</button>
-            <input type="hidden" id="stationMakanan"><input type="hidden" id="stationMinuman">
+            <button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveStationConfig()">💾 Simpan Semua Stesen</button>
         </div>
         <div class="card"><div class="card-title">📱 QR Payment</div><div class="form-group"><label>🔗 Link URL Gambar QR</label><input type="text" class="form-input" id="qrUrl" placeholder="https://i.imgur.com/contoh.jpg"></div><button class="btn btn-info" style="width:100%;justify-content:center;margin-bottom:4px" onclick="saveQRUrl()">💾 Simpan URL</button><p style="font-size:0.72rem;color:var(--gray);text-align:center;margin-bottom:8px">Pastikan link berakhir .jpg / .png</p><div class="qr-divider">atau upload fail gambar</div><div class="form-group"><label>📁 Upload Gambar QR</label><input type="file" class="form-input" id="qrUpload" accept="image/*" onchange="previewQR(this)"></div><div id="qrPreview" style="text-align:center;margin:8px 0"></div><button class="btn btn-info" style="width:100%;justify-content:center" onclick="saveQR()">💾 Simpan Gambar</button></div>
         <div class="card"><div class="card-title">🏦 Maklumat Transfer</div><div class="form-group"><label>Nama Bank</label><input type="text" class="form-input" id="setBankName" placeholder="Maybank"></div><div class="form-group"><label>No. Akaun</label><input type="text" class="form-input" id="setBankAcc" placeholder="1234567890"></div><div class="form-group"><label>Nama Pemilik</label><input type="text" class="form-input" id="setBankHolder" placeholder="Ahmad"></div><button class="btn btn-info" style="width:100%;justify-content:center" onclick="saveBankInfo()">💾 Simpan</button></div>
@@ -543,7 +539,7 @@ const C={
     KEY:'aca6f58aac70a3c722e74b9e0488bd693637e056de95a296f6b40613104b1df7',
     PAKEJ:'premium'
 };
-let S={menu:[],cart:[],orders:[],staff:{name:'Admin',role:'admin'},pay:'cash',cat:'Semua',editOid:null,editItems:[],shop:{shopName:'Kedai Makan',shopAddress:'',shopPhone:''},count:0,reportMode:'daily',orderFilter:'all',qrImage:'',bankName:'',bankAccount:'',bankHolder:'',completePay:'cash',completeOid:null,qrBase64:'',featuredCat:'',editPendingOid:null,editPendingItems:[],waReceiptText:'',completeOrderData:null,dapurStation:'semua',stationConfig:{makanan:[],minuman:[]},itemTicks:{}};
+let S={menu:[],cart:[],orders:[],staff:{name:'Admin',role:'admin'},pay:'cash',cat:'Semua',editOid:null,editItems:[],shop:{shopName:'Kedai Makan',shopAddress:'',shopPhone:''},count:0,reportMode:'daily',orderFilter:'all',qrImage:'',bankName:'',bankAccount:'',bankHolder:'',completePay:'cash',completeOid:null,qrBase64:'',featuredCat:'',editPendingOid:null,editPendingItems:[],waReceiptText:'',completeOrderData:null,dapurStation:'semua',stations:[],itemTicks:{}};
 let salesCache={daily:null,weekly:null,monthly:null};
 const clientCache={};
 const CLIENT_CACHE_TTL=30000;
@@ -593,7 +589,7 @@ function renderQuickCash(t){if(!t||t<=0){document.getElementById('quickCash').in
 function setCash(v){document.getElementById('cashIn').value=v.toFixed(2);calcChange()}
 function pickPay(m,el){S.pay=m;document.querySelectorAll('#cartContent .pay-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('cashCalc').classList.toggle('show',m==='cash');document.getElementById('qrBox').classList.toggle('show',m==='qr');document.getElementById('transferBox').classList.toggle('show',m==='transfer')}
 function calcChange(){const t=parseFloat(document.getElementById('cartTotal').textContent)||0;const g=parseFloat(document.getElementById('cashIn').value)||0;const b=document.getElementById('changeBox');if(!g){b.textContent='-';b.className='change-box';return}const c=g-t;if(c>=0){b.textContent='Baki: RM '+c.toFixed(2);b.className='change-box ok'}else{b.textContent='Kurang: RM '+Math.abs(c).toFixed(2);b.className='change-box bad'}}
-async function loadPaymentInfo(){const r=await cachedApi('getSettings',{},120000);if(r.success){S.qrImage=r.qrImage||'';S.bankName=r.bankName||'';S.bankAccount=r.bankAccount||'';S.bankHolder=r.bankHolder||'';renderPaymentInfo();loadStationConfig(r);renderStationToggle();}}
+async function loadPaymentInfo(){const r=await cachedApi('getSettings',{},120000);if(r.success){S.qrImage=r.qrImage||'';S.bankName=r.bankName||'';S.bankAccount=r.bankAccount||'';S.bankHolder=r.bankHolder||'';renderPaymentInfo();loadStationConfig(r);}}
 function renderPaymentInfo(){const qC=document.getElementById('qrContent'),cq=document.getElementById('completeQrBox');if(S.qrImage){qC.innerHTML='<img src="'+S.qrImage+'" alt="QR Payment" onerror="this.style.display=\'none\'">';cq.innerHTML='<p style="font-weight:700;margin-bottom:8px">📱 Scan QR</p><img src="'+S.qrImage+'" alt="QR" style="max-width:160px;border-radius:10px;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'}else{qC.innerHTML='<p style="color:var(--gray)">QR belum disetup.</p>';cq.innerHTML='<p style="color:var(--gray)">QR belum disetup.</p>'}const tC=document.getElementById('transferContent'),ct=document.getElementById('completeTransferBox');if(S.bankAccount){const h='<div class="bank-detail"><strong>'+esc(S.bankName||'Bank')+'</strong><div class="bank-acc">'+esc(S.bankAccount)+'</div><div>a/n: <strong>'+esc(S.bankHolder||'-')+'</strong></div></div>';tC.innerHTML=h;ct.innerHTML='<p style="font-weight:700;margin-bottom:8px">🏦 Transfer</p>'+h}else{tC.innerHTML='<p style="color:var(--gray)">Bank belum disetup.</p>';ct.innerHTML='<p style="color:var(--gray)">Bank belum disetup.</p>'}}
 async function saveQRUrl(){const url=document.getElementById('qrUrl').value.trim();if(!url){toast('Masukkan URL!','error');return}if(!url.startsWith('http')){toast('URL tidak sah!','error');return}const btn=event.target;btn.disabled=true;btn.textContent='⏳...';const r=await api('saveSettings',{qrImage:url});btn.disabled=false;btn.textContent='💾 Simpan URL';if(r.success){S.qrImage=url;S.qrBase64='';clearClientCache('getSettings');renderPaymentInfo();document.getElementById('qrPreview').innerHTML='<img src="'+url+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.parentNode.innerHTML=\'<p style=color:red>⚠️ URL tidak boleh dipapar</p>\'">';toast('✅ URL QR disimpan!')}else toast('❌ '+r.error,'error')}
 function previewQR(input){if(input.files&&input.files[0]){const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const MAX=350;let w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);let q=0.7,b64=canvas.toDataURL('image/jpeg',q);while(b64.length>120000&&q>0.2){q-=0.1;b64=canvas.toDataURL('image/jpeg',q)}S.qrBase64=b64;const sk=(b64.length*0.75/1024).toFixed(0);document.getElementById('qrPreview').innerHTML='<img src="'+b64+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)"><p style="font-size:0.75rem;color:var(--success-dark);margin-top:6px">✅ Preview ('+sk+'KB)</p>'};img.src=e.target.result};reader.readAsDataURL(input.files[0])}}
@@ -669,8 +665,8 @@ function openEditStaff(pin,name,role){document.getElementById('editStaffPin').va
 async function saveEditStaff(){const oldPin=document.getElementById('editStaffOldPin').value;const newPin=document.getElementById('editStaffNewPin').value.trim()||oldPin;const name=document.getElementById('editStaffName').value.trim();const role=document.getElementById('editStaffRole').value;if(!name){toast('Nama diperlukan!','error');return}const r=await api('editStaff',{oldPin,newPin,name,role});if(r.success){toast('✅ '+r.message);closeM('editStaffModal');clearClientCache('getStaff');loadStaffList()}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function deleteStaff(p,n){if(!confirm('Padam "'+n+'"?'))return;const r=await api('deleteStaff',{pin:p});if(r.success){toast('✅ '+r.message);clearClientCache('getStaff');loadStaffList()}else toast('❌ '+(r.error||'Gagal'),'error')}
 function loadSettingsForm(){if(S.qrImage&&S.qrImage.startsWith('http'))document.getElementById('qrUrl').value=S.qrImage;
-    // Render station checkboxes
-    renderStationCheckboxes();if(S.qrImage)document.getElementById('qrPreview').innerHTML='<img src="'+S.qrImage+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.style.display=\'none\'"><p style="font-size:0.75rem;color:var(--gray);margin-top:6px">QR semasa</p>';document.getElementById('setBankName').value=S.bankName;document.getElementById('setBankAcc').value=S.bankAccount;document.getElementById('setBankHolder').value=S.bankHolder;document.getElementById('featuredCatInput').value=S.featuredCat||'';updateFeaturedDropdown()}
+    // Render station builder
+    renderStationBuilder();if(S.qrImage)document.getElementById('qrPreview').innerHTML='<img src="'+S.qrImage+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.style.display=\'none\'"><p style="font-size:0.75rem;color:var(--gray);margin-top:6px">QR semasa</p>';document.getElementById('setBankName').value=S.bankName;document.getElementById('setBankAcc').value=S.bankAccount;document.getElementById('setBankHolder').value=S.bankHolder;document.getElementById('featuredCatInput').value=S.featuredCat||'';updateFeaturedDropdown()}
 function updateFeaturedDropdown(){const fc=S.featuredCat||'';const opt=document.getElementById('newCatFeatured');if(opt){opt.value=fc;opt.textContent=fc?('⭐ '+fc+' (Kategori Utama)'):'⭐ (Kategori Utama - belum ditetapkan)'}const emOpt=document.getElementById('emCatFeatured');if(emOpt){emOpt.value=fc;emOpt.textContent=fc?('⭐ '+fc+' (Kategori Utama)'):'⭐ (Kategori Utama - belum ditetapkan)'}}
 async function saveFeaturedCat(){const newName=document.getElementById('featuredCatInput').value.trim();if(!newName){toast('Masukkan nama kategori!','error');return}const oldName=S.featuredCat||'';const r=await api('saveFeaturedCategory',{newName,oldName});if(r.success){S.featuredCat=newName;updateFeaturedDropdown();clearClientCache('getMenu');await loadMenu();toast('✅ Kategori Utama: "'+newName+'"'+(r.updated>0?' ('+r.updated+' menu dikemaskini)':''))}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function saveBankInfo(){const bn=document.getElementById('setBankName').value.trim(),ba=document.getElementById('setBankAcc').value.trim(),bh=document.getElementById('setBankHolder').value.trim();if(!ba){toast('Isi no. akaun!','error');return}const r=await api('saveSettings',{bankName:bn,bankAccount:ba,bankHolder:bh});if(r.success){S.bankName=bn;S.bankAccount=ba;S.bankHolder=bh;clearClientCache('getSettings');renderPaymentInfo();toast('✅ Disimpan!')}else toast('❌ '+(r.error||'Gagal'),'error')}
@@ -679,7 +675,15 @@ async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dE
     S.orders=orders;
     dapurLastOrderIds=new Set(pending.map(o=>o.orderId));
     dapurFirstLoad=false;
-    renderDapurOrders(pending);}
+    // Use split view if stations configured
+    if(S.stations&&S.stations.length>0){
+        renderDapurSplit(pending);
+    }else{
+        renderDapurOrders(pending);
+    }
+    // Update count badge
+    const countEl=document.getElementById('dapurCount');
+    if(countEl)countEl.textContent=pending.length+' menunggu';}
 async function markDapurSiap(orderId,btn){if(!orderId){toast('ID pesanan tidak sah!','error');return}btn.disabled=true;btn.textContent='⏳ Menyimpan...';const r=await api('markKitchenDone',{orderId:orderId});if(r.success){beep(true);toast('🍳 Masakan siap! Cashier perlu selesaikan bayaran.');const card=document.getElementById('dapur-card-'+orderId);if(card){card.classList.remove('urgent','normal');card.classList.add('kitchen-done');const banner=document.createElement('div');banner.className='kitchen-done-banner';banner.textContent='🍳 Masakan Siap — Tunggu Cashier Selesaikan Bayaran';card.insertBefore(banner,card.firstChild);btn.textContent='✅ Sudah Ditandakan Siap';btn.style.background='#6b7280';btn.style.cursor='not-allowed'}clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal tandakan pesanan'),'error');btn.disabled=false;btn.textContent='🍳 Tandakan Masakan Siap'}}
 // ── DAPUR REAL-TIME POLLING ────────────────────────────────
 let dapurLastOrderIds = new Set();
@@ -741,8 +745,11 @@ async function dapurSilentRefresh(){
         // Kalau tab dapur aktif, refresh UI
         const dapurTab=document.getElementById('tab-dapur');
         if(dapurTab&&dapurTab.classList.contains('active')){
-            // Silent update — render semula tanpa loading spinner
-            renderDapurOrders(pending);
+            if(S.stations&&S.stations.length>0){
+                renderDapurSplit(pending);
+            }else{
+                renderDapurOrders(pending);
+            }
         }
         
     }catch(e){console.log('[Dapur] Poll error:',e.message)}
@@ -859,108 +866,227 @@ function initApp() {
 
 
 // ============================================================
-// STATION DAPUR FUNCTIONS
+// STATION DAPUR — DYNAMIC MULTI-STATION
 // ============================================================
-function renderStationToggle(){
-    const tog=document.getElementById('stationToggle');
-    if(!tog)return;
-    const hasMakanan=S.stationConfig.makanan.length>0;
-    const hasMinuman=S.stationConfig.minuman.length>0;
-    const hasStation=hasMakanan||hasMinuman;
-    if(!hasStation){tog.style.display='none';return}
-    tog.style.display='flex';
-    const stations=[
-        {id:'semua',label:'🍽️ Semua',color:'var(--dark)'},
-        ...(hasMakanan?[{id:'makanan',label:'🍚 Makanan',color:'#e67e22'}]:[]),
-        ...(hasMinuman?[{id:'minuman',label:'🥤 Minuman',color:'#3b82f6'}]:[]),
-    ];
-    tog.innerHTML=stations.map(st=>{
-        const isActive=S.dapurStation===st.id;
-        return'<button onclick="switchStation(\''+st.id+'\')" style="padding:8px 16px;border-radius:20px;border:2px solid '+(isActive?st.color:'var(--border)')+';background:'+(isActive?st.color:'var(--white)')+';color:'+(isActive?'white':'var(--gray)')+';font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font);transition:all 0.2s">'+st.label+'</button>';
-    }).join('');
-}
+const STATION_COLORS = [
+    {bg:'#e67e22',light:'#fef3e2',name:'orange'},
+    {bg:'#3b82f6',light:'#eff6ff',name:'blue'},
+    {bg:'#10b981',light:'#ecfdf5',name:'green'},
+    {bg:'#8b5cf6',light:'#f5f3ff',name:'purple'},
+];
+const STATION_EMOJIS = ['🍚','🥤','🔥','⭐'];
 
-function switchStation(id){
-    S.dapurStation=id;
-    renderStationToggle();
-    const orders=S.orders||[];
-    const pending=orders.filter(o=>o.status==='pending');
-    renderDapurOrders(pending);
-}
+function getStationColor(idx){return STATION_COLORS[idx%STATION_COLORS.length]}
+function getStationEmoji(idx){return STATION_EMOJIS[idx%STATION_EMOJIS.length]}
 
-function filterOrderByStation(order){
-    if(S.dapurStation==='semua')return order;
-    const cats=S.dapurStation==='makanan'?S.stationConfig.makanan:S.stationConfig.minuman;
-    if(!cats||cats.length===0)return order;
-    // Filter items by category
-    const menuCatMap={};
-    S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category});
-    const filteredItems=(order.items||[]).filter(item=>{
-        const cat=menuCatMap[item.name.toLowerCase()]||'';
-        return cats.some(c=>c.toLowerCase()===cat.toLowerCase());
-    });
-    if(!filteredItems.length)return null; // no items for this station
-    return {...order,items:filteredItems};
-}
-
-function renderStationCheckboxes(){
-    const allCats=[...new Set(S.menu.map(m=>m.category))];
-    if(!allCats.length){
-        ['stationMakananCheck','stationMinumanCheck'].forEach(id=>{
-            const el=document.getElementById(id);
-            if(el)el.innerHTML='<span style="font-size:0.78rem;color:var(--gray-light)">Tiada kategori. Tambah menu dulu.</span>';
-        });
+// Render split dapur view
+function renderDapurSplit(pending){
+    const el=document.getElementById('dapurList');
+    if(!el)return;
+    
+    const hasStations=S.stations&&S.stations.length>0;
+    
+    // If no stations configured, show normal single view
+    if(!hasStations){
+        renderDapurOrders(pending);
         return;
     }
-    ['makanan','minuman'].forEach(station=>{
-        const el=document.getElementById('station'+station.charAt(0).toUpperCase()+station.slice(1)+'Check');
-        if(!el)return;
-        const selected=S.stationConfig[station]||[];
-        const otherStation=station==='makanan'?'minuman':'makanan';
-        const otherSelected=S.stationConfig[otherStation]||[];
-        el.innerHTML=allCats.map(cat=>{
-            const isSelected=selected.includes(cat);
-            const isOther=otherSelected.includes(cat);
-            const disabled=isOther&&!isSelected;
-            return'<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;cursor:'+(disabled?'not-allowed':'pointer')+';background:'+(isSelected?'var(--primary)':disabled?'var(--bg)':'var(--white)')+';border:1.5px solid '+(isSelected?'var(--primary)':disabled?'var(--border)':'var(--border)')+';color:'+(isSelected?'white':disabled?'var(--gray-lighter)':'var(--dark-2)')+';font-size:0.8rem;font-weight:600;transition:all 0.2s;opacity:'+(disabled?'0.5':'1')+'">'
-                +'<input type="checkbox" '+(isSelected?'checked':'')+' '+(disabled?'disabled':'')+' style="display:none" onchange="toggleStationCat(\''+station+'\',\''+cat+'\',this.checked)">'
-                +(isSelected?'✓ ':'')+cat
-                +(isOther&&!isSelected?' <span style="font-size:0.6rem;opacity:0.6">(stesen lain)</span>':'')
-                +'</label>';
+    
+    // Build split column view
+    const cols=S.stations.map((st,si)=>{
+        const color=getStationColor(si);
+        const emoji=st.emoji||getStationEmoji(si);
+        const cats=(st.categories||[]).map(c=>c.toLowerCase());
+        const menuCatMap={};
+        S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase()});
+        
+        // Filter orders for this station
+        const stOrders=pending.map(o=>{
+            const filteredItems=(o.items||[]).filter(item=>{
+                if(!cats.length)return true;
+                const cat=menuCatMap[item.name.toLowerCase()]||'';
+                return cats.includes(cat);
+            });
+            if(!filteredItems.length)return null;
+            return{...o,items:filteredItems};
+        }).filter(Boolean);
+        
+        const cards=stOrders.map(o=>{
+            const now=Date.now();
+            let minsAgo='-',urgency='fresh';
+            try{const tStr=String(o.time||'');const dStr=String(o.date||today());const tParts=tStr.split(':');const dParts=dStr.split('-');if(tParts.length>=2&&dParts.length===3){const ot=new Date(+dParts[0],+dParts[1]-1,+dParts[2],+tParts[0],+tParts[1]||0);const diff=Math.floor((now-ot.getTime())/60000);minsAgo=diff<1?'Baru':diff+'min';if(diff>=15)urgency='urgent';else if(diff>=8)urgency='medium'}}catch(e){}
+            
+            const stKey=o.orderId+'_st'+si;
+            const ticks=S.itemTicks[stKey]||{};
+            const allTicked=o.items.every((_,i)=>ticks[i]);
+            const kitchenDone=o.kitchenDone===true;
+            
+            const urgencyBg=kitchenDone||allTicked?color.light:urgency==='urgent'?'var(--danger-light)':urgency==='medium'?'#fffbeb':'var(--white)';
+            const urgencyBorder=kitchenDone||allTicked?color.bg:urgency==='urgent'?'var(--danger)':urgency==='medium'?'var(--warning)':'var(--border)';
+            
+            const safeOid=String(o.orderId||'').replace(/'/g,"\'");
+            
+            const itemsHtml=o.items.map((item,idx)=>{
+                const ticked=ticks[idx]||false;
+                const noteHtml=item.note?'<div style="font-size:0.68rem;color:var(--warning-dark);font-weight:600;margin-top:2px">📝 '+esc(item.note)+'</div>':'';
+                return'<div onclick="tickItemStation(\''+safeOid+'\','+si+','+idx+')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;background:'+(ticked?color.light:'var(--bg-2)')+';border:1px solid '+(ticked?color.bg:'transparent')+';transition:all 0.2s;margin-bottom:4px">'
+                    +'<div style="width:24px;height:24px;border-radius:7px;background:'+(ticked?color.bg:'var(--gray-lighter)')+';color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;flex-shrink:0">'+(ticked?'✓':item.qty)+'</div>'
+                    +'<div style="flex:1"><div style="font-weight:600;font-size:0.82rem;color:'+(ticked?'var(--gray)':'var(--dark-2)')+';text-decoration:'+(ticked?'line-through':'none')+'">'+esc(item.name)+'</div>'+noteHtml+'</div>'
+                    +'</div>';
+            }).join('');
+            
+            const doneCount=Object.values(ticks).filter(Boolean).length;
+            const totalCount=o.items.length;
+            
+            const btnHtml=kitchenDone
+                ?'<button style="width:100%;padding:8px;background:#6b7280;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:not-allowed;font-family:var(--font)">✅ Siap</button>'
+                :allTicked
+                    ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:8px;background:'+color.bg+';color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;font-family:var(--font)">🍳 Hantar ke Cashier</button>'
+                    :'<div style="width:100%;padding:6px 10px;background:var(--bg);border-radius:8px;font-size:0.72rem;color:var(--gray);text-align:center;font-weight:600">'+doneCount+'/'+totalCount+' siap — tap item untuk tick</div>';
+            
+            return'<div style="background:'+urgencyBg+';border:1.5px solid '+urgencyBorder+';border-radius:14px;padding:12px;transition:all 0.3s">'
+                +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px">'
+                +'<span style="font-weight:900;font-size:1rem;color:var(--dark)">Pesanan #'+(o.orderNo||o.orderId)+'</span>'
+                +'<div style="display:flex;gap:5px;align-items:center">'
+                +'<span style="background:'+color.bg+';color:white;padding:3px 8px;border-radius:8px;font-size:0.72rem;font-weight:700">🪑 '+esc(o.tableNo||'-')+'</span>'
+                +'<span style="font-size:0.7rem;font-weight:600;padding:3px 8px;border-radius:8px;background:'+(urgency==='urgent'?'var(--danger-light)':urgency==='medium'?'#fffbeb':'var(--success-light)')+';color:'+(urgency==='urgent'?'var(--danger-dark)':urgency==='medium'?'var(--warning-dark)':'var(--success-dark)')+'">🕐 '+minsAgo+'</span>'
+                +'</div></div>'
+                +'<div style="font-size:0.7rem;color:var(--gray);margin-bottom:8px">👤 '+esc(o.staffName||'-')+'</div>'
+                +'<div style="margin-bottom:10px">'+itemsHtml+'</div>'
+                +btnHtml
+                +'</div>';
         }).join('');
+        
+        return{html:cards,count:stOrders.length,st,si,color,emoji};
     });
+    
+    // Check if any station has orders
+    const totalOrders=cols.reduce((s,c)=>s+c.count,0);
+    
+    el.innerHTML='<div class="dapur-split">'
+        +cols.map(({html,count,st,si,color,emoji})=>'<div class="dapur-station-col">'
+            +'<div class="dapur-station-header" style="background:'+color.bg+';color:white">'
+            +'<span>'+emoji+' '+esc(st.name||'Stesen '+(si+1))+'</span>'
+            +'<span class="dapur-station-count">'+count+' pesanan</span>'
+            +'</div>'
+            +(html||'<div style="padding:20px;text-align:center;color:var(--gray-light);font-size:0.82rem;background:var(--bg-2);border-radius:12px">✅ Tiada pesanan</div>')
+            +'</div>').join('')
+        +'</div>';
 }
 
-function toggleStationCat(station,cat,checked){
-    if(checked){
-        if(!S.stationConfig[station].includes(cat))S.stationConfig[station].push(cat);
-    }else{
-        S.stationConfig[station]=S.stationConfig[station].filter(c=>c!==cat);
+function tickItemStation(orderId,stationIdx,itemIdx){
+    const key=orderId+'_st'+stationIdx;
+    if(!S.itemTicks[key])S.itemTicks[key]={};
+    S.itemTicks[key][itemIdx]=!S.itemTicks[key][itemIdx];
+    const orders=S.orders||[];
+    const pending=orders.filter(o=>o.status==='pending');
+    renderDapurSplit(pending);
+}
+
+// ── STATION BUILDER (Settings) ────────────────────────────
+function renderStationBuilder(){
+    const el=document.getElementById('stationBuilderList');
+    if(!el)return;
+    if(!S.stations.length){
+        el.innerHTML='<div style="text-align:center;padding:16px;color:var(--gray-light);font-size:0.82rem;background:var(--bg-2);border-radius:12px">Belum ada stesen. Tekan ➕ untuk tambah.</div>';
+        const btn=document.getElementById('btnAddStation');
+        if(btn)btn.style.display='';
+        return;
     }
-    // Update hidden inputs
-    document.getElementById('stationMakanan').value=S.stationConfig.makanan.join(',');
-    document.getElementById('stationMinuman').value=S.stationConfig.minuman.join(',');
-    renderStationCheckboxes();
+    const allCats=[...new Set(S.menu.map(m=>m.category))];
+    const usedCats={};
+    S.stations.forEach((st,si)=>{(st.categories||[]).forEach(c=>{usedCats[c]=si;})});
+    
+    el.innerHTML=S.stations.map((st,si)=>{
+        const color=getStationColor(si);
+        const emoji=st.emoji||getStationEmoji(si);
+        const catChips=allCats.map(cat=>{
+            const isThis=(st.categories||[]).includes(cat);
+            const isOther=usedCats[cat]!==undefined&&usedCats[cat]!==si;
+            return'<label style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;cursor:'+(isOther?'not-allowed':'pointer')+';background:'+(isThis?color.bg:isOther?'var(--bg)':'var(--white)')+';border:1.5px solid '+(isThis?color.bg:isOther?'var(--border)':'var(--border)')+';color:'+(isThis?'white':isOther?'var(--gray-lighter)':'var(--dark-2)')+';font-size:0.75rem;font-weight:600;opacity:'+(isOther?0.5:1)+'">'
+                +'<input type="checkbox" '+(isThis?'checked':'')+' '+(isOther?'disabled':'')+' style="display:none" onchange="toggleStationCatDyn('+si+',\''+cat+'\',this.checked)">'
+                +(isThis?'✓ ':'')+cat+'</label>';
+        }).join('');
+        return'<div style="border:1.5px solid '+color.bg+';border-radius:14px;overflow:hidden">'
+            +'<div style="background:'+color.bg+';padding:10px 14px;display:flex;align-items:center;gap:8px">'
+            +'<span style="font-size:1.1rem">'+emoji+'</span>'
+            +'<input type="text" value="'+esc(st.name||'')+'" placeholder="Nama stesen..." oninput="updateStationName('+si+',this.value)" style="flex:1;background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;font-weight:700;font-size:0.85rem;font-family:var(--font)" onkeydown="return true">'
+            +'<button onclick="removeStation('+si+')" style="background:rgba(255,255,255,0.2);border:none;border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-size:0.8rem;font-family:var(--font)">🗑️</button>'
+            +'</div>'
+            +'<div style="padding:12px;background:var(--bg-2)">'
+            +'<div style="font-size:0.75rem;font-weight:700;color:var(--dark-3);margin-bottom:8px">Kategori menu:</div>'
+            +'<div style="display:flex;flex-wrap:wrap;gap:6px">'+(catChips||'<span style="font-size:0.75rem;color:var(--gray-light)">Tiada kategori. Tambah menu dulu.</span>')+'</div>'
+            +'</div></div>';
+    }).join('');
+    
+    const btn=document.getElementById('btnAddStation');
+    if(btn)btn.style.display=S.stations.length>=4?'none':'';
+}
+
+function addNewStation(){
+    if(S.stations.length>=4){toast('Max 4 stesen','error');return}
+    const idx=S.stations.length;
+    S.stations.push({name:'Stesen '+(idx+1),emoji:getStationEmoji(idx),categories:[]});
+    renderStationBuilder();
+}
+
+function removeStation(idx){
+    if(!confirm('Padam stesen ini?'))return;
+    S.stations.splice(idx,1);
+    renderStationBuilder();
+}
+
+function updateStationName(idx,val){
+    if(S.stations[idx])S.stations[idx].name=val;
+}
+
+function toggleStationCatDyn(stIdx,cat,checked){
+    if(!S.stations[stIdx])return;
+    if(!S.stations[stIdx].categories)S.stations[stIdx].categories=[];
+    if(checked){
+        S.stations[stIdx].categories.push(cat);
+    }else{
+        S.stations[stIdx].categories=S.stations[stIdx].categories.filter(c=>c!==cat);
+    }
+    renderStationBuilder();
 }
 
 async function saveStationConfig(){
-    const makanan=S.stationConfig.makanan;
-    const minuman=S.stationConfig.minuman;
-    const r=await api('saveSettings',{stationMakanan:makanan.join(','),stationMinuman:minuman.join(',')});
+    const stationsJson=JSON.stringify(S.stations);
+    const r=await api('saveSettings',{stationsConfig:stationsJson});
     if(r.success){
         clearClientCache('getSettings');
         toast('✅ Stesen dapur disimpan!');
-        renderStationToggle();
     }else toast('❌ '+r.error,'error');
 }
 
 function loadStationConfig(settings){
-    const makanan=(settings.stationMakanan||'').split(',').map(s=>s.trim()).filter(Boolean);
-    const minuman=(settings.stationMinuman||'').split(',').map(s=>s.trim()).filter(Boolean);
-    S.stationConfig={makanan,minuman};
+    try{
+        if(settings.stationsConfig){
+            S.stations=JSON.parse(settings.stationsConfig)||[];
+        }else{
+            // Migrate dari format lama (stationMakanan/stationMinuman)
+            S.stations=[];
+            const makanan=(settings.stationMakanan||'').split(',').map(s=>s.trim()).filter(Boolean);
+            const minuman=(settings.stationMinuman||'').split(',').map(s=>s.trim()).filter(Boolean);
+            if(makanan.length)S.stations.push({name:'Makanan',emoji:'🍚',categories:makanan});
+            if(minuman.length)S.stations.push({name:'Minuman',emoji:'🥤',categories:minuman});
+        }
+    }catch(e){S.stations=[];}
+}
+
+function renderStationToggle(){
+    // Legacy - no longer used for split view
+}
+
+function filterOrderByStation(order){
+    // Legacy compat
+    return order;
 }
 
 // ============================================================
+// ITEM TICK FUNCTIONS
+// ============================================================// ============================================================
 // ITEM TICK FUNCTIONS
 // ============================================================
 function tickItem(orderId,itemIdx){
