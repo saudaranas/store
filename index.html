@@ -448,35 +448,43 @@ async function routerInit() {
         return;
     }
 
+    // ── Semak cache dulu ──────────────────────────────────
+    const cacheKey = '_pk_reg_' + slug;
+    try {
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+            const data = JSON.parse(cached);
+            if (data && data.gasUrl) {
+                window.__PK_GAS_URL__ = data.gasUrl;
+                updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
+                setTimeout(() => {
+                    document.getElementById('splashScreen').classList.add('hide');
+                    setTimeout(() => { document.getElementById('splashScreen').style.display = 'none'; }, 400);
+                    initApp();
+                }, 200);
+                return;
+            }
+        }
+    } catch(e) {}
+
     updateSplash('🔍 Mencari kedai...', slug);
 
-    // Cuba 3 kali kalau gagal
     for (let attempt = 1; attempt <= 3; attempt++) {
         try {
-            updateSplash('🔍 Mencari kedai... (' + attempt + '/3)', slug);
+            if (attempt > 1) updateSplash('⏳ Cuba semula... (' + attempt + '/3)', slug);
             const ctrl = new AbortController();
             const tid  = setTimeout(() => ctrl.abort(), 20000);
-            
             const fetchUrl = MASTER_URL + '?slug=' + encodeURIComponent(slug) + '&key=' + encodeURIComponent(MASTER_KEY);
-            const res = await fetch(fetchUrl, {
-                method:   'GET',
-                redirect: 'follow',
-                signal:   ctrl.signal
-            });
+            const res = await fetch(fetchUrl, { method: 'GET', redirect: 'follow', signal: ctrl.signal });
             clearTimeout(tid);
-
             const text = await res.text();
-            console.log('[Router] Response:', text.substring(0, 200));
-            
             let data;
             try { data = JSON.parse(text); }
-            catch (e) { 
-                console.error('[Router] Parse error:', text.substring(0, 200));
+            catch (e) {
                 if (attempt < 3) { await sleep(2000); continue; }
-                showSplashError('Ralat Server', 'Respons tidak sah. Cuba semula.', slug); 
-                return; 
+                showSplashError('Ralat Server', 'Respons tidak sah. Cuba semula.', slug);
+                return;
             }
-
             if (!data.success) {
                 showSplashError(
                     data.status === 'expired' ? '⏰ Langganan Tamat' : '❌ Kedai Tidak Dijumpai',
@@ -485,26 +493,19 @@ async function routerInit() {
                 );
                 return;
             }
-
-            // ✅ Jumpa!
+            // ✅ Simpan cache
+            try { sessionStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
             window.__PK_GAS_URL__ = data.gasUrl;
             updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
-
             setTimeout(() => {
                 document.getElementById('splashScreen').classList.add('hide');
-                setTimeout(() => {
-                    document.getElementById('splashScreen').style.display = 'none';
-                }, 400);
+                setTimeout(() => { document.getElementById('splashScreen').style.display = 'none'; }, 400);
                 initApp();
-            }, 500);
+            }, 200);
             return;
-
         } catch (err) {
-            console.error('[Router] Attempt', attempt, 'error:', err.message);
-            if (attempt < 3) {
-                updateSplash('⏳ Cuba semula... (' + attempt + '/3)', err.message);
-                await sleep(2000);
-            } else {
+            if (attempt < 3) { await sleep(2000); }
+            else {
                 showSplashError(
                     err.name === 'AbortError' ? 'Timeout' : 'Gagal Sambung',
                     err.name === 'AbortError' ? 'Sambungan terlalu lama. Semak internet.' : err.message,
@@ -514,7 +515,6 @@ async function routerInit() {
         }
     }
 }
-
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function updateSplash(text, sub) {
@@ -563,7 +563,22 @@ function skipLogin(){S.staff={name:'Admin',role:'admin'};saveSession();enterApp(
 async function enterApp(){const isAdmin=S.staff.role==='admin';document.getElementById('tabSales').style.display=isAdmin?'':'none';document.getElementById('tabSettings').style.display=isAdmin?'':'none';document.getElementById('tabMenu').style.display=isAdmin?'':'none';document.getElementById('tabDapur').style.display='';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tabOrder=document.querySelector('#appContainer .nav-tabs .nav-tab:first-child');if(tabOrder)tabOrder.classList.add('active');document.getElementById('tab-order').classList.add('active');document.getElementById('loginScreen').style.display='none';document.getElementById('appContainer').classList.add('show');document.getElementById('staffBadge').textContent='👤 '+esc(S.staff.name);await Promise.all([loadMenu(),loadCount(),loadPaymentInfo()]);applyPakejLimits()}
 function doLogout(){if(S.cart.length>0&&!confirm('Ada item dalam troli. Keluar?'))return;if(dapurInterval){clearInterval(dapurInterval);dapurInterval=null}clearSession();document.getElementById('loginScreen').style.display='flex';document.getElementById('appContainer').classList.remove('show');document.getElementById('pinInput').value='';S.cart=[];['tabSales','tabMenu','tabSettings','tabDapur'].forEach(id=>document.getElementById(id).style.display='')}
 function go(tab,el){document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('tab-'+tab).classList.add('active');if(tab==='list')loadOrders();if(tab==='dapur'){const dEl=document.getElementById('dapurDate');if(dEl&&!dEl.value)dEl.value=today();loadDapur();}if(tab==='sales'){initSalesTab();if(S.reportMode==='daily')loadDailySales();else if(S.reportMode==='weekly')loadWeeklySales();else loadMonthlySales()}if(tab==='menu')loadMenuManage();if(tab==='settings'){loadStaffList();loadSettingsForm()}}
-async function loadMenu(){const r=await cachedApi('getMenu',{},60000);if(r.success){S.menu=r.menu;renderCats();renderMenu()}else document.getElementById('menuGrid').innerHTML='<div class="api-error-box"><strong>❌ Gagal muatkan menu</strong>'+esc(r.error)+'</div>'}
+async function loadMenu(){
+    // Try sessionStorage cache for instant render
+    try{
+        const mc=sessionStorage.getItem('_pk_menu_'+window.__PK_GAS_URL__);
+        if(mc){const cached=JSON.parse(mc);if(cached&&cached.length){S.menu=cached;renderCats();renderMenu();}}
+    }catch(e){}
+    // Always fetch fresh in background
+    const r=await cachedApi('getMenu',{},60000);
+    if(r.success){
+        S.menu=r.menu;
+        try{sessionStorage.setItem('_pk_menu_'+window.__PK_GAS_URL__,JSON.stringify(r.menu))}catch(e){}
+        renderCats();renderMenu();
+    }else if(!S.menu.length){
+        document.getElementById('menuGrid').innerHTML='<div class="api-error-box"><strong>❌ Gagal muatkan menu</strong>'+esc(r.error)+'</div>';
+    }
+}
 function renderCats(){const featured=S.featuredCat||'';const allCats=[...new Set(S.menu.map(m=>m.category))];const others=allCats.filter(c=>c!==featured);const ordered=featured?[featured,...others]:others;const cats=['Semua',...ordered];const ic={Semua:'🍽️',Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};document.getElementById('catFilter').innerHTML=cats.map(c=>{const isF=featured&&c===featured;const icon=isF?'⭐':(ic[c]||'📦');return'<button class="cat-chip'+(isF?' featured':'')+' '+(c===S.cat?'active':'')+'" onclick="pickCat(\''+esc(c)+'\',this)">'+icon+' '+esc(c)+'</button>'}).join('')}
 function pickCat(c,el){S.cat=c;document.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderMenu()}
 function renderMenu(){const g=document.getElementById('menuGrid');const q=document.getElementById('menuSearch').value.toLowerCase();let l=S.menu;if(S.cat!=='Semua')l=l.filter(m=>m.category===S.cat);if(q)l=l.filter(m=>m.name.toLowerCase().includes(q));if(!l.length){g.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}g.innerHTML=l.map(m=>{const c=S.cart.find(x=>x.id===m.id);return'<div class="menu-item '+(c?'selected':'')+'" onclick="addCart(\''+esc(m.id)+'\')" data-id="'+esc(m.id)+'">'+(c?'<div class="item-badge">'+c.qty+'</div>':'')+'<div class="item-cat">'+esc(m.category)+'</div><div class="item-name">'+esc(m.name)+'</div><div class="item-price">RM '+m.price.toFixed(2)+'</div></div>'}).join('')}
