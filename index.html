@@ -727,7 +727,7 @@ function updateFeaturedDropdown(){const fc=S.featuredCat||'';const opt=document.
 async function saveFeaturedCat(){const newName=document.getElementById('featuredCatInput').value.trim();if(!newName){toast('Masukkan nama kategori!','error');return}const oldName=S.featuredCat||'';const r=await api('saveFeaturedCategory',{newName,oldName});if(r.success){S.featuredCat=newName;updateFeaturedDropdown();clearClientCache('getMenu');await loadMenu();toast('✅ Kategori Utama: "'+newName+'"'+(r.updated>0?' ('+r.updated+' menu dikemaskini)':''))}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function saveBankInfo(){const bn=document.getElementById('setBankName').value.trim(),ba=document.getElementById('setBankAcc').value.trim(),bh=document.getElementById('setBankHolder').value.trim();if(!ba){toast('Isi no. akaun!','error');return}const r=await api('saveSettings',{bankName:bn,bankAccount:ba,bankHolder:bh});if(r.success){S.bankName=bn;S.bankAccount=ba;S.bankHolder=bh;clearClientCache('getSettings');renderPaymentInfo();toast('✅ Disimpan!')}else toast('❌ '+(r.error||'Gagal'),'error')}
 let dapurInterval=null;
-async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dEl.value)dEl.value=today();const selectedDate=dEl.value;const isToday=selectedDate===today();const arLabel=document.getElementById('dapurAutoRefreshLabel');if(arLabel)arLabel.textContent=isToday?'Auto kemaskini setiap 30 saat':'Paparan arkib — auto kemaskini dinyahaktif';document.getElementById('dapurList').innerHTML='<div class="loading"><div class="spinner"></div>Memuatkan...</div>';const r=await api('getOrders',{date:selectedDate});if(!r.success){document.getElementById('dapurList').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong><br>'+esc(r.error||'Cuba semula')+'</div>';return}const orders=r.orders||[];const isToday2=document.getElementById('dapurDate').value===today();const pending=isToday2?orders.filter(o=>o.status==='pending'):orders.filter(o=>o.status!=='cancelled');const countEl=document.getElementById('dapurCount');if(countEl)countEl.textContent=pending.length+(isToday2?' menunggu':' pesanan');const el=document.getElementById('dapurList');if(!pending.length){el.innerHTML='<div class="dapur-empty"><div class="dapur-empty-icon">'+(isToday2?'✅':'📋')+'</div><div style="font-weight:700;font-size:1rem;color:var(--success-dark)">'+(isToday2?'Semua pesanan selesai!':'Tiada rekod pesanan.')+'</div><div style="font-size:0.82rem;margin-top:6px">'+(isToday2?'Tiada pesanan menunggu.':'Cuba pilih tarikh lain.')+'</div></div>';return}const now=Date.now();    // Store orders & init tracking
+async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dEl.value)dEl.value=today();const selectedDate=dEl.value;const isToday=selectedDate===today();const arLabel=document.getElementById('dapurAutoRefreshLabel');if(arLabel)arLabel.textContent=isToday?'Auto kemaskini setiap 30 saat':'Paparan arkib — auto kemaskini dinyahaktif';document.getElementById('dapurList').innerHTML='<div class="loading"><div class="spinner"></div>Memuatkan...</div>';const r=await api('getOrders',{date:selectedDate});if(!r.success){document.getElementById('dapurList').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong><br>'+esc(r.error||'Cuba semula')+'</div>';return}const orders=r.orders||[];const isToday2=document.getElementById('dapurDate').value===today();const pending=isToday2?orders.filter(o=>o.status==='pending'):orders.filter(o=>o.status!=='cancelled');let dapurCountEl=document.getElementById('dapurCount');if(dapurCountEl)dapurCountEl.textContent=pending.length+(isToday2?' menunggu':' pesanan');const el=document.getElementById('dapurList');if(!pending.length){el.innerHTML='<div class="dapur-empty"><div class="dapur-empty-icon">'+(isToday2?'✅':'📋')+'</div><div style="font-weight:700;font-size:1rem;color:var(--success-dark)">'+(isToday2?'Semua pesanan selesai!':'Tiada rekod pesanan.')+'</div><div style="font-size:0.82rem;margin-top:6px">'+(isToday2?'Tiada pesanan menunggu.':'Cuba pilih tarikh lain.')+'</div></div>';return}const now=Date.now();    // Store orders & init tracking
     S.orders=orders;
     dapurLastOrderIds=new Set(pending.map(o=>o.orderId));
     dapurFirstLoad=false;
@@ -738,8 +738,8 @@ async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dE
         renderDapurOrders(pending);
     }
     // Update count badge
-    const countEl=document.getElementById('dapurCount');
-    if(countEl)countEl.textContent=pending.length+' menunggu';}
+    const dapurCnt=document.getElementById('dapurCount');
+    if(dapurCnt)dapurCnt.ttEl.textContent=pending.length+' menunggu';}
 async function markDapurSiap(orderId,btn){if(!orderId){toast('ID pesanan tidak sah!','error');return}btn.disabled=true;btn.textContent='⏳ Menyimpan...';const r=await api('markKitchenDone',{orderId:orderId});if(r.success){beep(true);toast('🍳 Masakan siap! Cashier perlu selesaikan bayaran.');const card=document.getElementById('dapur-card-'+orderId);if(card){card.classList.remove('urgent','normal');card.classList.add('kitchen-done');const banner=document.createElement('div');banner.className='kitchen-done-banner';banner.textContent='🍳 Masakan Siap — Tunggu Cashier Selesaikan Bayaran';card.insertBefore(banner,card.firstChild);btn.textContent='✅ Sudah Ditandakan Siap';btn.style.background='#6b7280';btn.style.cursor='not-allowed'}clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal tandakan pesanan'),'error');btn.disabled=false;btn.textContent='🍳 Tandakan Masakan Siap'}}
 // ── DAPUR REAL-TIME POLLING ────────────────────────────────
 let dapurLastOrderIds = new Set();
@@ -781,8 +781,8 @@ async function dapurSilentRefresh(){
         dapurFirstLoad=false;
         
         // Update count badge
-        const countEl=document.getElementById('dapurCount');
-        if(countEl)countEl.textContent=pending.length+' menunggu';
+        const dapurBadge=document.getElementById('dapurCount');
+        if(dapurBadge)countEl.textContent=pending.length+' menunggu';
         
         // Update tab badge
         const tabDapur=document.getElementById('tabDapur');
