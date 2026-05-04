@@ -279,8 +279,32 @@
         .dapur-split{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;align-items:flex-start}
         .dapur-split::-webkit-scrollbar{height:4px}.dapur-split::-webkit-scrollbar-thumb{background:var(--gray-lighter);border-radius:4px}
         .dapur-station-col{flex:0 0 300px;min-width:280px;max-width:340px;display:flex;flex-direction:column;gap:10px}
-        .dapur-station-header{padding:10px 14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:0.88rem;position:sticky;top:0;z-index:10}
-        .dapur-station-count{background:rgba(255,255,255,0.3);padding:2px 8px;border-radius:10px;font-size:0.72rem;font-weight:700}
+        .dapur-station-header{
+            padding:12px 16px;border-radius:12px;
+            display:flex;align-items:center;justify-content:space-between;
+            font-weight:800;font-size:0.9rem;
+            position:sticky;top:0;z-index:10;
+            background:#1e293b;color:white;
+            border-left:4px solid #f97316;
+            box-shadow:0 4px 12px rgba(0,0,0,0.15);
+        }
+        .dapur-station-count{
+            background:rgba(249,115,22,0.25);
+            color:#fdba74;
+            padding:3px 10px;border-radius:10px;
+            font-size:0.72rem;font-weight:700;
+        }
+        /* Dapur card status colors */
+        .dk-fresh{background:#fffbeb;border:2px solid #f59e0b;}          /* < 5min amber */
+        .dk-cooking{background:#fff7ed;border:2px solid #f97316;}        /* 5-15min oren */
+        .dk-urgent{background:#fef2f2;border:2px solid #ef4444;}         /* > 15min merah */
+        .dk-done{background:#ecfdf5;border:2px solid #065f46;}           /* siap hijau */
+        .dk-kitchen-done{background:#f0fdf4;border:2px solid #16a34a;opacity:0.85;}
+        /* Time badge colors */
+        .tb-fresh{background:#fef3c7;color:#92400e;font-weight:700;}
+        .tb-cooking{background:#ffedd5;color:#9a3412;font-weight:700;}
+        .tb-urgent{background:#fee2e2;color:#991b1b;font-weight:800;}
+        .tb-done{background:#dcfce7;color:#065f46;font-weight:700;}
         @media(min-width:700px){.dapur-station-col{flex:1;min-width:220px}}
     
     </style>
@@ -704,6 +728,7 @@ function unlockAudio(){
         src.connect(ctx.destination);
         src.start(0);
         S.audioUnlocked=true;
+        try{localStorage.setItem('_pk_audio_unlocked','1')}catch(e){}
         const btn=document.getElementById('btnUnlockAudio');
         if(btn){
             btn.innerHTML='🔔 Bunyi Aktif';
@@ -911,28 +936,37 @@ function renderDapurOrders(pending){
         try{const tStr=String(o.time||'');const dStr=String(o.date||today());const tParts=tStr.split(':');const dParts=dStr.split('-');if(tParts.length>=2&&dParts.length===3){const orderTime=new Date(+dParts[0],+dParts[1]-1,+dParts[2],+tParts[0],+tParts[1]||0);const diff=Math.floor((now-orderTime.getTime())/60000);minsAgo=diff<1?'Baru':diff+'min';if(diff>=15)urgency='urgent';else if(diff>=8)urgency='medium'}}catch(e){}
         const kitchenDone=o.kitchenDone===true;
         const ticks=S.itemTicks[o.orderId]||{};
-        const allTicked=allItemsTicked(o.orderId,o.items||[]);
-        const timeCls=urgency==='urgent'?'dapur-time-badge urgent':urgency==='medium'?'dapur-time-badge medium':'dapur-time-badge fresh';
-        const cardCls=kitchenDone?'kitchen-done':allTicked?'kitchen-done':urgency==='urgent'?'urgent':'normal';
+        const allTicked=allItemsTicked(o.orderId,-1,o.items||[]);
+        // Color system
+        const timeCls=urgency==='urgent'?'tb-urgent':urgency==='medium'?'tb-cooking':'tb-fresh';
+        let cardCls;
+        if(kitchenDone)cardCls='dk-kitchen-done';
+        else if(allTicked)cardCls='dk-done';
+        else if(urgency==='urgent')cardCls='dk-urgent';
+        else if(urgency==='medium')cardCls='dk-cooking';
+        else cardCls='dk-fresh';
         const safeOid=String(o.orderId||'').replace(/'/g,"\'");
-        const kitchenBanner=kitchenDone?'<div class="kitchen-done-banner">🍳 Masakan Siap — Tunggu Cashier Selesaikan Bayaran</div>':
-            allTicked?'<div class="kitchen-done-banner">✅ Semua Item Siap — Sedia Hantar!</div>':'';
+        const kitchenBanner=kitchenDone
+            ?'<div style="display:flex;align-items:center;gap:8px;background:#065f46;color:white;padding:8px 12px;border-radius:10px;font-weight:800;font-size:0.82rem;margin-bottom:8px">🍳 Masakan Siap — Tunggu Cashier</div>'
+            :allTicked
+            ?'<div style="display:flex;align-items:center;gap:8px;background:#f97316;color:white;padding:8px 12px;border-radius:10px;font-weight:800;font-size:0.82rem;margin-bottom:8px">✅ Semua Item Siap!</div>'
+            :'';
         // Items with tick
         const itemsHtml=(o.items||[]).map((item,idx)=>{
             const ticked=ticks[idx]||false;
             const noteHtml=item.note?'<div style="font-size:0.7rem;color:var(--warning-dark);font-weight:600;margin-top:2px">📝 '+esc(item.note)+'</div>':'';
-            return'<div class="dapur-item-row" onclick="tickItem(\''+safeOid+'\','+idx+')" style="cursor:pointer;opacity:'+(ticked?'0.5':'1')+';background:'+(ticked?'var(--success-light)':'var(--bg-2)')+';transition:all 0.2s">'
+            return'<div class="dapur-item-row" onclick="tickItem(\''+safeOid+'\','+(-1)+','+idx+')" style="cursor:pointer;opacity:'+(ticked?'0.5':'1')+';background:'+(ticked?'var(--success-light)':'var(--bg-2)')+';transition:all 0.2s">'
                 +'<div style="width:26px;height:26px;border-radius:8px;background:'+(ticked?'var(--success-dark)':'var(--primary)')+';color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.82rem;flex-shrink:0">'+(ticked?'✓':item.qty)+'</div>'
                 +'<div style="flex:1"><div class="dapur-item-name" style="text-decoration:'+(ticked?'line-through':'none')+';color:'+(ticked?'var(--gray)':'var(--dark-2)')+'">'+esc(item.name)+'</div>'+noteHtml+'</div>'
                 +'</div>';
         }).join('');
         // Button logic
         const btnSiap=kitchenDone
-            ?'<button class="btn-siap" disabled style="background:#6b7280;cursor:not-allowed">✅ Sudah Ditandakan Siap</button>'
+            ?'<button style="width:100%;padding:10px;background:#6b7280;color:white;border:none;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:not-allowed;font-family:var(--font)">✅ Sudah Siap</button>'
             :allTicked
-                ?'<button class="btn-siap" onclick="markDapurSiap(\''+safeOid+'\',this)" style="background:linear-gradient(135deg,var(--success-dark),#059669)">🍳 Hantar ke Cashier</button>'
-                :'<button class="btn-siap" disabled style="background:var(--gray-lighter);color:var(--gray);cursor:not-allowed">Tick item untuk siapkan ('+Object.values(ticks).filter(Boolean).length+'/'+((o.items||[]).length)+')</button>';
-        return'<div class="dapur-order-card '+cardCls+'" id="dapur-card-'+esc(o.orderId)+'">'+kitchenBanner+'<div class="dapur-order-top"><span class="dapur-order-num">Pesanan #'+(o.orderNo||o.orderId)+'</span><span class="dapur-table-badge">🪑 '+esc(o.tableNo||'-')+'</span><span class="'+timeCls+'">🕐 '+minsAgo+(urgency==='urgent'&&!kitchenDone?' ⚠️':'')+'</span></div><div class="dapur-staff">👤 '+esc(o.staffName||'-')+'</div><div class="dapur-items-list">'+itemsHtml+'</div>'+btnSiap+'</div>';
+                ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:10px;background:#065f46;color:white;border:none;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(6,95,70,0.3)">🍳 Hantar ke Cashier ✓</button>'
+                :'<div style="width:100%;padding:8px;background:var(--bg);border-radius:10px;font-size:0.78rem;color:var(--gray);text-align:center;font-weight:600">'+Object.values(ticks).filter(Boolean).length+'/'+((o.items||[]).length)+' siap — tap item untuk tick</div>';
+        return'<div class="'+cardCls+'" style="border-radius:16px;padding:16px;margin-bottom:2px;transition:all 0.3s" id="dapur-card-'+esc(o.orderId)+'">'+kitchenBanner+'<div class="dapur-order-top"><span class="dapur-order-num">Pesanan #'+(o.orderNo||o.orderId)+'</span><span class="dapur-table-badge">🪑 '+esc(o.tableNo||'-')+'</span><span class="'+timeCls+'">🕐 '+minsAgo+(urgency==='urgent'&&!kitchenDone?' ⚠️':'')+'</span></div><div class="dapur-staff">👤 '+esc(o.staffName||'-')+'</div><div class="dapur-items-list">'+itemsHtml+'</div>'+btnSiap+'</div>';
     }).join('');
     el.innerHTML='<div class="dapur-grid">'+cardsHtml+'</div>';
 }
@@ -947,6 +981,22 @@ window.addEventListener('offline',()=>{document.getElementById('offDot').style.d
 window.addEventListener('beforeunload',e=>{if(S.cart.length){e.preventDefault();e.returnValue=''}});
 async function init(){
     updateClock();setInterval(updateClock,1000);
+    // Restore audio unlock state
+    try{
+        if(localStorage.getItem('_pk_audio_unlocked')==='1'){
+            S.audioUnlocked=true;
+            // Update button UI after DOM ready
+            setTimeout(()=>{
+                const btn=document.getElementById('btnUnlockAudio');
+                if(btn){
+                    btn.innerHTML='🔔 Bunyi Aktif';
+                    btn.style.background='var(--success-dark)';
+                    btn.style.cursor='default';
+                    btn.onclick=null;
+                }
+            },1000);
+        }
+    }catch(e){}
     document.getElementById('orderDate').value=today();
     
     // ── INSTANT: Load dari cache dulu, tunjuk login terus ──
@@ -1078,8 +1128,14 @@ function renderDapurSplit(pending){
             const allTicked=o.items.every((_,i)=>ticks[i]);
             const kitchenDone=o.kitchenDone===true;
             
-            const urgencyBg=kitchenDone||allTicked?color.light:urgency==='urgent'?'var(--danger-light)':urgency==='medium'?'#fffbeb':'var(--white)';
-            const urgencyBorder=kitchenDone||allTicked?color.bg:urgency==='urgent'?'var(--danger)':urgency==='medium'?'var(--warning)':'var(--border)';
+            // Color system: fresh=amber, cooking=oren, urgent=merah, done=hijau
+            let cardClass;
+            if(kitchenDone) cardClass='dk-kitchen-done';
+            else if(allTicked) cardClass='dk-done';
+            else if(urgency==='urgent') cardClass='dk-urgent';
+            else if(urgency==='medium') cardClass='dk-cooking';
+            else cardClass='dk-fresh';
+            const urgencyBg=''; const urgencyBorder=''; // now handled by CSS class
             
             const safeOid=String(o.orderId||'').replace(/'/g,"\'");
             
@@ -1098,15 +1154,15 @@ function renderDapurSplit(pending){
             const btnHtml=kitchenDone
                 ?'<button style="width:100%;padding:8px;background:#6b7280;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:not-allowed;font-family:var(--font)">✅ Siap</button>'
                 :allTicked
-                    ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:8px;background:'+color.bg+';color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;font-family:var(--font)">🍳 Hantar ke Cashier</button>'
+                    ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:8px;background:#065f46;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(6,95,70,0.3)">🍳 Hantar ke Cashier ✓</button>'
                     :'<div style="width:100%;padding:6px 10px;background:var(--bg);border-radius:8px;font-size:0.72rem;color:var(--gray);text-align:center;font-weight:600">'+doneCount+'/'+totalCount+' siap — tap item untuk tick</div>';
             
-            return'<div style="background:'+urgencyBg+';border:1.5px solid '+urgencyBorder+';border-radius:14px;padding:12px;transition:all 0.3s">'
+            return'<div class="'+cardClass+'" style="border-radius:14px;padding:12px;transition:all 0.3s">'
                 +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px">'
                 +'<span style="font-weight:900;font-size:1rem;color:var(--dark)">Pesanan #'+(o.orderNo||o.orderId)+'</span>'
                 +'<div style="display:flex;gap:5px;align-items:center">'
                 +'<span style="background:'+color.bg+';color:white;padding:3px 8px;border-radius:8px;font-size:0.72rem;font-weight:700">🪑 '+esc(o.tableNo||'-')+'</span>'
-                +'<span style="font-size:0.7rem;font-weight:600;padding:3px 8px;border-radius:8px;background:'+(urgency==='urgent'?'var(--danger-light)':urgency==='medium'?'#fffbeb':'var(--success-light)')+';color:'+(urgency==='urgent'?'var(--danger-dark)':urgency==='medium'?'var(--warning-dark)':'var(--success-dark)')+'">🕐 '+minsAgo+'</span>'
+                +'<span class="'+(urgency==='urgent'?'tb-urgent':urgency==='medium'?'tb-cooking':'tb-fresh')+'" style="font-size:0.7rem;padding:3px 8px;border-radius:8px">🕐 '+minsAgo+'</span>'
                 +'</div></div>'
                 +'<div style="font-size:0.7rem;color:var(--gray);margin-bottom:8px">👤 '+esc(o.staffName||'-')+'</div>'
                 +'<div style="margin-bottom:10px">'+itemsHtml+'</div>'
@@ -1122,7 +1178,7 @@ function renderDapurSplit(pending){
     
     el.innerHTML='<div class="dapur-split">'
         +cols.map(({html,count,st,si,color,emoji})=>'<div class="dapur-station-col">'
-            +'<div class="dapur-station-header" style="background:'+color.bg+';color:white">'
+            +'<div class="dapur-station-header">'
             +'<span>'+emoji+' '+esc(st.name||'Stesen '+(si+1))+'</span>'
             +'<span class="dapur-station-count">'+count+' pesanan</span>'
             +'</div>'
@@ -1132,12 +1188,8 @@ function renderDapurSplit(pending){
 }
 
 function tickItemStation(orderId,stationIdx,itemIdx){
-    const key=orderId+'_st'+stationIdx;
-    if(!S.itemTicks[key])S.itemTicks[key]={};
-    S.itemTicks[key][itemIdx]=!S.itemTicks[key][itemIdx];
-    const orders=S.orders||[];
-    const pending=orders.filter(o=>o.status==='pending');
-    renderDapurSplit(pending);
+    // Delegate to tickItem
+    tickItem(orderId,stationIdx,itemIdx);
 }
 
 // ── STATION BUILDER (Settings) ────────────────────────────
@@ -1246,26 +1298,12 @@ function filterOrderByStation(order){
 // ============================================================// ============================================================
 // ITEM TICK FUNCTIONS
 // ============================================================
-function tickItem(orderId,itemIdx){
-    if(!S.itemTicks[orderId])S.itemTicks[orderId]={};
-    S.itemTicks[orderId][itemIdx]=!S.itemTicks[orderId][itemIdx];
-    // Re-render just this card
+function tickItem(orderId,stIdx,itemIdx){
+    const key=stIdx>=0?orderId+'_st'+stIdx:orderId;
+    if(!S.itemTicks[key])S.itemTicks[key]={};
+    S.itemTicks[key][itemIdx]=!S.itemTicks[key][itemIdx];
     const orders=S.orders||[];
     const pending=orders.filter(o=>o.status==='pending');
-    renderDapurOrders(pending);
-}
-
-function allItemsTicked(orderId,items){
-    if(!S.itemTicks[orderId])return false;
-    return items.every((_,i)=>S.itemTicks[orderId][i]);
-}
-
-// ============================================================
-// STATION SETTINGS FORM LOAD
-// ============================================================
-
-// Start router bila page load
-routerInit();
-</script>
-</body>
-</html>
+    if(S.stations&&S.stations.length>0)renderDapurSplit(pending);
+    else renderDapurOrders(pending);
+}>
