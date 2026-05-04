@@ -568,6 +568,15 @@ function showSplashError(title, msg, url) {
 // CONFIG — AMBIL GAS URL DARI ROUTER (index.html)
 // ============================================================
 let S={menu:[],cart:[],orders:[],staff:{name:'Admin',role:'admin'},pay:'cash',cat:'Semua',editOid:null,editItems:[],shop:{shopName:'Kedai Makan',shopAddress:'',shopPhone:''},count:0,reportMode:'daily',orderFilter:'all',qrImage:'',bankName:'',bankAccount:'',bankHolder:'',completePay:'cash',completeOid:null,qrBase64:'',featuredCat:'',editPendingOid:null,editPendingItems:[],waReceiptText:'',completeOrderData:null,dapurStation:'semua',stations:[],itemTicks:{}};
+// ============================================================
+// APP CONFIG
+// ============================================================
+const C={
+    get URL(){ return window.__PK_GAS_URL__ || ''; },
+    KEY: PK_API_KEY,
+    PAKEJ: 'premium'
+};
+
 let salesCache={daily:null,weekly:null,monthly:null};
 const clientCache={};
 const CLIENT_CACHE_TTL=30000;
