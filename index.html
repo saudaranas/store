@@ -395,17 +395,22 @@
         <div class="card"><div class="card-title">⭐ Kategori Utama</div><p style="font-size:0.8rem;color:var(--gray);margin-bottom:12px">Kategori ini akan muncul pertama dalam tab Pesanan dan Menu.</p><div class="form-group"><label>Nama Kategori Utama</label><input type="text" class="form-input" id="featuredCatInput" placeholder="contoh: Amazy, Chef Special, Signature..."></div><p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:10px">⚠️ Tukar nama akan auto-kemaskini semua menu dalam kategori ini.</p><button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveFeaturedCat()">💾 Simpan Kategori Utama</button></div>
         <div class="card">
             <div class="card-title">🍳 Stesen Dapur</div>
-            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:12px">Tetapkan kategori menu untuk setiap stesen dapur. Biarkan kosong jika tidak guna stesen.</p>
+            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:16px">Pilih kategori untuk setiap stesen. Biarkan kosong jika tidak guna stesen.</p>
             <div class="form-group">
-                <label>🍚 Stesen Makanan — Kategori</label>
-                <input type="text" class="form-input" id="stationMakanan" placeholder="cth: Makanan,Set,Kuih (pisah dengan koma)">
-                <p style="font-size:0.72rem;color:var(--gray-light);margin-top:4px">Kosongkan untuk tunjuk semua item</p>
+                <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px">🍚 <span>Stesen Makanan</span></label>
+                <div id="stationMakananCheck" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--bg-2);border-radius:12px;border:1px solid var(--border);min-height:44px">
+                    <span style="font-size:0.78rem;color:var(--gray-light)">Memuatkan kategori...</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label>🥤 Stesen Minuman — Kategori</label>
-                <input type="text" class="form-input" id="stationMinuman" placeholder="cth: Minuman (pisah dengan koma)">
+            <div class="form-group" style="margin-top:4px">
+                <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px">🥤 <span>Stesen Minuman</span></label>
+                <div id="stationMinumanCheck" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:var(--bg-2);border-radius:12px;border:1px solid var(--border);min-height:44px">
+                    <span style="font-size:0.78rem;color:var(--gray-light)">Memuatkan kategori...</span>
+                </div>
             </div>
+            <p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:12px">💡 Setiap kategori hanya boleh dipilih untuk satu stesen</p>
             <button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveStationConfig()">💾 Simpan Stesen</button>
+            <input type="hidden" id="stationMakanan"><input type="hidden" id="stationMinuman">
         </div>
         <div class="card"><div class="card-title">📱 QR Payment</div><div class="form-group"><label>🔗 Link URL Gambar QR</label><input type="text" class="form-input" id="qrUrl" placeholder="https://i.imgur.com/contoh.jpg"></div><button class="btn btn-info" style="width:100%;justify-content:center;margin-bottom:4px" onclick="saveQRUrl()">💾 Simpan URL</button><p style="font-size:0.72rem;color:var(--gray);text-align:center;margin-bottom:8px">Pastikan link berakhir .jpg / .png</p><div class="qr-divider">atau upload fail gambar</div><div class="form-group"><label>📁 Upload Gambar QR</label><input type="file" class="form-input" id="qrUpload" accept="image/*" onchange="previewQR(this)"></div><div id="qrPreview" style="text-align:center;margin:8px 0"></div><button class="btn btn-info" style="width:100%;justify-content:center" onclick="saveQR()">💾 Simpan Gambar</button></div>
         <div class="card"><div class="card-title">🏦 Maklumat Transfer</div><div class="form-group"><label>Nama Bank</label><input type="text" class="form-input" id="setBankName" placeholder="Maybank"></div><div class="form-group"><label>No. Akaun</label><input type="text" class="form-input" id="setBankAcc" placeholder="1234567890"></div><div class="form-group"><label>Nama Pemilik</label><input type="text" class="form-input" id="setBankHolder" placeholder="Ahmad"></div><button class="btn btn-info" style="width:100%;justify-content:center" onclick="saveBankInfo()">💾 Simpan</button></div>
@@ -649,11 +654,8 @@ function openEditStaff(pin,name,role){document.getElementById('editStaffPin').va
 async function saveEditStaff(){const oldPin=document.getElementById('editStaffOldPin').value;const newPin=document.getElementById('editStaffNewPin').value.trim()||oldPin;const name=document.getElementById('editStaffName').value.trim();const role=document.getElementById('editStaffRole').value;if(!name){toast('Nama diperlukan!','error');return}const r=await api('editStaff',{oldPin,newPin,name,role});if(r.success){toast('✅ '+r.message);closeM('editStaffModal');clearClientCache('getStaff');loadStaffList()}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function deleteStaff(p,n){if(!confirm('Padam "'+n+'"?'))return;const r=await api('deleteStaff',{pin:p});if(r.success){toast('✅ '+r.message);clearClientCache('getStaff');loadStaffList()}else toast('❌ '+(r.error||'Gagal'),'error')}
 function loadSettingsForm(){if(S.qrImage&&S.qrImage.startsWith('http'))document.getElementById('qrUrl').value=S.qrImage;
-    // Load station config
-    const makananEl=document.getElementById('stationMakanan');
-    const minumanEl=document.getElementById('stationMinuman');
-    if(makananEl)makananEl.value=S.stationConfig.makanan.join(', ');
-    if(minumanEl)minumanEl.value=S.stationConfig.minuman.join(', ');if(S.qrImage)document.getElementById('qrPreview').innerHTML='<img src="'+S.qrImage+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.style.display=\'none\'"><p style="font-size:0.75rem;color:var(--gray);margin-top:6px">QR semasa</p>';document.getElementById('setBankName').value=S.bankName;document.getElementById('setBankAcc').value=S.bankAccount;document.getElementById('setBankHolder').value=S.bankHolder;document.getElementById('featuredCatInput').value=S.featuredCat||'';updateFeaturedDropdown()}
+    // Render station checkboxes
+    renderStationCheckboxes();if(S.qrImage)document.getElementById('qrPreview').innerHTML='<img src="'+S.qrImage+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.style.display=\'none\'"><p style="font-size:0.75rem;color:var(--gray);margin-top:6px">QR semasa</p>';document.getElementById('setBankName').value=S.bankName;document.getElementById('setBankAcc').value=S.bankAccount;document.getElementById('setBankHolder').value=S.bankHolder;document.getElementById('featuredCatInput').value=S.featuredCat||'';updateFeaturedDropdown()}
 function updateFeaturedDropdown(){const fc=S.featuredCat||'';const opt=document.getElementById('newCatFeatured');if(opt){opt.value=fc;opt.textContent=fc?('⭐ '+fc+' (Kategori Utama)'):'⭐ (Kategori Utama - belum ditetapkan)'}const emOpt=document.getElementById('emCatFeatured');if(emOpt){emOpt.value=fc;emOpt.textContent=fc?('⭐ '+fc+' (Kategori Utama)'):'⭐ (Kategori Utama - belum ditetapkan)'}}
 async function saveFeaturedCat(){const newName=document.getElementById('featuredCatInput').value.trim();if(!newName){toast('Masukkan nama kategori!','error');return}const oldName=S.featuredCat||'';const r=await api('saveFeaturedCategory',{newName,oldName});if(r.success){S.featuredCat=newName;updateFeaturedDropdown();clearClientCache('getMenu');await loadMenu();toast('✅ Kategori Utama: "'+newName+'"'+(r.updated>0?' ('+r.updated+' menu dikemaskini)':''))}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function saveBankInfo(){const bn=document.getElementById('setBankName').value.trim(),ba=document.getElementById('setBankAcc').value.trim(),bh=document.getElementById('setBankHolder').value.trim();if(!ba){toast('Isi no. akaun!','error');return}const r=await api('saveSettings',{bankName:bn,bankAccount:ba,bankHolder:bh});if(r.success){S.bankName=bn;S.bankAccount=ba;S.bankHolder=bh;clearClientCache('getSettings');renderPaymentInfo();toast('✅ Disimpan!')}else toast('❌ '+(r.error||'Gagal'),'error')}
@@ -813,8 +815,14 @@ window.addEventListener('beforeunload',e=>{if(S.cart.length){e.preventDefault();
 async function init(){
     updateClock();setInterval(updateClock,1000);
     document.getElementById('orderDate').value=today();
-    let info=await api('getShopInfo');
-    if(!info.success){document.getElementById('loginShopName').textContent='⏳ Cuba semula...';await new Promise(r=>setTimeout(r,2000));info=await api('getShopInfo')}
+    // Cuba dari cache dulu
+    let info=null;
+    try{const cached=sessionStorage.getItem('_pk_shopinfo');if(cached){info=JSON.parse(cached);console.log('[Init] Using cached shopInfo')}}catch(e){}
+    if(!info||!info.success){
+        info=await api('getShopInfo');
+        if(!info.success){document.getElementById('loginShopName').textContent='⏳ Cuba semula...';await new Promise(r=>setTimeout(r,2000));info=await api('getShopInfo')}
+        if(info.success){try{sessionStorage.setItem('_pk_shopinfo',JSON.stringify(info))}catch(e){}}
+    }
     if(info.success){
         S.shop=info;document.getElementById('loginShopName').textContent='🍽️ '+info.shopName;document.title='POSKedai - '+info.shopName;
         if(info.pakej)C.PAKEJ=info.pakej.toLowerCase();
@@ -880,14 +888,52 @@ function filterOrderByStation(order){
     return {...order,items:filteredItems};
 }
 
+function renderStationCheckboxes(){
+    const allCats=[...new Set(S.menu.map(m=>m.category))];
+    if(!allCats.length){
+        ['stationMakananCheck','stationMinumanCheck'].forEach(id=>{
+            const el=document.getElementById(id);
+            if(el)el.innerHTML='<span style="font-size:0.78rem;color:var(--gray-light)">Tiada kategori. Tambah menu dulu.</span>';
+        });
+        return;
+    }
+    ['makanan','minuman'].forEach(station=>{
+        const el=document.getElementById('station'+station.charAt(0).toUpperCase()+station.slice(1)+'Check');
+        if(!el)return;
+        const selected=S.stationConfig[station]||[];
+        const otherStation=station==='makanan'?'minuman':'makanan';
+        const otherSelected=S.stationConfig[otherStation]||[];
+        el.innerHTML=allCats.map(cat=>{
+            const isSelected=selected.includes(cat);
+            const isOther=otherSelected.includes(cat);
+            const disabled=isOther&&!isSelected;
+            return'<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;cursor:'+(disabled?'not-allowed':'pointer')+';background:'+(isSelected?'var(--primary)':disabled?'var(--bg)':'var(--white)')+';border:1.5px solid '+(isSelected?'var(--primary)':disabled?'var(--border)':'var(--border)')+';color:'+(isSelected?'white':disabled?'var(--gray-lighter)':'var(--dark-2)')+';font-size:0.8rem;font-weight:600;transition:all 0.2s;opacity:'+(disabled?'0.5':'1')+'">'
+                +'<input type="checkbox" '+(isSelected?'checked':'')+' '+(disabled?'disabled':'')+' style="display:none" onchange="toggleStationCat(\''+station+'\',\''+cat+'\',this.checked)">'
+                +(isSelected?'✓ ':'')+cat
+                +(isOther&&!isSelected?' <span style="font-size:0.6rem;opacity:0.6">(stesen lain)</span>':'')
+                +'</label>';
+        }).join('');
+    });
+}
+
+function toggleStationCat(station,cat,checked){
+    if(checked){
+        if(!S.stationConfig[station].includes(cat))S.stationConfig[station].push(cat);
+    }else{
+        S.stationConfig[station]=S.stationConfig[station].filter(c=>c!==cat);
+    }
+    // Update hidden inputs
+    document.getElementById('stationMakanan').value=S.stationConfig.makanan.join(',');
+    document.getElementById('stationMinuman').value=S.stationConfig.minuman.join(',');
+    renderStationCheckboxes();
+}
+
 async function saveStationConfig(){
-    const makananRaw=document.getElementById('stationMakanan').value;
-    const minumanRaw=document.getElementById('stationMinuman').value;
-    const makanan=makananRaw.split(',').map(s=>s.trim()).filter(Boolean);
-    const minuman=minumanRaw.split(',').map(s=>s.trim()).filter(Boolean);
+    const makanan=S.stationConfig.makanan;
+    const minuman=S.stationConfig.minuman;
     const r=await api('saveSettings',{stationMakanan:makanan.join(','),stationMinuman:minuman.join(',')});
     if(r.success){
-        S.stationConfig={makanan,minuman};
+        clearClientCache('getSettings');
         toast('✅ Stesen dapur disimpan!');
         renderStationToggle();
     }else toast('❌ '+r.error,'error');
