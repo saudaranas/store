@@ -349,6 +349,31 @@
         .expired-shop{font-size:1.1rem;font-weight:800;color:#1e293b;margin-bottom:4px;}
         .expired-date{font-size:0.82rem;color:#64748b;margin-bottom:20px;}
         @media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{position:absolute;top:0;left:0}}
+        /* ===== RENEW REMINDER BANNER ===== */
+        .renew-reminder-bar{
+            background:linear-gradient(135deg,#f97316,#ea580c);
+            color:white;padding:8px 16px;
+            display:flex;align-items:center;justify-content:space-between;
+            font-size:0.78rem;font-weight:700;gap:8px;flex-wrap:wrap;
+            animation:slideDownBanner 0.4s ease;
+        }
+        @keyframes slideDownBanner{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+        .renew-reminder-bar .rb-left{display:flex;align-items:center;gap:8px;}
+        .renew-reminder-bar .rb-days{
+            background:rgba(255,255,255,0.2);
+            padding:3px 10px;border-radius:20px;
+            font-weight:800;white-space:nowrap;
+        }
+        .renew-reminder-bar .rb-btn{
+            background:white;color:#ea580c;
+            padding:5px 14px;border-radius:20px;
+            font-weight:800;font-size:0.75rem;
+            border:none;cursor:pointer;
+            white-space:nowrap;font-family:var(--font);
+            transition:all 0.2s;flex-shrink:0;
+        }
+        .renew-reminder-bar .rb-btn:hover{background:#fff7ed;}
+
         /* ===== DAPUR SPLIT VIEW ===== */
         .dapur-split{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px;align-items:flex-start}
         .dapur-split::-webkit-scrollbar{height:4px}.dapur-split::-webkit-scrollbar-thumb{background:var(--gray-lighter);border-radius:4px}
@@ -450,6 +475,15 @@
 </div>
 <div class="app-container" id="appContainer">
     <div class="offline-banner" id="offBanner">⚠️ Tiada internet.</div>
+    <div class="renew-reminder-bar" id="renewReminderBar" style="display:none">
+        <div class="rb-left">
+            <span>⚠️ Langganan hampir tamat!</span>
+            <span class="rb-days" id="rbDaysLeft">7 hari lagi</span>
+        </div>
+        <button class="rb-btn" onclick="document.getElementById('renewPopup').style.display='flex'">
+            Renew Sekarang
+        </button>
+    </div>
     <div class="header">
         <div class="header-left"><span class="header-logo"><span>POS</span><span>Kedai</span></span><span class="header-staff" id="staffBadge">👤 Admin</span></div>
         <div class="header-right"><span class="offline-dot" id="offDot"></span><span class="header-counter" id="orderCounter">#0</span><span class="header-time" id="clock"></span><button class="btn-logout" onclick="doLogout()">Keluar</button></div>
@@ -1526,16 +1560,8 @@ function showExpiredScreen(data) {
 }
 
 function checkAndShowRenewPopup(data) {
-    // Semak daysLeft — tunjuk popup kalau <= 7 hari
-    if (!data || !data.daysLeft) return;
+    if (!data || data.daysLeft === null || data.daysLeft === undefined) return;
     if (data.daysLeft > RENEW_WARNING_DAYS) return;
-
-    // Semak sama ada user dah dismiss hari ni
-    const dismissKey = '_pk_renew_dismiss_' + (window.__PK_GAS_URL__ || '');
-    try {
-        const dismissed = localStorage.getItem(dismissKey);
-        if (dismissed === new Date().toDateString()) return;
-    } catch(e) {}
 
     const renewType = data.renewType || 'standard';
     const price = renewType === 'setup' ? 'RM80' : 'RM30';
@@ -1545,6 +1571,22 @@ function checkAndShowRenewPopup(data) {
                      data.daysLeft === 1 ? 'Esok!' :
                      data.daysLeft + ' hari lagi';
 
+    // ── Sentiasa tunjuk reminder bar dalam header ──
+    const bar = document.getElementById('renewReminderBar');
+    const barDays = document.getElementById('rbDaysLeft');
+    if (bar) {
+        bar.style.display = 'flex';
+        if (barDays) barDays.textContent = daysText;
+    }
+
+    // ── Semak sama ada popup dah dismiss hari ni ──
+    const dismissKey = '_pk_renew_dismiss_' + (window.__PK_GAS_URL__ || '');
+    try {
+        const dismissed = localStorage.getItem(dismissKey);
+        if (dismissed === new Date().toDateString()) return; // dah dismiss hari ni
+    } catch(e) {}
+
+    // Setup popup content
     document.getElementById('renewPopupShop').textContent = data.shopName || '-';
     document.getElementById('renewPopupDate').textContent = data.expiryDate || '-';
     document.getElementById('renewPopupDays').textContent = daysText;
@@ -1554,7 +1596,16 @@ function checkAndShowRenewPopup(data) {
         'Langganan anda akan tamat dalam ' + daysText + '. Renew sekarang untuk elak gangguan.';
     document.getElementById('btnRenewNow').href = bclLink;
 
-    // Tunjuk popup selepas app load
+    // Countdown note
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const noteEl = document.getElementById('renewDismissNote');
+    if (noteEl) {
+        const hrs = Math.ceil((tomorrow.setHours(0,0,0,0) - Date.now()) / 3600000);
+        noteEl.textContent = 'Popup akan muncul semula dalam ' + hrs + ' jam';
+    }
+
+    // Tunjuk popup selepas 1.5 saat
     setTimeout(() => {
         document.getElementById('renewPopup').style.display = 'flex';
     }, 1500);
@@ -1562,7 +1613,7 @@ function checkAndShowRenewPopup(data) {
 
 function dismissRenewPopup() {
     document.getElementById('renewPopup').style.display = 'none';
-    // Simpan dismiss untuk hari ini
+    // Simpan dismiss — popup tak muncul lagi hari ni
     const dismissKey = '_pk_renew_dismiss_' + (window.__PK_GAS_URL__ || '');
     try {
         localStorage.setItem(dismissKey, new Date().toDateString());
@@ -1632,8 +1683,11 @@ routerInit();
                 💬 WhatsApp Kami
             </a>
             <button class="btn-renew-dismiss" onclick="dismissRenewPopup()">
-                Ingatkan saya kemudian
+                Ingatkan saya esok
             </button>
+            <p style="font-size:0.72rem;color:#cbd5e1;text-align:center;margin-top:4px" id="renewDismissNote">
+                Popup akan muncul semula esok
+            </p>
         </div>
     </div>
 </div>
