@@ -349,31 +349,6 @@
         .expired-shop{font-size:1.1rem;font-weight:800;color:#1e293b;margin-bottom:4px;}
         .expired-date{font-size:0.82rem;color:#64748b;margin-bottom:20px;}
         @media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{position:absolute;top:0;left:0}}
-        /* ===== RENEW REMINDER BANNER ===== */
-        .renew-reminder-bar{
-            background:linear-gradient(135deg,#f97316,#ea580c);
-            color:white;padding:8px 16px;
-            display:flex;align-items:center;justify-content:space-between;
-            font-size:0.78rem;font-weight:700;gap:8px;flex-wrap:wrap;
-            animation:slideDownBanner 0.4s ease;
-        }
-        @keyframes slideDownBanner{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-        .renew-reminder-bar .rb-left{display:flex;align-items:center;gap:8px;}
-        .renew-reminder-bar .rb-days{
-            background:rgba(255,255,255,0.2);
-            padding:3px 10px;border-radius:20px;
-            font-weight:800;white-space:nowrap;
-        }
-        .renew-reminder-bar .rb-btn{
-            background:white;color:#ea580c;
-            padding:5px 14px;border-radius:20px;
-            font-weight:800;font-size:0.75rem;
-            border:none;cursor:pointer;
-            white-space:nowrap;font-family:var(--font);
-            transition:all 0.2s;flex-shrink:0;
-        }
-        .renew-reminder-bar .rb-btn:hover{background:#fff7ed;}
-
         /* ===== DAPUR SPLIT VIEW ===== */
         .dapur-split{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px;align-items:flex-start}
         .dapur-split::-webkit-scrollbar{height:4px}.dapur-split::-webkit-scrollbar-thumb{background:var(--gray-lighter);border-radius:4px}
@@ -475,17 +450,17 @@
 </div>
 <div class="app-container" id="appContainer">
     <div class="offline-banner" id="offBanner">⚠️ Tiada internet.</div>
-    <div class="renew-reminder-bar" id="renewReminderBar" style="display:none">
-        <div class="rb-left">
-            <span>⚠️ Langganan hampir tamat!</span>
-            <span class="rb-days" id="rbDaysLeft">7 hari lagi</span>
-        </div>
-        <button class="rb-btn" onclick="document.getElementById('renewPopup').style.display='flex'">
-            Renew Sekarang
-        </button>
-    </div>
+
     <div class="header">
-        <div class="header-left"><span class="header-logo"><span>POS</span><span>Kedai</span></span><span class="header-staff" id="staffBadge">👤 Admin</span></div>
+        <div class="header-left" style="display:flex;align-items:center;gap:10px;flex:1">
+            <span class="header-logo"><span>POS</span><span>Kedai</span></span>
+            <span class="header-staff" id="staffBadge">👤 Admin</span>
+            <div id="renewReminderBar" style="display:none;align-items:center;gap:6px;background:rgba(0,0,0,0.15);padding:5px 12px;border-radius:20px;font-size:0.72rem;font-weight:700;color:white;cursor:pointer" onclick="document.getElementById('renewPopup').style.display='flex'">
+                <span>⚠️</span>
+                <span id="rbDaysLeft">7 hari lagi</span>
+                <span style="background:white;color:#ea580c;padding:2px 8px;border-radius:10px;font-size:0.68rem;font-weight:800">Renew</span>
+            </div>
+        </div>
         <div class="header-right"><span class="offline-dot" id="offDot"></span><span class="header-counter" id="orderCounter">#0</span><span class="header-time" id="clock"></span><button class="btn-logout" onclick="doLogout()">Keluar</button></div>
     </div>
     <div class="nav-tabs">
