@@ -6,7 +6,6 @@
     <title>POSKedai Admin</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{
@@ -282,4 +281,582 @@
                     <input type="text" class="form-input" id="new-googleSheet" placeholder="https://docs.google.com/...">
                 </div>
             </div>
-            <button onclick="tambahClient()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;f
+            <button onclick="tambahClient()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;font-family:var(--font);margin-top:8px">
+                ➕ Tambah Client
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">✏️ Edit Client</div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-slug-orig">
+            <div class="form-group">
+                <label class="form-label">Slug</label>
+                <input type="text" class="form-input" id="edit-slug" readonly style="background:var(--bg);color:var(--gray)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nama Kedai</label>
+                <input type="text" class="form-input" id="edit-shopName">
+            </div>
+            <div class="form-group">
+                <label class="form-label">GAS URL</label>
+                <input type="text" class="form-input" id="edit-gasUrl">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-input" id="edit-status">
+                        <option value="active">✅ Active</option>
+                        <option value="expired">⏰ Expired</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tarikh Luput</label>
+                    <input type="date" class="form-input" id="edit-expiryDate">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Renew Type</label>
+                    <select class="form-input" id="edit-renewType">
+                        <option value="standard">Standard (RM30)</option>
+                        <option value="setup">Setup (RM80)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp</label>
+                    <input type="text" class="form-input" id="edit-whatsapp">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Google Sheet URL</label>
+                <input type="text" class="form-input" id="edit-googleSheet">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-save" onclick="saveEdit()">💾 Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- SALES MODAL -->
+<div class="modal-overlay" id="salesModal">
+    <div class="modal sales-modal">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title" id="salesModalTitle">📊 Jualan Client</div>
+                <div style="font-size:0.72rem;color:var(--gray);margin-top:2px" id="salesModalSub">7 hari lepas</div>
+            </div>
+            <button class="modal-close" onclick="closeSalesModal()">✕</button>
+        </div>
+        <div class="modal-body" id="salesModalBody">
+            <div style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-wrap" id="loadingWrap">
+    <div class="spinner"></div>
+    <div class="loading-text">Memuatkan data...</div>
+    <div class="loading-sub" id="loadingSub">Sila tunggu</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const ADMIN_PASS = '*Yarohim*165';
+const MASTER_URL = 'https://script.google.com/macros/s/AKfycbznU2RPkvryyNLyRrbT5iRtA1HTdazlgia_7HcN1-_OpE15pMhr7t1ZRsoqjIWNFAsY/exec';
+const MASTER_KEY = 'poskedai-master-2026';
+const CLIENT_KEY = 'aca6f58aac70a3c722e74b9e0488bd693637e056de95a296f6b40613104b1df7';
+
+let allClients = [];
+
+// ============================================================
+// LOGIN / LOGOUT
+// ============================================================
+function doLogin(){
+    const pw = document.getElementById('pwInput').value;
+    if(pw === ADMIN_PASS){
+        document.getElementById('loginWrap').style.display='none';
+        document.getElementById('adminApp').style.display='block';
+        loadAllData();
+    }else{
+        const err=document.getElementById('loginErr');
+        err.style.display='block';
+        document.getElementById('pwInput').value='';
+        setTimeout(()=>err.style.display='none',3000);
+    }
+}
+function doLogout(){
+    document.getElementById('loginWrap').style.display='flex';
+    document.getElementById('adminApp').style.display='none';
+    document.getElementById('pwInput').value='';
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(id, btn){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+id).classList.add('active');
+}
+
+// ============================================================
+// LOAD ALL DATA
+// ============================================================
+async function loadAllData(){
+    showLoading('Mengambil senarai client...');
+    try{
+        const reg = await gasCall(MASTER_URL, MASTER_KEY, 'listAll', {});
+        if(!reg.success) throw new Error(reg.error);
+        allClients = reg.clients || [];
+
+        // Fetch sales parallel (batches of 4)
+        const results = [];
+        for(let i=0;i<allClients.length;i+=4){
+            const batch = allClients.slice(i,i+4);
+            setLoadingSub('Memuatkan jualan ' + Math.min(i+4,allClients.length) + '/' + allClients.length + '...');
+            const bRes = await Promise.all(batch.map(c=>fetchSales(c)));
+            results.push(...bRes);
+        }
+        allClients = results;
+        renderDashboard();
+        renderRegistry();
+        document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
+    }catch(e){
+        toast('❌ Gagal: ' + e.message, true);
+    }finally{
+        hideLoading();
+    }
+}
+
+async function gasCall(url, key, action, data){
+    const res = await fetch(url,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({apiKey:key,action,data})
+    });
+    return res.json();
+}
+
+async function fetchSales(client){
+    if(!client.gasUrl || client.status==='expired') return {...client,sales:null};
+    try{
+        const today=new Date();
+        const start=new Date(today); start.setDate(today.getDate()-6);
+        const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        const r = await gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:fmt(start),endDate:fmt(today)});
+        if(r.success){
+            const byDate = r.byDate||{};
+            const lastDate = Object.keys(byDate).filter(d=>byDate[d]>0).sort().reverse()[0]||null;
+            let activity='inactive';
+            if(lastDate){
+                const diff=Math.floor((new Date()-new Date(lastDate))/86400000);
+                activity = diff===0?'active':diff<=3?'recent':'idle';
+            }
+            return {...client,sales:{revenue:r.totalRevenue||0,orders:r.totalOrders||0,lastDate,activity}};
+        }
+    }catch(e){}
+    return {...client,sales:null};
+}
+
+// ============================================================
+// RENDER DASHBOARD
+// ============================================================
+function renderDashboard(){
+    const total   = allClients.length;
+    const active  = allClients.filter(c=>c.status==='active').length;
+    const expired = allClients.filter(c=>c.status==='expired').length;
+    const warning = allClients.filter(c=>c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=7).length;
+    const revenue = allClients.reduce((s,c)=>s+(c.sales?.revenue||0),0);
+    const orders  = allClients.reduce((s,c)=>s+(c.sales?.orders||0),0);
+
+    document.getElementById('st-total').textContent   = total;
+    document.getElementById('st-active').textContent  = active;
+    document.getElementById('st-expired').textContent = expired;
+    document.getElementById('st-warning').textContent = warning;
+    document.getElementById('st-revenue').textContent = 'RM'+revenue.toFixed(2);
+    document.getElementById('st-orders').textContent  = orders;
+
+    const sorted = [...allClients].sort((a,b)=>{
+        if(a.status==='active'&&b.status!=='active') return -1;
+        if(a.status!=='active'&&b.status==='active') return 1;
+        return (b.sales?.revenue||0)-(a.sales?.revenue||0);
+    });
+
+    document.getElementById('clientGrid').innerHTML = sorted.map(c=>{
+        const isExp  = c.status==='expired';
+        const isWarn = !isExp && c.daysLeft!==null && c.daysLeft<=7;
+
+        const statusBadge = isExp
+            ? '<span class="badge badge-expired">⏰ Expired</span>'
+            : isWarn
+                ? '<span class="badge badge-warning">⚠️ '+c.daysLeft+' hari</span>'
+                : '<span class="badge badge-active">✅ Aktif</span>';
+
+        let expiryHtml='<div class="cc-expiry ce-none">📅 Tiada tarikh luput</div>';
+        if(c.expiryDate){
+            expiryHtml = isExp
+                ? '<div class="cc-expiry ce-exp">⏰ Luput: '+c.expiryDate+'</div>'
+                : isWarn
+                    ? '<div class="cc-expiry ce-warn">⚠️ Luput dalam '+c.daysLeft+' hari ('+c.expiryDate+')</div>'
+                    : '<div class="cc-expiry ce-ok">✅ Aktif sehingga '+c.expiryDate+'</div>';
+        }
+
+        let statsHtml='', actHtml='';
+        if(c.sales){
+            const a=c.sales;
+            const dotClass=a.activity==='active'?'dot-g':a.activity==='recent'?'dot-y':a.activity==='idle'?'dot-r':'dot-x';
+            const actText=a.activity==='active'?'Ada pesanan hari ini':a.lastDate?'Terakhir: '+a.lastDate:'Tiada pesanan 7 hari';
+            statsHtml='<div class="cc-stats">'
+                +'<div class="cc-stat"><div class="cc-stat-label">Jualan 7 Hari</div><div class="cc-stat-val" style="color:var(--success)">RM'+a.revenue.toFixed(0)+'</div></div>'
+                +'<div class="cc-stat"><div class="cc-stat-label">Pesanan</div><div class="cc-stat-val">'+a.orders+'</div></div>'
+                +'<div class="cc-stat"><div class="cc-stat-label">Avg/Hari</div><div class="cc-stat-val">RM'+(a.revenue/7).toFixed(0)+'</div></div>'
+                +'</div>';
+            actHtml='<div class="activity-row"><div class="dot '+dotClass+'"></div><span>'+actText+'</span></div>';
+        }else if(isExp){
+            statsHtml='<div style="text-align:center;padding:10px;background:var(--bg);border-radius:8px;font-size:0.75rem;color:var(--gray);margin-bottom:8px">⏰ Expired — data tidak dimuatkan</div>';
+            actHtml='<div class="activity-row"><div class="dot dot-r"></div><span>Tidak aktif</span></div>';
+        }else{
+            statsHtml='<div style="text-align:center;padding:10px;background:var(--bg);border-radius:8px;font-size:0.75rem;color:var(--gray);margin-bottom:8px">⚠️ Gagal muatkan data</div>';
+            actHtml='<div class="activity-row"><div class="dot dot-x"></div><span>Data tidak tersedia</span></div>';
+        }
+
+        return '<div class="client-card">'
+            +'<div class="cc-header"><div><div class="cc-name">🍽️ '+esc(c.shopName||c.slug)+'</div><div class="cc-slug">'+esc(c.slug)+'</div></div>'+statusBadge+'</div>'
+            +expiryHtml+statsHtml+actHtml
+            +'<div class="cc-footer">'
+            +'<a href="https://poskedai.store/?kedai='+esc(c.slug)+'" target="_blank" class="btn-link">🔗 Buka App</a>'
+            +'<button onclick="openEdit(\''+esc(c.slug)+'\')" class="btn-link primary-btn" style="border:none;cursor:pointer">✏️ Edit</button>'
+            +'</div></div>';
+    }).join('');
+}
+
+// ============================================================
+// RENDER REGISTRY TABLE
+// ============================================================
+function renderRegistry(filter=''){
+    const clients = filter
+        ? allClients.filter(c=>(c.shopName||'').toLowerCase().includes(filter.toLowerCase())||(c.slug||'').toLowerCase().includes(filter.toLowerCase()))
+        : allClients;
+
+    document.getElementById('registryBody').innerHTML = clients.map((c,i)=>{
+        const isExp  = c.status==='expired';
+        const isWarn = !isExp && c.daysLeft!==null && c.daysLeft<=7;
+        const statusBadge = isExp
+            ? '<span class="badge badge-expired">⏰ Expired</span>'
+            : isWarn
+                ? '<span class="badge badge-warning">⚠️ '+c.daysLeft+' hari</span>'
+                : '<span class="badge badge-active">✅ Aktif</span>';
+        const renewBadge = c.renewType==='setup'
+            ? '<span class="badge badge-setup">RM80</span>'
+            : '<span class="badge badge-standard">RM30</span>';
+        const waLink = c.whatsapp
+            ? '<a href="https://'+esc(c.whatsapp)+'" target="_blank" style="color:var(--primary);font-size:0.72rem">'+esc(c.whatsapp.replace('wa.me/',''))+'</a>'
+            : '<span style="color:var(--gray-lighter)">-</span>';
+        return '<tr>'
+            +'<td style="color:var(--gray-light);font-size:0.75rem">'+(i+1)+'</td>'
+            +'<td><div style="font-weight:700">'+esc(c.shopName||'-')+'</div></td>'
+            +'<td style="font-family:monospace;font-size:0.75rem;color:var(--gray)">'+esc(c.slug)+'</td>'
+            +'<td>'+statusBadge+'</td>'
+            +'<td style="font-size:0.78rem">'+(c.expiryDate||'-')+'</td>'
+            +'<td style="font-size:0.78rem">'+(c.daysLeft!==null?(isExp?'<span style="color:var(--danger)">Luput</span>':c.daysLeft+' hari'):'-')+'</td>'
+            +'<td>'+renewBadge+'</td>'
+            +'<td>'+waLink+'</td>'
+            +'<td><div style="display:flex;gap:6px">'
+            +'<button class="btn-edit" onclick="openEdit(\''+esc(c.slug)+'\')">✏️ Edit</button>'
+            +'</div></td>'
+            +'</tr>';
+    }).join('');
+}
+
+function filterTable(val){
+    renderRegistry(val);
+}
+
+// ============================================================
+// EDIT MODAL
+// ============================================================
+function openEdit(slug){
+    const c = allClients.find(x=>x.slug===slug);
+    if(!c) return;
+    document.getElementById('edit-slug-orig').value  = c.slug;
+    document.getElementById('edit-slug').value       = c.slug;
+    document.getElementById('edit-shopName').value   = c.shopName||'';
+    document.getElementById('edit-gasUrl').value     = c.gasUrl||'';
+    document.getElementById('edit-status').value     = c.status||'active';
+    document.getElementById('edit-expiryDate').value = c.expiryDate||'';
+    document.getElementById('edit-renewType').value  = c.renewType||'standard';
+    document.getElementById('edit-whatsapp').value   = c.whatsapp||'';
+    document.getElementById('edit-googleSheet').value= c.googleSheet||'';
+    document.getElementById('editModal').classList.add('show');
+}
+
+function closeModal(){
+    document.getElementById('editModal').classList.remove('show');
+}
+
+async function saveEdit(){
+    const slug = document.getElementById('edit-slug-orig').value;
+    const data = {
+        slug,
+        shopName:    document.getElementById('edit-shopName').value,
+        gasUrl:      document.getElementById('edit-gasUrl').value,
+        status:      document.getElementById('edit-status').value,
+        expiryDate:  document.getElementById('edit-expiryDate').value,
+        renewType:   document.getElementById('edit-renewType').value,
+        whatsapp:    document.getElementById('edit-whatsapp').value,
+        googleSheet: document.getElementById('edit-googleSheet').value,
+    };
+    showLoading('Menyimpan perubahan...');
+    try{
+        const r = await gasCall(MASTER_URL, MASTER_KEY, 'update', data);
+        if(r.success){
+            // Update local
+            const idx = allClients.findIndex(c=>c.slug===slug);
+            if(idx>=0) allClients[idx] = {...allClients[idx],...data};
+            closeModal();
+            renderDashboard();
+            renderRegistry();
+            toast('✅ Berjaya disimpan!');
+        }else{
+            toast('❌ '+r.error, true);
+        }
+    }catch(e){
+        toast('❌ Gagal: '+e.message, true);
+    }finally{
+        hideLoading();
+    }
+}
+
+// ============================================================
+// TAMBAH CLIENT
+// ============================================================
+async function tambahClient(){
+    const slug      = document.getElementById('new-slug').value.trim();
+    const shopName  = document.getElementById('new-shopName').value.trim();
+    const gasUrl    = document.getElementById('new-gasUrl').value.trim();
+    const expiryDate= document.getElementById('new-expiryDate').value;
+    const renewType = document.getElementById('new-renewType').value;
+    const whatsapp  = document.getElementById('new-whatsapp').value.trim();
+    const googleSheet=document.getElementById('new-googleSheet').value.trim();
+
+    if(!slug||!shopName||!gasUrl){toast('❌ Slug, nama kedai & GAS URL diperlukan!',true);return;}
+
+    showLoading('Mendaftarkan client baru...');
+    try{
+        const r = await gasCall(MASTER_URL, MASTER_KEY, 'addClient', {slug,shopName,gasUrl,expiryDate,renewType,whatsapp,googleSheet});
+        if(r.success){
+            toast('✅ '+shopName+' berjaya didaftarkan!');
+            // Clear form
+            ['new-slug','new-shopName','new-gasUrl','new-expiryDate','new-whatsapp','new-googleSheet'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('new-renewType').value='setup';
+            loadAllData();
+        }else{
+            toast('❌ '+r.error,true);
+        }
+    }catch(e){
+        toast('❌ '+e.message,true);
+    }finally{
+        hideLoading();
+    }
+}
+
+// ============================================================
+// SALES DETAIL MODAL
+// ============================================================
+let salesChart = null;
+
+async function openSales(slug){
+    const client = allClients.find(c=>c.slug===slug);
+    if(!client) return;
+
+    document.getElementById('salesModalTitle').textContent = '📊 ' + (client.shopName||slug);
+    document.getElementById('salesModalSub').textContent = '7 hari lepas · ' + slug;
+    document.getElementById('salesModalBody').innerHTML = '<div style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto 12px"></div><div style="font-size:0.8rem;color:var(--gray)">Memuatkan data jualan...</div></div>';
+    document.getElementById('salesModal').classList.add('show');
+
+    if(!client.gasUrl || client.status==='expired'){
+        document.getElementById('salesModalBody').innerHTML = '<div class="no-orders">⏰ Client expired — data tidak tersedia</div>';
+        return;
+    }
+
+    try{
+        const today = new Date();
+        const start = new Date(today); start.setDate(today.getDate()-6);
+        const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        const startStr = fmt(start);
+        const endStr   = fmt(today);
+
+        // Fetch weekly + today orders in parallel
+        const [weekly, daily] = await Promise.all([
+            gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:startStr, endDate:endStr}),
+            gasCall(client.gasUrl, CLIENT_KEY, 'getOrders', {date:endStr})
+        ]);
+
+        renderSalesModal(client, weekly, daily);
+    }catch(e){
+        document.getElementById('salesModalBody').innerHTML = '<div class="no-orders">❌ Gagal muatkan: '+esc(e.message)+'</div>';
+    }
+}
+
+function renderSalesModal(client, weekly, daily){
+    if(!weekly.success){
+        document.getElementById('salesModalBody').innerHTML = '<div class="no-orders">❌ ' + esc(weekly.error||'Gagal') + '</div>';
+        return;
+    }
+
+    const byDate  = weekly.byDate || {};
+    const dates   = Object.keys(byDate).sort();
+    const values  = dates.map(d => byDate[d] || 0);
+    const maxVal  = Math.max(...values, 1);
+    const days    = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+
+    // Build date rows
+    const dateRows = dates.map(d => {
+        const val   = byDate[d] || 0;
+        const pct   = Math.round((val/maxVal)*100);
+        const dayName = days[new Date(d).getDay()];
+        const dateShort = d.substring(5); // MM-DD
+        const isToday = d === dates[dates.length-1];
+        return '<div class="sales-day-row">'
+            +'<div class="sales-day-label">'+(isToday?'<strong>Hari ini</strong>':dayName)+'<div style="font-size:0.62rem;color:var(--gray-light)">'+dateShort+'</div></div>'
+            +'<div class="sales-day-bar-wrap"><div class="sales-day-bar" style="width:'+pct+'%"></div></div>'
+            +'<div class="sales-day-val">RM'+val.toFixed(2)+'</div>'
+            +'</div>';
+    }).join('');
+
+    // Summary stats
+    const totalRevenue = weekly.totalRevenue || 0;
+    const totalOrders  = weekly.totalOrders  || 0;
+    const avgPerDay    = (totalRevenue / 7).toFixed(2);
+    const topItems     = (weekly.topItems||[]).slice(0,5);
+
+    // Today orders
+    let ordersHtml = '<div class="no-orders">Tiada pesanan hari ini</div>';
+    if(daily.success && daily.orders && daily.orders.length){
+        const completed = daily.orders.filter(o=>o.status==='completed').slice(0,10);
+        if(completed.length){
+            ordersHtml = completed.map(o=>'<div class="order-row">'
+                +'<div class="order-row-left">'
+                +'<div class="order-num">Pesanan #'+o.orderNo+'</div>'
+                +'<div class="order-meta">🪑 Meja '+esc(o.tableNo||'-')+' · '+esc(o.time||'')+'</div>'
+                +'</div>'
+                +'<div class="order-amount">RM'+parseFloat(o.total).toFixed(2)+'</div>'
+                +'</div>').join('');
+        }
+    }
+
+    // Top items
+    let topHtml = '<div class="no-orders">Tiada data</div>';
+    if(topItems.length){
+        topHtml = topItems.map(item=>'<div class="order-row">'
+            +'<div class="order-row-left">'
+            +'<div class="order-num">'+esc(item.name)+'</div>'
+            +'<div class="order-meta">'+item.qty+' unit terjual</div>'
+            +'</div>'
+            +'<div class="order-amount">RM'+parseFloat(item.revenue||0).toFixed(2)+'</div>'
+            +'</div>').join('');
+    }
+
+    document.getElementById('salesModalBody').innerHTML =
+        // Summary stats
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">'
+        +'<div class="cc-stat"><div class="cc-stat-label">Jualan 7 Hari</div><div class="cc-stat-val" style="color:var(--success)">RM'+totalRevenue.toFixed(2)+'</div></div>'
+        +'<div class="cc-stat"><div class="cc-stat-label">Pesanan</div><div class="cc-stat-val">'+totalOrders+'</div></div>'
+        +'<div class="cc-stat"><div class="cc-stat-label">Avg/Hari</div><div class="cc-stat-val">RM'+avgPerDay+'</div></div>'
+        +'</div>'
+        // Chart canvas
+        +'<div class="sales-section-title">📈 Carta Jualan Harian</div>'
+        +'<div class="chart-wrap"><canvas id="salesChartCanvas"></canvas></div>'
+        // Date breakdown
+        +'<div class="sales-section-title">📅 Jumlah Per Hari</div>'
+        +dateRows
+        // Top menu
+        +'<div class="sales-section-title">🍽️ Menu Paling Laris (7 Hari)</div>'
+        +topHtml
+        // Today orders
+        +'<div class="sales-section-title">🧾 Pesanan Hari Ini</div>'
+        +ordersHtml;
+
+    // Render chart
+    setTimeout(()=>{
+        const ctx = document.getElementById('salesChartCanvas');
+        if(!ctx) return;
+        if(salesChart) salesChart.destroy();
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dates.map(d=>{
+                    const day=days[new Date(d).getDay()];
+                    return day.substring(0,3)+' '+d.substring(8);
+                }),
+                datasets:[{
+                    label:'Jualan (RM)',
+                    data: values,
+                    backgroundColor:'rgba(249,115,22,0.2)',
+                    borderColor:'#f97316',
+                    borderWidth:2,
+                    borderRadius:8,
+                    borderSkipped:false,
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false,
+                plugins:{legend:{display:false}},
+                scales:{
+                    y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},
+                    x:{grid:{display:false},ticks:{font:{size:10}}}
+                }
+            }
+        });
+    }, 100);
+}
+
+function closeSalesModal(){
+    document.getElementById('salesModal').classList.remove('show');
+    if(salesChart){ salesChart.destroy(); salesChart=null; }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function showLoading(text,sub){
+    document.querySelector('#loadingWrap .loading-text').textContent=text||'Memuatkan...';
+    setLoadingSub(sub||'Sila tunggu');
+    document.getElementById('loadingWrap').classList.add('show');
+}
+function setLoadingSub(t){document.getElementById('loadingSub').textContent=t;}
+function hideLoading(){document.getElementById('loadingWrap').classList.remove('show');}
+
+let toastTimer;
+function toast(msg,isErr){
+    const el=document.getElementById('toast');
+    el.textContent=msg;
+    el.style.background=isErr?'#ef4444':'#1e293b';
+    el.style.display='block';
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>el.style.display='none',3000);
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
