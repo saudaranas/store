@@ -20,8 +20,6 @@
             --radius:14px;--shadow:0 2px 12px rgba(0,0,0,0.06);
         }
         body{font-family:var(--font);background:var(--bg);color:var(--dark);min-height:100vh;}
-
-        /* LOGIN */
         .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff7ed,#fed7aa,#fb923c);padding:24px;}
         .login-card{background:white;border-radius:28px;padding:48px 36px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,0.12);text-align:center;}
         .login-logo{font-size:2.2rem;font-weight:900;margin-bottom:4px;}
@@ -32,8 +30,6 @@
         .login-btn{width:100%;padding:16px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:14px;font-weight:800;font-size:1rem;cursor:pointer;font-family:var(--font);box-shadow:0 6px 20px rgba(249,115,22,0.35);transition:all 0.2s;}
         .login-btn:hover{transform:translateY(-2px);}
         .login-err{color:var(--danger);font-size:0.82rem;margin-top:10px;display:none;font-weight:600;}
-
-        /* APP */
         #adminApp{display:none;}
         .topbar{background:var(--dark-2);color:white;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
         .topbar-logo{font-weight:900;font-size:1.1rem;display:flex;align-items:center;gap:10px;}
@@ -44,15 +40,11 @@
         .btn-sm:hover{background:rgba(255,255,255,0.2);}
         .btn-sm.orange{background:var(--primary);color:white;}
         .btn-sm.orange:hover{background:var(--primary-dark);}
-
-        /* TABS */
         .tabs{display:flex;gap:0;background:white;border-bottom:2px solid var(--border);padding:0 24px;position:sticky;top:56px;z-index:100;}
         .tab-btn{padding:14px 20px;font-size:0.82rem;font-weight:700;color:var(--gray);border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s;font-family:var(--font);}
         .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
         .tab-content{display:none;padding:20px 24px;max-width:1400px;margin:0 auto;}
         .tab-content.active{display:block;}
-
-        /* STATS */
         .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
         .stat-card{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);}
         .stat-label{font-size:0.68rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
@@ -61,8 +53,6 @@
         .stat-val.green{color:var(--success);}
         .stat-val.red{color:var(--danger);}
         .stat-val.gray{color:var(--gray);}
-
-        /* REGISTRY TABLE */
         .table-wrap{background:white;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;}
         .table-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
         .table-title{font-weight:800;font-size:0.95rem;}
@@ -83,8 +73,6 @@
         .btn-edit:hover{border-color:var(--primary);color:var(--primary);}
         .btn-del{background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;color:var(--danger);font-family:var(--font);transition:all 0.2s;}
         .btn-del:hover{border-color:var(--danger);background:var(--danger-light);}
-
-        /* CLIENT CARDS (Dashboard) */
         .client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
         .client-card{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all 0.2s;}
         .client-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.1);transform:translateY(-2px);}
@@ -111,8 +99,6 @@
         .btn-link:hover{border-color:var(--primary);color:var(--primary);}
         .btn-link.primary-btn{background:var(--primary);border-color:var(--primary);color:white;}
         .btn-link.primary-btn:hover{background:var(--primary-dark);}
-
-        /* MODAL */
         .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
         .modal-overlay.show{display:flex;}
         .modal{background:white;border-radius:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.2);}
@@ -129,20 +115,14 @@
         .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
         .btn-cancel{padding:10px 20px;background:var(--bg-2);border:none;border-radius:10px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:var(--font);}
         .btn-save{padding:10px 24px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;font-weight:800;font-size:0.85rem;cursor:pointer;font-family:var(--font);}
-
-        /* LOADING */
         .loading-wrap{position:fixed;inset:0;background:rgba(255,255,255,0.9);backdrop-filter:blur(4px);z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
         .loading-wrap.show{display:flex;}
         .spinner{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;}
         @keyframes spin{to{transform:rotate(360deg)}}
         .loading-text{font-weight:700;color:var(--dark);}
         .loading-sub{font-size:0.8rem;color:var(--gray);}
-
-        /* TOAST */
         .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark-2);color:white;padding:10px 20px;border-radius:20px;font-size:0.82rem;font-weight:700;z-index:99999;display:none;animation:fadeInUp 0.3s ease;}
         @keyframes fadeInUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-        /* SALES MODAL */
         .sales-modal{max-width:680px;}
         .sales-day-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.82rem;}
         .sales-day-row:last-child{border:none;}
@@ -150,7 +130,6 @@
         .sales-day-bar-wrap{flex:1;background:var(--bg-2);border-radius:20px;height:10px;overflow:hidden;}
         .sales-day-bar{height:100%;background:linear-gradient(90deg,#f97316,#ea580c);border-radius:20px;transition:width 0.5s ease;}
         .sales-day-val{width:80px;text-align:right;font-weight:800;color:var(--dark);}
-        .sales-day-orders{width:60px;text-align:right;font-size:0.72rem;color:var(--gray);}
         .order-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:var(--bg);margin-bottom:6px;font-size:0.8rem;}
         .order-row-left{display:flex;flex-direction:column;gap:2px;}
         .order-num{font-weight:800;color:var(--dark);}
@@ -159,8 +138,6 @@
         .sales-section-title{font-size:0.72rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px;}
         .chart-wrap{position:relative;height:180px;margin-bottom:4px;}
         .no-orders{text-align:center;padding:20px;color:var(--gray-light);font-size:0.82rem;}
-
-        /* CHARTS DASHBOARD */
         .chart-card{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);}
         .chart-title{font-weight:800;font-size:0.95rem;color:var(--dark);margin-bottom:2px;}
         .chart-sub{font-size:0.72rem;color:var(--gray);margin-bottom:14px;}
@@ -170,11 +147,7 @@
         .risk-row-left{display:flex;flex-direction:column;gap:2px;}
         .risk-name{font-weight:700;}
         .risk-meta{font-size:0.7rem;color:var(--gray);}
-        @media(max-width:700px){
-            .chart-row-2,.chart-row-3{grid-template-columns:1fr!important;}
-        }
-
-        /* FOLLOWUP & LEAD */
+        @media(max-width:700px){.chart-row-2,.chart-row-3{grid-template-columns:1fr!important;}}
         .fu-filter-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:0.75rem;font-weight:700;background:white;color:var(--gray);cursor:pointer;font-family:var(--font);transition:all 0.2s;}
         .fu-filter-btn.active,.fu-filter-btn:hover{background:var(--primary);color:white;border-color:var(--primary);}
         .fu-card{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);}
@@ -200,7 +173,6 @@
         .ls-trial{background:#faf5ff;color:#6d28d9;}
         .ls-closed{background:var(--success-light);color:var(--success-dark);}
         .ls-lost{background:var(--danger-light);color:var(--danger-dark);}
-
         @media(max-width:600px){
             .tab-btn{padding:12px 12px;font-size:0.75rem;}
             .stats-grid{grid-template-columns:1fr 1fr;}
@@ -243,7 +215,67 @@
         <button class="tab-btn" onclick="switchTab('leads',this)">🎯 Lead</button>
     </div>
 
+    <!-- TAB: DASHBOARD -->
+    <div class="tab-content active" id="tab-dashboard">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
+            <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
+            <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
+            <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
+            <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
+            <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
+        </div>
+        <div class="client-grid" id="clientGrid"></div>
+    </div>
 
+    <!-- TAB: CHARTS DASHBOARD -->
+    <div class="tab-content" id="tab-charts">
+        <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
+            <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
+            <div class="stat-card"><div class="stat-label">Client Aktif</div><div class="stat-val green" id="kpi-aktif">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dari jumlah client</div></div>
+            <div class="stat-card"><div class="stat-label">Churn Rate</div><div class="stat-val red" id="kpi-churn">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">% client expired</div></div>
+            <div class="stat-card"><div class="stat-label">Conversion</div><div class="stat-val orange" id="kpi-conversion">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Lead → Client</div></div>
+            <div class="stat-card"><div class="stat-label">Jumlah Lead</div><div class="stat-val" id="kpi-leads">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dalam CRM</div></div>
+            <div class="stat-card"><div class="stat-label">At Risk</div><div class="stat-val orange" id="kpi-risk">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Luput dalam 7 hari</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-2">
+            <div class="chart-card">
+                <div class="chart-title">🎯 Sales Funnel</div>
+                <div class="chart-sub">Peringkat lead sekarang</div>
+                <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center"><canvas id="funnelChart"></canvas></div>
+                <div id="funnelLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">💚 Kesihatan Client</div>
+                <div class="chart-sub">Status semua client</div>
+                <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center"><canvas id="healthChart"></canvas></div>
+                <div id="healthLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-3">
+            <div class="chart-card">
+                <div class="chart-title">💰 Top Client — Jualan 7 Hari</div>
+                <div class="chart-sub">Client dengan jualan tertinggi</div>
+                <div style="position:relative;height:220px"><canvas id="revenueChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">📦 Jenis Pakej</div>
+                <div class="chart-sub">Standard vs Setup</div>
+                <div style="position:relative;height:180px;display:flex;align-items:center;justify-content:center"><canvas id="pakejChart"></canvas></div>
+                <div id="pakejLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+            </div>
+        </div>
+        <div class="chart-card" style="margin-bottom:16px">
+            <div class="chart-title">🏃 Aktiviti Client — Guna vs Tidak</div>
+            <div class="chart-sub">Berdasarkan jualan 7 hari lepas</div>
+            <div style="position:relative;height:200px"><canvas id="activityChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">⚠️ Client Berisiko</div>
+            <div class="chart-sub">Langganan hampir luput atau tidak aktif</div>
+            <div id="atRiskTable" style="margin-top:12px"></div>
+        </div>
+    </div>
 
     <!-- TAB: REGISTRY -->
     <div class="tab-content" id="tab-registry">
@@ -254,19 +286,7 @@
             </div>
             <div style="overflow-x:auto">
                 <table id="registryTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nama Kedai</th>
-                            <th>Slug</th>
-                            <th>Status</th>
-                            <th>Tarikh Luput</th>
-                            <th>Baki Hari</th>
-                            <th>Renew Type</th>
-                            <th>WhatsApp</th>
-                            <th>Tindakan</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>#</th><th>Nama Kedai</th><th>Slug</th><th>Status</th><th>Tarikh Luput</th><th>Baki Hari</th><th>Renew Type</th><th>WhatsApp</th><th>Tindakan</th></tr></thead>
                     <tbody id="registryBody"></tbody>
                 </table>
             </div>
@@ -278,158 +298,73 @@
         <div style="background:white;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);max-width:600px;">
             <div style="font-weight:800;font-size:1rem;margin-bottom:20px">➕ Tambah Client Baru</div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Slug *</label>
-                    <input type="text" class="form-input" id="new-slug" placeholder="cth: nama-kedai">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nama Kedai *</label>
-                    <input type="text" class="form-input" id="new-shopName" placeholder="cth: Kedai Makan Ali">
-                </div>
+                <div class="form-group"><label class="form-label">Slug *</label><input type="text" class="form-input" id="new-slug" placeholder="cth: nama-kedai"></div>
+                <div class="form-group"><label class="form-label">Nama Kedai *</label><input type="text" class="form-input" id="new-shopName" placeholder="cth: Kedai Makan Ali"></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">GAS URL *</label>
-                <input type="text" class="form-input" id="new-gasUrl" placeholder="https://script.google.com/macros/s/...">
+            <div class="form-group"><label class="form-label">GAS URL *</label><input type="text" class="form-input" id="new-gasUrl" placeholder="https://script.google.com/macros/s/..."></div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Tarikh Luput</label><input type="date" class="form-input" id="new-expiryDate"></div>
+                <div class="form-group"><label class="form-label">Renew Type</label><select class="form-input" id="new-renewType"><option value="setup">Setup (RM80)</option><option value="standard">Standard (RM30)</option></select></div>
             </div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Tarikh Luput</label>
-                    <input type="date" class="form-input" id="new-expiryDate">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Renew Type</label>
-                    <select class="form-input" id="new-renewType">
-                        <option value="setup">Setup (RM80)</option>
-                        <option value="standard">Standard (RM30)</option>
-                    </select>
-                </div>
+                <div class="form-group"><label class="form-label">WhatsApp</label><input type="text" class="form-input" id="new-whatsapp" placeholder="wa.me/601xxxxxxxx"></div>
+                <div class="form-group"><label class="form-label">Google Sheet URL</label><input type="text" class="form-input" id="new-googleSheet" placeholder="https://docs.google.com/..."></div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">WhatsApp</label>
-                    <input type="text" class="form-input" id="new-whatsapp" placeholder="wa.me/601xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Google Sheet URL</label>
-                    <input type="text" class="form-input" id="new-googleSheet" placeholder="https://docs.google.com/...">
-                </div>
-            </div>
-            <button onclick="tambahClient()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;font-family:var(--font);margin-top:8px">
-                ➕ Tambah Client
-            </button>
+            <button onclick="tambahClient()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;font-family:var(--font);margin-top:8px">➕ Tambah Client</button>
         </div>
     </div>
 
-    <!-- Client Cards Section (collapsible) -->
-    <div class="chart-card" style="margin-top:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleClientSection()">
-            <div>
-                <div class="chart-title">🏪 Senarai Client</div>
-                <div class="chart-sub" id="clientSectionSub">Klik untuk lihat semua client</div>
+    <!-- TAB: FOLLOW UP -->
+    <div class="tab-content" id="tab-followup">
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+            <div style="font-weight:800;font-size:0.95rem;flex:1">💬 Follow Up Client</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onclick="setFollowupFilter('all')" class="fu-filter-btn active" id="ff-all">Semua</button>
+                <button onclick="setFollowupFilter('belum_bayar')" class="fu-filter-btn" id="ff-belum_bayar">🔴 Belum Bayar</button>
+                <button onclick="setFollowupFilter('dah_bayar')" class="fu-filter-btn" id="ff-dah_bayar">🟢 Dah Bayar</button>
             </div>
-            <button id="clientToggleBtn" style="background:var(--primary);color:white;border:none;border-radius:10px;padding:8px 18px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:var(--font);white-space:nowrap">▼ Lihat Client</button>
         </div>
-        <div id="clientSection" style="display:none;margin-top:16px">
-            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:16px">
-                <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
-                <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
-                <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
-                <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
-                <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
-                <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
-            </div>
-            <div class="client-grid" id="clientGrid"></div>
-        </div>
+        <div id="fuPendingAlert" style="display:none;background:var(--warning-light);border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:0.82rem;font-weight:700;color:#78350f"></div>
+        <div id="followupGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
     </div>
-</div>
 
-<!-- TAB: FOLLOW UP -->
-<div class="tab-content" id="tab-followup">
-    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-        <div style="font-weight:800;font-size:0.95rem;flex:1">💬 Follow Up Client</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button onclick="setFollowupFilter('all')" class="fu-filter-btn active" id="ff-all">Semua</button>
-            <button onclick="setFollowupFilter('belum_bayar')" class="fu-filter-btn" id="ff-belum_bayar">🔴 Belum Bayar</button>
-            <button onclick="setFollowupFilter('dah_bayar')" class="fu-filter-btn" id="ff-dah_bayar">🟢 Dah Bayar</button>
+    <!-- TAB: LEADS -->
+    <div class="tab-content" id="tab-leads">
+        <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+            <div style="font-weight:800;font-size:0.95rem;flex:1">🎯 Tracking Lead</div>
+            <button onclick="openAddLead()" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;padding:8px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font)">➕ Tambah Lead</button>
         </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button onclick="setLeadFilter('all')" class="fu-filter-btn active" id="lf-all">Semua</button>
+            <button onclick="setLeadFilter('new')" class="fu-filter-btn" id="lf-new">🆕 Baru</button>
+            <button onclick="setLeadFilter('followup')" class="fu-filter-btn" id="lf-followup">📞 Follow Up</button>
+            <button onclick="setLeadFilter('trial')" class="fu-filter-btn" id="lf-trial">🎁 Trial</button>
+            <button onclick="setLeadFilter('closed')" class="fu-filter-btn" id="lf-closed">✅ Closed</button>
+            <button onclick="setLeadFilter('lost')" class="fu-filter-btn" id="lf-lost">❌ Lost</button>
+        </div>
+        <div id="leadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
     </div>
-    <div id="fuPendingAlert" style="display:none;background:var(--warning-light);border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:0.82rem;font-weight:700;color:#78350f"></div>
-    <div id="followupGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
-</div>
 
-<!-- TAB: LEADS -->
-<div class="tab-content" id="tab-leads">
-    <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-        <div style="font-weight:800;font-size:0.95rem;flex:1">🎯 Tracking Lead</div>
-        <button onclick="openAddLead()" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;padding:8px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font)">➕ Tambah Lead</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button onclick="setLeadFilter('all')" class="fu-filter-btn active" id="lf-all">Semua</button>
-        <button onclick="setLeadFilter('new')" class="fu-filter-btn" id="lf-new">🆕 Baru</button>
-        <button onclick="setLeadFilter('followup')" class="fu-filter-btn" id="lf-followup">📞 Follow Up</button>
-        <button onclick="setLeadFilter('trial')" class="fu-filter-btn" id="lf-trial">🎁 Trial</button>
-        <button onclick="setLeadFilter('closed')" class="fu-filter-btn" id="lf-closed">✅ Closed</button>
-        <button onclick="setLeadFilter('lost')" class="fu-filter-btn" id="lf-lost">❌ Lost</button>
-    </div>
-    <div id="leadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
-</div>
+</div><!-- end adminApp -->
 
 <!-- ADD/EDIT LEAD MODAL -->
 <div class="modal-overlay" id="leadModal">
     <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title" id="leadModalTitle">🎯 Tambah Lead</div>
-            <button class="modal-close" onclick="closeLeadModal()">✕</button>
-        </div>
+        <div class="modal-header"><div class="modal-title" id="leadModalTitle">🎯 Tambah Lead</div><button class="modal-close" onclick="closeLeadModal()">✕</button></div>
         <div class="modal-body">
             <input type="hidden" id="lead-id">
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Nama *</label>
-                    <input type="text" class="form-input" id="lead-nama" placeholder="Nama prospek">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nama Kedai</label>
-                    <input type="text" class="form-input" id="lead-kedai" placeholder="Nama kedai">
-                </div>
+                <div class="form-group"><label class="form-label">Nama *</label><input type="text" class="form-input" id="lead-nama" placeholder="Nama prospek"></div>
+                <div class="form-group"><label class="form-label">Nama Kedai</label><input type="text" class="form-input" id="lead-kedai" placeholder="Nama kedai"></div>
             </div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">WhatsApp *</label>
-                    <input type="text" class="form-input" id="lead-wa" placeholder="601xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-input" id="lead-status">
-                        <option value="new">🆕 Baru</option>
-                        <option value="followup">📞 Follow Up</option>
-                        <option value="trial">🎁 Trial</option>
-                        <option value="closed">✅ Closed</option>
-                        <option value="lost">❌ Lost</option>
-                    </select>
-                </div>
+                <div class="form-group"><label class="form-label">WhatsApp *</label><input type="text" class="form-input" id="lead-wa" placeholder="601xxxxxxxx"></div>
+                <div class="form-group"><label class="form-label">Status</label><select class="form-input" id="lead-status"><option value="new">🆕 Baru</option><option value="followup">📞 Follow Up</option><option value="trial">🎁 Trial</option><option value="closed">✅ Closed</option><option value="lost">❌ Lost</option></select></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Sumber Lead</label>
-                <select class="form-input" id="lead-sumber">
-                    <option value="">Pilih sumber</option>
-                    <option value="Facebook">Facebook</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="TikTok">TikTok</option>
-                    <option value="Rujukan">Rujukan</option>
-                    <option value="Threads">Threads</option>
-                    <option value="Lain-lain">Lain-lain</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Nota</label>
-                <textarea class="form-input" id="lead-nota" rows="3" placeholder="Nota tentang lead ini..." style="resize:vertical"></textarea>
-            </div>
+            <div class="form-group"><label class="form-label">Sumber Lead</label><select class="form-input" id="lead-sumber"><option value="">Pilih sumber</option><option value="Facebook">Facebook</option><option value="Instagram">Instagram</option><option value="TikTok">TikTok</option><option value="Rujukan">Rujukan</option><option value="Threads">Threads</option><option value="Lain-lain">Lain-lain</option></select></div>
+            <div class="form-group"><label class="form-label">Nota</label><textarea class="form-input" id="lead-nota" rows="3" placeholder="Nota tentang lead ini..." style="resize:vertical"></textarea></div>
         </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeLeadModal()">Batal</button>
-            <button class="btn-save" onclick="saveLead()">💾 Simpan</button>
-        </div>
+        <div class="modal-footer"><button class="btn-cancel" onclick="closeLeadModal()">Batal</button><button class="btn-save" onclick="saveLead()">💾 Simpan</button></div>
     </div>
 </div>
 
@@ -437,10 +372,7 @@
 <div class="modal-overlay" id="mesejModal">
     <div class="modal" style="max-width:540px">
         <div class="modal-header">
-            <div>
-                <div class="modal-title" id="mesejModalTitle">📩 Hantar Mesej</div>
-                <div style="font-size:0.72rem;color:var(--gray);margin-top:2px" id="mesejModalSub"></div>
-            </div>
+            <div><div class="modal-title" id="mesejModalTitle">📩 Hantar Mesej</div><div style="font-size:0.72rem;color:var(--gray);margin-top:2px" id="mesejModalSub"></div></div>
             <button class="modal-close" onclick="closeMesejModal()">✕</button>
         </div>
         <div class="modal-body">
@@ -458,149 +390,26 @@
     </div>
 </div>
 
-<!-- TAB: DASHBOARD -->
-<div class="tab-content active" id="tab-dashboard">
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
-        <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
-        <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
-        <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
-        <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
-        <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
-    </div>
-    <div class="client-grid" id="clientGrid"></div>
-</div>
-
-<!-- TAB: CHARTS DASHBOARD -->
-<div class="tab-content" id="tab-charts">
-    <!-- Row 1: KPI Cards -->
-    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
-        <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
-        <div class="stat-card"><div class="stat-label">Client Aktif</div><div class="stat-val green" id="kpi-aktif">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dari jumlah client</div></div>
-        <div class="stat-card"><div class="stat-label">Churn Rate</div><div class="stat-val red" id="kpi-churn">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">% client expired</div></div>
-        <div class="stat-card"><div class="stat-label">Conversion</div><div class="stat-val orange" id="kpi-conversion">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Lead → Client</div></div>
-        <div class="stat-card"><div class="stat-label">Jumlah Lead</div><div class="stat-val" id="kpi-leads">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dalam CRM</div></div>
-        <div class="stat-card"><div class="stat-label">At Risk</div><div class="stat-val orange" id="kpi-risk">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Luput dalam 7 hari</div></div>
-    </div>
-
-    <!-- Row 2: Sales Funnel + Client Health -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-2">
-        <!-- Sales Funnel Donut -->
-        <div class="chart-card">
-            <div class="chart-title">🎯 Sales Funnel</div>
-            <div class="chart-sub">Peringkat lead sekarang</div>
-            <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
-                <canvas id="funnelChart"></canvas>
-            </div>
-            <div id="funnelLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
-        </div>
-
-        <!-- Client Health Donut -->
-        <div class="chart-card">
-            <div class="chart-title">💚 Kesihatan Client</div>
-            <div class="chart-sub">Status semua client</div>
-            <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
-                <canvas id="healthChart"></canvas>
-            </div>
-            <div id="healthLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
-        </div>
-    </div>
-
-    <!-- Row 3: Revenue Bar + Client Type Pie -->
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-3">
-        <!-- Top Client Revenue Bar -->
-        <div class="chart-card">
-            <div class="chart-title">💰 Top Client — Jualan 7 Hari</div>
-            <div class="chart-sub">Client dengan jualan tertinggi</div>
-            <div style="position:relative;height:220px">
-                <canvas id="revenueChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Client Type Pie -->
-        <div class="chart-card">
-            <div class="chart-title">📦 Jenis Pakej</div>
-            <div class="chart-sub">Standard vs Setup</div>
-            <div style="position:relative;height:180px;display:flex;align-items:center;justify-content:center">
-                <canvas id="pakejChart"></canvas>
-            </div>
-            <div id="pakejLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
-        </div>
-    </div>
-
-    <!-- Row 4: Client Activity Bar -->
-    <div class="chart-card" style="margin-bottom:16px">
-        <div class="chart-title">🏃 Aktiviti Client — Guna vs Tidak</div>
-        <div class="chart-sub">Berdasarkan jualan 7 hari lepas</div>
-        <div style="position:relative;height:200px">
-            <canvas id="activityChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Row 5: At Risk Table -->
-    <div class="chart-card">
-        <div class="chart-title">⚠️ Client Berisiko</div>
-        <div class="chart-sub">Langganan hampir luput atau tidak aktif</div>
-        <div id="atRiskTable" style="margin-top:12px"></div>
-    </div>
-</div>
-
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
     <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">✏️ Edit Client</div>
-            <button class="modal-close" onclick="closeModal()">✕</button>
-        </div>
+        <div class="modal-header"><div class="modal-title">✏️ Edit Client</div><button class="modal-close" onclick="closeModal()">✕</button></div>
         <div class="modal-body">
             <input type="hidden" id="edit-slug-orig">
-            <div class="form-group">
-                <label class="form-label">Slug</label>
-                <input type="text" class="form-input" id="edit-slug" readonly style="background:var(--bg);color:var(--gray)">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Nama Kedai</label>
-                <input type="text" class="form-input" id="edit-shopName">
-            </div>
-            <div class="form-group">
-                <label class="form-label">GAS URL</label>
-                <input type="text" class="form-input" id="edit-gasUrl">
+            <div class="form-group"><label class="form-label">Slug</label><input type="text" class="form-input" id="edit-slug" readonly style="background:var(--bg);color:var(--gray)"></div>
+            <div class="form-group"><label class="form-label">Nama Kedai</label><input type="text" class="form-input" id="edit-shopName"></div>
+            <div class="form-group"><label class="form-label">GAS URL</label><input type="text" class="form-input" id="edit-gasUrl"></div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Status</label><select class="form-input" id="edit-status"><option value="active">✅ Active</option><option value="expired">⏰ Expired</option></select></div>
+                <div class="form-group"><label class="form-label">Tarikh Luput</label><input type="date" class="form-input" id="edit-expiryDate"></div>
             </div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select class="form-input" id="edit-status">
-                        <option value="active">✅ Active</option>
-                        <option value="expired">⏰ Expired</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tarikh Luput</label>
-                    <input type="date" class="form-input" id="edit-expiryDate">
-                </div>
+                <div class="form-group"><label class="form-label">Renew Type</label><select class="form-input" id="edit-renewType"><option value="standard">Standard (RM30)</option><option value="setup">Setup (RM80)</option></select></div>
+                <div class="form-group"><label class="form-label">WhatsApp</label><input type="text" class="form-input" id="edit-whatsapp"></div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Renew Type</label>
-                    <select class="form-input" id="edit-renewType">
-                        <option value="standard">Standard (RM30)</option>
-                        <option value="setup">Setup (RM80)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">WhatsApp</label>
-                    <input type="text" class="form-input" id="edit-whatsapp">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Google Sheet URL</label>
-                <input type="text" class="form-input" id="edit-googleSheet">
-            </div>
+            <div class="form-group"><label class="form-label">Google Sheet URL</label><input type="text" class="form-input" id="edit-googleSheet"></div>
         </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">Batal</button>
-            <button class="btn-save" onclick="saveEdit()">💾 Simpan</button>
-        </div>
+        <div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Batal</button><button class="btn-save" onclick="saveEdit()">💾 Simpan</button></div>
     </div>
 </div>
 
@@ -608,10 +417,7 @@
 <div class="modal-overlay" id="salesModal">
     <div class="modal sales-modal">
         <div class="modal-header">
-            <div>
-                <div class="modal-title" id="salesModalTitle">📊 Jualan Client</div>
-                <div style="font-size:0.72rem;color:var(--gray);margin-top:2px" id="salesModalSub">7 hari lepas</div>
-            </div>
+            <div><div class="modal-title" id="salesModalTitle">📊 Jualan Client</div><div style="font-size:0.72rem;color:var(--gray);margin-top:2px" id="salesModalSub">7 hari lepas</div></div>
             <button class="modal-close" onclick="closeSalesModal()">✕</button>
         </div>
         <div class="modal-body" id="salesModalBody">
@@ -668,7 +474,6 @@ function doLogin(){
         setTimeout(()=>err.style.display='none',3000);
     }
 }
-
 function showAdminApp(){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('adminApp').style.display='block';
@@ -695,49 +500,23 @@ function switchTab(id, btn){
     if(id==='charts') setTimeout(()=>renderChartsDashboard(), 50);
 }
 
-let clientSectionOpen = false;
-function toggleClientSection(){
-    clientSectionOpen = !clientSectionOpen;
-    const sec = document.getElementById('clientSection');
-    const btn = document.getElementById('clientToggleBtn');
-    const sub = document.getElementById('clientSectionSub');
-    if(clientSectionOpen){
-        sec.style.display = 'block';
-        btn.textContent = '▲ Sembunyikan';
-        btn.style.background = 'var(--gray)';
-        sub.textContent = allClients.length + ' client — klik untuk sembunyikan';
-        renderDashboard();
-    }else{
-        sec.style.display = 'none';
-        btn.textContent = '▼ Lihat Client';
-        btn.style.background = 'var(--primary)';
-        sub.textContent = 'Klik untuk lihat semua client';
-    }
-}
-
 // ============================================================
 // LOAD ALL DATA
 // ============================================================
 async function loadAllData(){
     showLoading('Mengambil senarai client...');
     try{
-        // Step 1: Fetch registry + CRM serentak
         const [reg, crmRes] = await Promise.all([
             gasCall(MASTER_URL, MASTER_KEY, 'listAll', {}),
             loadCRMData()
         ]);
         if(!reg.success) throw new Error(reg.error);
         allClients = (reg.clients || []).filter(c => c.slug !== 'demo');
-
-        // Step 2: Render terus tanpa tunggu jualan
         renderRegistry();
         renderDashboard();
         hideLoading();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
-
-        // Step 3: Load jualan dalam background (silent)
         loadSalesBackground();
-
     }catch(e){
         toast('❌ Gagal: ' + e.message, true);
         hideLoading();
@@ -745,18 +524,13 @@ async function loadAllData(){
 }
 
 async function loadSalesBackground(){
-    // Show subtle indicator
     document.getElementById('lastUpdated').textContent = '⏳ Memuatkan jualan...';
     const results = [];
     for(let i=0;i<allClients.length;i+=4){
         const batch = allClients.slice(i,i+4);
         const bRes = await Promise.all(batch.map(c=>fetchSales(c)));
         results.push(...bRes);
-        // Update cards progressively as each batch completes
-        allClients = [
-            ...results,
-            ...allClients.slice(results.length)
-        ];
+        allClients = [...results, ...allClients.slice(results.length)];
         renderDashboard();
     }
     allClients = results;
@@ -764,7 +538,6 @@ async function loadSalesBackground(){
     document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 }
 
-// CRM data in memory
 let crmLeads = [];
 let crmFollowup = {};
 
@@ -776,14 +549,10 @@ async function loadCRMData(){
         ]);
         if(leadsRes.success) crmLeads = leadsRes.leads || [];
         if(fuRes.success)    crmFollowup = fuRes.followup || {};
-    }catch(e){
-        console.log('CRM load error:', e.message);
-    }
+    }catch(e){ console.log('CRM load error:', e.message); }
 }
 
-async function crmCall(action, data){
-    return gasCall(CRM_URL, CRM_KEY, action, data||{});
-}
+async function crmCall(action, data){ return gasCall(CRM_URL, CRM_KEY, action, data||{}); }
 
 async function gasCall(url, key, action, data){
     const res = await fetch(url,{
@@ -794,10 +563,14 @@ async function gasCall(url, key, action, data){
     return res.json();
 }
 
+// ============================================================
+// FETCH SALES + PIN
+// FIX 1: Client expired — tetap fetch PIN
+// ============================================================
 async function fetchSales(client){
     if(!client.gasUrl) return {...client,sales:null,adminPin:null};
 
-    // Client expired — hanya fetch PIN sahaja
+    // Client expired — hanya fetch PIN sahaja, skip sales data
     if(client.status==='expired'){
         try{
             const staffRes = await gasCall(client.gasUrl, CLIENT_KEY, 'getStaffList', {});
@@ -810,24 +583,20 @@ async function fetchSales(client){
         }catch(e){}
         return {...client, sales:null, adminPin:null};
     }
+
     try{
         const today=new Date();
         const start=new Date(today); start.setDate(today.getDate()-6);
         const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-
-        // Fetch weekly sales + staff list in parallel
         const [r, staffRes] = await Promise.all([
             gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:fmt(start),endDate:fmt(today)}),
             gasCall(client.gasUrl, CLIENT_KEY, 'getStaffList', {})
         ]);
-
-        // Get admin PIN
         let adminPin = null;
         if(staffRes.success && staffRes.staffList){
             const admin = staffRes.staffList.find(s=>s.role==='admin');
             if(admin) adminPin = admin.pin;
         }
-
         if(r.success){
             const byDate = r.byDate||{};
             const lastDate = Object.keys(byDate).filter(d=>byDate[d]>0).sort().reverse()[0]||null;
@@ -845,6 +614,7 @@ async function fetchSales(client){
 
 // ============================================================
 // RENDER DASHBOARD
+// FIX 2: Tambah butang 📊 Jualan dalam client card
 // ============================================================
 function renderDashboard(){
     const total   = allClients.length;
@@ -870,13 +640,11 @@ function renderDashboard(){
     document.getElementById('clientGrid').innerHTML = sorted.map(c=>{
         const isExp  = c.status==='expired';
         const isWarn = !isExp && c.daysLeft!==null && c.daysLeft<=7;
-
         const statusBadge = isExp
             ? '<span class="badge badge-expired">⏰ Expired</span>'
             : isWarn
                 ? '<span class="badge badge-warning">⚠️ '+c.daysLeft+' hari</span>'
                 : '<span class="badge badge-active">✅ Aktif</span>';
-
         let expiryHtml='<div class="cc-expiry ce-none">📅 Tiada tarikh luput</div>';
         if(c.expiryDate){
             expiryHtml = isExp
@@ -885,7 +653,6 @@ function renderDashboard(){
                     ? '<div class="cc-expiry ce-warn">⚠️ Luput dalam '+c.daysLeft+' hari ('+c.expiryDate+')</div>'
                     : '<div class="cc-expiry ce-ok">✅ Aktif sehingga '+c.expiryDate+'</div>';
         }
-
         let statsHtml='', actHtml='';
         if(c.sales){
             const a=c.sales;
@@ -904,13 +671,13 @@ function renderDashboard(){
             statsHtml='<div style="text-align:center;padding:10px;background:var(--bg);border-radius:8px;font-size:0.75rem;color:var(--gray);margin-bottom:8px">⚠️ Gagal muatkan data</div>';
             actHtml='<div class="activity-row"><div class="dot dot-x"></div><span>Data tidak tersedia</span></div>';
         }
-
         return '<div class="client-card">'
             +'<div class="cc-header"><div><div class="cc-name">🍽️ '+esc(c.shopName||c.slug)+'</div><div class="cc-slug">'+esc(c.slug)+'</div></div>'+statusBadge+'</div>'
             +(c.adminPin?'<div style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:8px;font-size:0.78rem;font-weight:700;margin-bottom:8px;border:1px solid #e2e8f0">'+esc(c.adminPin)+'</div>':'')
             +expiryHtml+statsHtml+actHtml
             +'<div class="cc-footer">'
-            +'<a href="https://poskedai.store/?kedai='+esc(c.slug)+'" target="_blank" class="btn-link">🔗 Buka App</a>'
+            +'<a href="https://poskedai.store/?kedai='+esc(c.slug)+'" target="_blank" class="btn-link">🔗 App</a>'
+            +'<button onclick="openSales(\''+esc(c.slug)+'\')" style="flex:1;padding:6px;background:var(--success-light);border:1.5px solid #86efac;border-radius:8px;font-size:0.7rem;font-weight:700;color:var(--success-dark);cursor:pointer;font-family:var(--font)">📊 Jualan</button>'
             +'<button onclick="openEdit(\''+esc(c.slug)+'\')" class="btn-link primary-btn" style="border:none;cursor:pointer">✏️ Edit</button>'
             +'</div></div>';
     }).join('');
@@ -923,15 +690,12 @@ function renderRegistry(filter=''){
     const clients = filter
         ? allClients.filter(c=>(c.shopName||'').toLowerCase().includes(filter.toLowerCase())||(c.slug||'').toLowerCase().includes(filter.toLowerCase()))
         : allClients;
-
     document.getElementById('registryBody').innerHTML = clients.map((c,i)=>{
         const isExp  = c.status==='expired';
         const isWarn = !isExp && c.daysLeft!==null && c.daysLeft<=7;
-        const statusBadge = isExp
-            ? '<span class="badge badge-expired">⏰ Expired</span>'
-            : isWarn
-                ? '<span class="badge badge-warning">⚠️ '+c.daysLeft+' hari</span>'
-                : '<span class="badge badge-active">✅ Aktif</span>';
+        const statusBadge = isExp ? '<span class="badge badge-expired">⏰ Expired</span>'
+            : isWarn ? '<span class="badge badge-warning">⚠️ '+c.daysLeft+' hari</span>'
+            : '<span class="badge badge-active">✅ Aktif</span>';
         const renewBadge = c.renewType==='setup'
             ? '<span class="badge badge-setup">RM80</span>'
             : '<span class="badge badge-standard">RM30</span>';
@@ -947,16 +711,11 @@ function renderRegistry(filter=''){
             +'<td style="font-size:0.78rem">'+(c.daysLeft!==null?(isExp?'<span style="color:var(--danger)">Luput</span>':c.daysLeft+' hari'):'-')+'</td>'
             +'<td>'+renewBadge+'</td>'
             +'<td>'+waLink+'</td>'
-            +'<td><div style="display:flex;gap:6px">'
-            +'<button class="btn-edit" onclick="openEdit(\''+esc(c.slug)+'\')">✏️ Edit</button>'
-            +'</div></td>'
+            +'<td><div style="display:flex;gap:6px"><button class="btn-edit" onclick="openEdit(\''+esc(c.slug)+'\')">✏️ Edit</button></div></td>'
             +'</tr>';
     }).join('');
 }
-
-function filterTable(val){
-    renderRegistry(val);
-}
+function filterTable(val){ renderRegistry(val); }
 
 // ============================================================
 // EDIT MODAL
@@ -975,10 +734,7 @@ function openEdit(slug){
     document.getElementById('edit-googleSheet').value= c.googleSheet||'';
     document.getElementById('editModal').classList.add('show');
 }
-
-function closeModal(){
-    document.getElementById('editModal').classList.remove('show');
-}
+function closeModal(){ document.getElementById('editModal').classList.remove('show'); }
 
 async function saveEdit(){
     const slug = document.getElementById('edit-slug-orig').value;
@@ -996,21 +752,15 @@ async function saveEdit(){
     try{
         const r = await gasCall(MASTER_URL, MASTER_KEY, 'update', data);
         if(r.success){
-            // Update local
             const idx = allClients.findIndex(c=>c.slug===slug);
             if(idx>=0) allClients[idx] = {...allClients[idx],...data};
             closeModal();
             renderDashboard();
             renderRegistry();
             toast('✅ Berjaya disimpan!');
-        }else{
-            toast('❌ '+r.error, true);
-        }
-    }catch(e){
-        toast('❌ Gagal: '+e.message, true);
-    }finally{
-        hideLoading();
-    }
+        }else{ toast('❌ '+r.error, true); }
+    }catch(e){ toast('❌ Gagal: '+e.message, true); }
+    finally{ hideLoading(); }
 }
 
 // ============================================================
@@ -1024,26 +774,18 @@ async function tambahClient(){
     const renewType = document.getElementById('new-renewType').value;
     const whatsapp  = document.getElementById('new-whatsapp').value.trim();
     const googleSheet=document.getElementById('new-googleSheet').value.trim();
-
     if(!slug||!shopName||!gasUrl){toast('❌ Slug, nama kedai & GAS URL diperlukan!',true);return;}
-
     showLoading('Mendaftarkan client baru...');
     try{
         const r = await gasCall(MASTER_URL, MASTER_KEY, 'addClient', {slug,shopName,gasUrl,expiryDate,renewType,whatsapp,googleSheet});
         if(r.success){
             toast('✅ '+shopName+' berjaya didaftarkan!');
-            // Clear form
             ['new-slug','new-shopName','new-gasUrl','new-expiryDate','new-whatsapp','new-googleSheet'].forEach(id=>document.getElementById(id).value='');
             document.getElementById('new-renewType').value='setup';
             loadAllData();
-        }else{
-            toast('❌ '+r.error,true);
-        }
-    }catch(e){
-        toast('❌ '+e.message,true);
-    }finally{
-        hideLoading();
-    }
+        }else{ toast('❌ '+r.error,true); }
+    }catch(e){ toast('❌ '+e.message,true); }
+    finally{ hideLoading(); }
 }
 
 // ============================================================
@@ -1054,30 +796,22 @@ let salesChart = null;
 async function openSales(slug){
     const client = allClients.find(c=>c.slug===slug);
     if(!client) return;
-
     document.getElementById('salesModalTitle').textContent = '📊 ' + (client.shopName||slug);
     document.getElementById('salesModalSub').textContent = '7 hari lepas · ' + slug;
     document.getElementById('salesModalBody').innerHTML = '<div style="text-align:center;padding:30px"><div class="spinner" style="margin:0 auto 12px"></div><div style="font-size:0.8rem;color:var(--gray)">Memuatkan data jualan...</div></div>';
     document.getElementById('salesModal').classList.add('show');
-
     if(!client.gasUrl || client.status==='expired'){
         document.getElementById('salesModalBody').innerHTML = '<div class="no-orders">⏰ Client expired — data tidak tersedia</div>';
         return;
     }
-
     try{
         const today = new Date();
         const start = new Date(today); start.setDate(today.getDate()-6);
         const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        const startStr = fmt(start);
-        const endStr   = fmt(today);
-
-        // Fetch weekly + today orders in parallel
         const [weekly, daily] = await Promise.all([
-            gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:startStr, endDate:endStr}),
-            gasCall(client.gasUrl, CLIENT_KEY, 'getOrders', {date:endStr})
+            gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:fmt(start), endDate:fmt(today)}),
+            gasCall(client.gasUrl, CLIENT_KEY, 'getOrders', {date:fmt(today)})
         ]);
-
         renderSalesModal(client, weekly, daily);
     }catch(e){
         document.getElementById('salesModalBody').innerHTML = '<div class="no-orders">❌ Gagal muatkan: '+esc(e.message)+'</div>';
@@ -1089,115 +823,70 @@ function renderSalesModal(client, weekly, daily){
         document.getElementById('salesModalBody').innerHTML = '<div class="no-orders">❌ ' + esc(weekly.error||'Gagal') + '</div>';
         return;
     }
-
     const byDate  = weekly.byDate || {};
     const dates   = Object.keys(byDate).sort();
     const values  = dates.map(d => byDate[d] || 0);
     const maxVal  = Math.max(...values, 1);
     const days    = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
-
-    // Build date rows
     const dateRows = dates.map(d => {
-        const val   = byDate[d] || 0;
-        const pct   = Math.round((val/maxVal)*100);
+        const val = byDate[d] || 0;
+        const pct = Math.round((val/maxVal)*100);
         const dayName = days[new Date(d).getDay()];
-        const dateShort = d.substring(5); // MM-DD
         const isToday = d === dates[dates.length-1];
         return '<div class="sales-day-row">'
-            +'<div class="sales-day-label">'+(isToday?'<strong>Hari ini</strong>':dayName)+'<div style="font-size:0.62rem;color:var(--gray-light)">'+dateShort+'</div></div>'
+            +'<div class="sales-day-label">'+(isToday?'<strong>Hari ini</strong>':dayName)+'<div style="font-size:0.62rem;color:var(--gray-light)">'+d.substring(5)+'</div></div>'
             +'<div class="sales-day-bar-wrap"><div class="sales-day-bar" style="width:'+pct+'%"></div></div>'
             +'<div class="sales-day-val">RM'+val.toFixed(2)+'</div>'
             +'</div>';
     }).join('');
-
-    // Summary stats
     const totalRevenue = weekly.totalRevenue || 0;
     const totalOrders  = weekly.totalOrders  || 0;
     const avgPerDay    = (totalRevenue / 7).toFixed(2);
     const topItems     = (weekly.topItems||[]).slice(0,5);
-
-    // Today orders
     let ordersHtml = '<div class="no-orders">Tiada pesanan hari ini</div>';
     if(daily.success && daily.orders && daily.orders.length){
         const completed = daily.orders.filter(o=>o.status==='completed').slice(0,10);
         if(completed.length){
             ordersHtml = completed.map(o=>'<div class="order-row">'
-                +'<div class="order-row-left">'
-                +'<div class="order-num">Pesanan #'+o.orderNo+'</div>'
-                +'<div class="order-meta">🪑 Meja '+esc(o.tableNo||'-')+' · '+esc(o.time||'')+'</div>'
-                +'</div>'
+                +'<div class="order-row-left"><div class="order-num">Pesanan #'+o.orderNo+'</div>'
+                +'<div class="order-meta">🪑 Meja '+esc(o.tableNo||'-')+' · '+esc(o.time||'')+'</div></div>'
                 +'<div class="order-amount">RM'+parseFloat(o.total).toFixed(2)+'</div>'
                 +'</div>').join('');
         }
     }
-
-    // Top items
     let topHtml = '<div class="no-orders">Tiada data</div>';
     if(topItems.length){
         topHtml = topItems.map(item=>'<div class="order-row">'
-            +'<div class="order-row-left">'
-            +'<div class="order-num">'+esc(item.name)+'</div>'
-            +'<div class="order-meta">'+item.qty+' unit terjual</div>'
-            +'</div>'
+            +'<div class="order-row-left"><div class="order-num">'+esc(item.name)+'</div>'
+            +'<div class="order-meta">'+item.qty+' unit terjual</div></div>'
             +'<div class="order-amount">RM'+parseFloat(item.revenue||0).toFixed(2)+'</div>'
             +'</div>').join('');
     }
-
     document.getElementById('salesModalBody').innerHTML =
-        // Summary stats
         '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">'
         +'<div class="cc-stat"><div class="cc-stat-label">Jualan 7 Hari</div><div class="cc-stat-val" style="color:var(--success)">RM'+totalRevenue.toFixed(2)+'</div></div>'
         +'<div class="cc-stat"><div class="cc-stat-label">Pesanan</div><div class="cc-stat-val">'+totalOrders+'</div></div>'
         +'<div class="cc-stat"><div class="cc-stat-label">Avg/Hari</div><div class="cc-stat-val">RM'+avgPerDay+'</div></div>'
         +'</div>'
-        // Chart canvas
         +'<div class="sales-section-title">📈 Carta Jualan Harian</div>'
         +'<div class="chart-wrap"><canvas id="salesChartCanvas"></canvas></div>'
-        // Date breakdown
-        +'<div class="sales-section-title">📅 Jumlah Per Hari</div>'
-        +dateRows
-        // Top menu
-        +'<div class="sales-section-title">🍽️ Menu Paling Laris (7 Hari)</div>'
-        +topHtml
-        // Today orders
-        +'<div class="sales-section-title">🧾 Pesanan Hari Ini</div>'
-        +ordersHtml;
-
-    // Render chart
+        +'<div class="sales-section-title">📅 Jumlah Per Hari</div>'+dateRows
+        +'<div class="sales-section-title">🍽️ Menu Paling Laris (7 Hari)</div>'+topHtml
+        +'<div class="sales-section-title">🧾 Pesanan Hari Ini</div>'+ordersHtml;
     setTimeout(()=>{
         const ctx = document.getElementById('salesChartCanvas');
         if(!ctx) return;
         if(salesChart) salesChart.destroy();
         salesChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: dates.map(d=>{
-                    const day=days[new Date(d).getDay()];
-                    return day.substring(0,3)+' '+d.substring(8);
-                }),
-                datasets:[{
-                    label:'Jualan (RM)',
-                    data: values,
-                    backgroundColor:'rgba(249,115,22,0.2)',
-                    borderColor:'#f97316',
-                    borderWidth:2,
-                    borderRadius:8,
-                    borderSkipped:false,
-                }]
+            type:'bar',
+            data:{
+                labels: dates.map(d=>days[new Date(d).getDay()].substring(0,3)+' '+d.substring(8)),
+                datasets:[{label:'Jualan (RM)',data:values,backgroundColor:'rgba(249,115,22,0.2)',borderColor:'#f97316',borderWidth:2,borderRadius:8,borderSkipped:false}]
             },
-            options:{
-                responsive:true,
-                maintainAspectRatio:false,
-                plugins:{legend:{display:false}},
-                scales:{
-                    y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},
-                    x:{grid:{display:false},ticks:{font:{size:10}}}
-                }
-            }
+            options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
         });
     }, 100);
 }
-
 function closeSalesModal(){
     document.getElementById('salesModal').classList.remove('show');
     if(salesChart){ salesChart.destroy(); salesChart=null; }
@@ -1207,11 +896,7 @@ function closeSalesModal(){
 // CHARTS DASHBOARD
 // ============================================================
 let chartInstances = {};
-
-function destroyChart(id){
-    if(chartInstances[id]){ chartInstances[id].destroy(); delete chartInstances[id]; }
-}
-
+function destroyChart(id){ if(chartInstances[id]){ chartInstances[id].destroy(); delete chartInstances[id]; } }
 function makeChart(id, type, data, options){
     destroyChart(id);
     const ctx = document.getElementById(id);
@@ -1228,17 +913,12 @@ function renderChartsDashboard(){
     const atRisk   = clients.filter(c=>c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=7).length;
     const standard = clients.filter(c=>c.renewType==='standard').length;
     const setup    = clients.filter(c=>c.renewType==='setup').length;
-
-    // MRR calculation
-    const mrr = clients.filter(c=>c.status==='active').length * 30;
-
-    // Conversion rate
+    const mrr      = clients.filter(c=>c.status==='active').length * 30;
     const closedLeads = leads.filter(l=>l.status==='closed').length;
     const totalLeads  = leads.length;
     const conversion  = totalLeads>0 ? Math.round((closedLeads/totalLeads)*100) : 0;
     const churnRate   = total>0 ? Math.round((expired/total)*100) : 0;
 
-    // Update KPI cards
     document.getElementById('kpi-mrr').textContent        = 'RM'+mrr;
     document.getElementById('kpi-aktif').textContent      = aktif+'/'+total;
     document.getElementById('kpi-churn').textContent      = churnRate+'%';
@@ -1246,108 +926,29 @@ function renderChartsDashboard(){
     document.getElementById('kpi-leads').textContent      = totalLeads;
     document.getElementById('kpi-risk').textContent       = atRisk;
 
-    // ── CHART 1: Sales Funnel (Donut) ─────────────────────
-    const funnelData = {
-        new:      leads.filter(l=>l.status==='new').length,
-        followup: leads.filter(l=>l.status==='followup').length,
-        trial:    leads.filter(l=>l.status==='trial').length,
-        closed:   leads.filter(l=>l.status==='closed').length,
-        lost:     leads.filter(l=>l.status==='lost').length,
-    };
+    const funnelData = {new:leads.filter(l=>l.status==='new').length,followup:leads.filter(l=>l.status==='followup').length,trial:leads.filter(l=>l.status==='trial').length,closed:leads.filter(l=>l.status==='closed').length,lost:leads.filter(l=>l.status==='lost').length};
     const funnelColors = ['#3b82f6','#f59e0b','#8b5cf6','#16a34a','#ef4444'];
     const funnelLabels = ['🆕 Baru','📞 Follow Up','🎁 Trial','✅ Closed','❌ Lost'];
-    makeChart('funnelChart','doughnut',{
-        labels: funnelLabels,
-        datasets:[{data:Object.values(funnelData),backgroundColor:funnelColors,borderWidth:2,borderColor:'white'}]
-    },{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+' lead';}}}}
-    });
-    document.getElementById('funnelLegend').innerHTML = funnelLabels.map((l,i)=>
-        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+funnelColors[i]+'"></div>'+l+' ('+Object.values(funnelData)[i]+')</div>'
-    ).join('');
+    makeChart('funnelChart','doughnut',{labels:funnelLabels,datasets:[{data:Object.values(funnelData),backgroundColor:funnelColors,borderWidth:2,borderColor:'white'}]},{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+' lead';}}}}});
+    document.getElementById('funnelLegend').innerHTML = funnelLabels.map((l,i)=>'<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+funnelColors[i]+'"></div>'+l+' ('+Object.values(funnelData)[i]+')</div>').join('');
 
-    // ── CHART 2: Client Health (Donut) ───────────────────
     const notActive = clients.filter(c=>c.status==='active'&&c.sales&&c.sales.orders===0).length;
     const active7   = clients.filter(c=>c.status==='active'&&c.sales&&c.sales.orders>0).length;
     const healthColors = ['#16a34a','#f59e0b','#ef4444','#94a3b8'];
     const healthLabels = ['🟢 Aktif (ada jualan)','🟡 Berisiko (luput 7 hari)','🔴 Expired','⚪ Tak aktif'];
     const healthData   = [active7, atRisk, expired, notActive];
-    makeChart('healthChart','doughnut',{
-        labels:healthLabels,
-        datasets:[{data:healthData,backgroundColor:healthColors,borderWidth:2,borderColor:'white'}]
-    },{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}}
-    });
-    document.getElementById('healthLegend').innerHTML = healthLabels.map((l,i)=>
-        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+healthColors[i]+'"></div>'+l+' ('+healthData[i]+')</div>'
-    ).join('');
+    makeChart('healthChart','doughnut',{labels:healthLabels,datasets:[{data:healthData,backgroundColor:healthColors,borderWidth:2,borderColor:'white'}]},{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}});
+    document.getElementById('healthLegend').innerHTML = healthLabels.map((l,i)=>'<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+healthColors[i]+'"></div>'+l+' ('+healthData[i]+')</div>').join('');
 
-    // ── CHART 3: Top Client Revenue (Bar) ────────────────
-    const topClients = [...clients]
-        .filter(c=>c.sales&&c.sales.revenue>0)
-        .sort((a,b)=>(b.sales.revenue)-(a.sales.revenue))
-        .slice(0,7);
-    makeChart('revenueChart','bar',{
-        labels: topClients.map(c=>c.shopName||c.slug),
-        datasets:[{
-            label:'Jualan 7 Hari (RM)',
-            data: topClients.map(c=>c.sales.revenue),
-            backgroundColor: topClients.map((_,i)=>['#f97316','#3b82f6','#16a34a','#8b5cf6','#f59e0b','#ef4444','#06b6d4'][i]||'#f97316'),
-            borderRadius:8, borderSkipped:false,
-        }]
-    },{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{
-            y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},
-            x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}}
-        }
-    });
+    const topClients = [...clients].filter(c=>c.sales&&c.sales.revenue>0).sort((a,b)=>(b.sales.revenue)-(a.sales.revenue)).slice(0,7);
+    makeChart('revenueChart','bar',{labels:topClients.map(c=>c.shopName||c.slug),datasets:[{label:'Jualan 7 Hari (RM)',data:topClients.map(c=>c.sales.revenue),backgroundColor:topClients.map((_,i)=>['#f97316','#3b82f6','#16a34a','#8b5cf6','#f59e0b','#ef4444','#06b6d4'][i]||'#f97316'),borderRadius:8,borderSkipped:false}]},{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}}}});
 
-    // ── CHART 4: Pakej Type (Pie) ────────────────────────
-    makeChart('pakejChart','pie',{
-        labels:['Standard (RM30)','Setup (RM80)'],
-        datasets:[{data:[standard,setup],backgroundColor:['#3b82f6','#f97316'],borderWidth:2,borderColor:'white'}]
-    },{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}}
-    });
-    document.getElementById('pakejLegend').innerHTML =
-        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#3b82f6"></div>Standard ('+standard+')</div>'+
-        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f97316"></div>Setup ('+setup+')</div>';
+    makeChart('pakejChart','pie',{labels:['Standard (RM30)','Setup (RM80)'],datasets:[{data:[standard,setup],backgroundColor:['#3b82f6','#f97316'],borderWidth:2,borderColor:'white'}]},{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}});
+    document.getElementById('pakejLegend').innerHTML='<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#3b82f6"></div>Standard ('+standard+')</div><div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f97316"></div>Setup ('+setup+')</div>';
 
-    // ── CHART 5: Activity Bar ───────────────────────────
-    const actLabels = ['Ada jualan','Tiada jualan','Expired'];
-    const actData   = [active7, notActive, expired];
-    const actColors = ['#16a34a','#f59e0b','#ef4444'];
-    makeChart('activityChart','bar',{
-        labels: clients.filter(c=>c.sales||c.status==='expired').map(c=>c.shopName||c.slug),
-        datasets:[{
-            label:'Jualan 7 Hari',
-            data: clients.filter(c=>c.sales||c.status==='expired').map(c=>c.sales?c.sales.revenue:0),
-            backgroundColor: clients.filter(c=>c.sales||c.status==='expired').map(c=>{
-                if(c.status==='expired') return '#ef4444';
-                if(!c.sales||c.sales.orders===0) return '#f59e0b';
-                return '#16a34a';
-            }),
-            borderRadius:6,borderSkipped:false,
-        }]
-    },{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{
-            y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},
-            x:{grid:{display:false},ticks:{font:{size:9},maxRotation:35}}
-        }
-    });
+    makeChart('activityChart','bar',{labels:clients.filter(c=>c.sales||c.status==='expired').map(c=>c.shopName||c.slug),datasets:[{label:'Jualan 7 Hari',data:clients.filter(c=>c.sales||c.status==='expired').map(c=>c.sales?c.sales.revenue:0),backgroundColor:clients.filter(c=>c.sales||c.status==='expired').map(c=>{if(c.status==='expired')return '#ef4444';if(!c.sales||c.sales.orders===0)return '#f59e0b';return '#16a34a';}),borderRadius:6,borderSkipped:false}]},{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:9},maxRotation:35}}}});
 
-    // ── At Risk Table ───────────────────────────────────
-    const riskClients = clients
-        .filter(c=>(c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=14)||(c.status==='active'&&c.sales&&c.sales.orders===0))
-        .sort((a,b)=>(a.daysLeft||999)-(b.daysLeft||999));
-
+    const riskClients = clients.filter(c=>(c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=14)||(c.status==='active'&&c.sales&&c.sales.orders===0)).sort((a,b)=>(a.daysLeft||999)-(b.daysLeft||999));
     const riskEl = document.getElementById('atRiskTable');
     if(!riskClients.length){
         riskEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-light);font-size:0.82rem">✅ Tiada client berisiko sekarang</div>';
@@ -1357,11 +958,7 @@ function renderChartsDashboard(){
             if(c.daysLeft!==null&&c.daysLeft<=14) reasons.push('⏰ Luput dalam '+c.daysLeft+' hari');
             if(c.sales&&c.sales.orders===0) reasons.push('📉 Tiada pesanan 7 hari');
             const urgency = c.daysLeft!==null&&c.daysLeft<=7 ? 'var(--danger-light)' : 'var(--warning-light)';
-            return '<div class="risk-row" style="background:'+urgency+'">'
-                +'<div class="risk-row-left"><div class="risk-name">🍽️ '+esc(c.shopName||c.slug)+'</div>'
-                +'<div class="risk-meta">'+reasons.join(' · ')+'</div></div>'
-                +(c.whatsapp?'<a href="https://'+esc(c.whatsapp)+'" target="_blank" class="btn-wa-send">💬 WA</a>':'')
-                +'</div>';
+            return '<div class="risk-row" style="background:'+urgency+'"><div class="risk-row-left"><div class="risk-name">🍽️ '+esc(c.shopName||c.slug)+'</div><div class="risk-meta">'+reasons.join(' · ')+'</div></div>'+(c.whatsapp?'<a href="https://'+esc(c.whatsapp)+'" target="_blank" class="btn-wa-send">💬 WA</a>':'')+'</div>';
         }).join('');
     }
 }
@@ -1376,7 +973,6 @@ function showLoading(text,sub){
 }
 function setLoadingSub(t){document.getElementById('loadingSub').textContent=t;}
 function hideLoading(){document.getElementById('loadingWrap').classList.remove('show');}
-
 let toastTimer;
 function toast(msg,isErr){
     const el=document.getElementById('toast');
@@ -1394,9 +990,7 @@ const DEMO_URL = 'poskedai.store/demo';
 const MY_WA    = '60167388358';
 
 const SEQ_BELUM_BAYAR = [
-    {
-        step: 1, label: 'Intro + Demo Link', hari: 0,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+    {step:1,label:'Intro + Demo Link',hari:0,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Terima kasih kerana berminat dengan POSKedai!
 
@@ -1407,11 +1001,8 @@ Cuba tengok demo kami dulu:
 
 Boleh masuk tanpa PIN, terus explore semua fungsi.
 
-Ada soalan? Saya sedia bantu 😊`
-    },
-    {
-        step: 2, label: 'FAQ + Nilai', hari: 3,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+Ada soalan? Saya sedia bantu 😊`},
+    {step:2,label:'FAQ + Nilai',hari:3,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Dah sempat cuba demo POSKedai?
 
@@ -1428,11 +1019,8 @@ Ramai peniaga tanya saya soalan ni:
 
 Harga pun berpatutan — dari RM30/bulan je.
 
-Nak saya tunjukkan macam mana ia boleh bantu${d.kedai ? ' ' + d.kedai : ' kedai anda'}?`
-    },
-    {
-        step: 3, label: 'Social Proof + Offer Trial', hari: 7,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+Nak saya tunjukkan macam mana ia boleh bantu${d.kedai ? ' ' + d.kedai : ' kedai anda'}?`},
+    {step:3,label:'Social Proof + Offer Trial',hari:7,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Saya nak kongsi apa yang peniaga lain dapat selepas guna POSKedai:
 
@@ -1445,11 +1033,8 @@ Sekarang ada 12 kedai guna POSKedai setiap hari.
 
 Saya nak offer ${d.nama} cuba PERCUMA 7 hari — tanpa bayar apa-apa.
 
-Berminat? Balas "YA" dan saya setup terus untuk anda 🙏`
-    },
-    {
-        step: 4, label: 'Last Follow Up', hari: 14,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+Berminat? Balas "YA" dan saya setup terus untuk anda 🙏`},
+    {step:4,label:'Last Follow Up',hari:14,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Ini mesej terakhir saya — tak nak ganggu selalu 😊
 
@@ -1463,14 +1048,11 @@ Harga: RM30/bulan je selepas trial.
 
 Kalau belum bersedia sekarang, takpe. Simpan nombor saya — bila ready, saya sedia bantu 🙏
 
-Terima kasih ${d.nama}!`
-    }
+Terima kasih ${d.nama}!`}
 ];
 
 const SEQ_DAH_BAYAR = [
-    {
-        step: 1, label: 'Welcome + Setup', hari: 0,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+    {step:1,label:'Welcome + Setup',hari:0,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Selamat datang ke keluarga POSKedai! 🎉
 
@@ -1484,11 +1066,8 @@ Langkah pertama:
 3️⃣ Pergi tab Menu → tambah menu kedai anda
 4️⃣ Cuba buat pesanan pertama!
 
-Ada masalah atau soalan, WhatsApp saya terus. Saya sedia bantu 💪`
-    },
-    {
-        step: 2, label: 'Check In Minggu Pertama', hari: 7,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+Ada masalah atau soalan, WhatsApp saya terus. Saya sedia bantu 💪`},
+    {step:2,label:'Check In Minggu Pertama',hari:7,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Dah seminggu guna POSKedai — macam mana pengalaman setakat ni? 😊
 
@@ -1497,11 +1076,8 @@ Ada tak sebarang:
 ❓ Masalah teknikal
 ❓ Nak tambah menu baru
 
-Beritahu saya — saya nak pastikan${d.kedai ? ' ' + d.kedai : ' kedai anda'} dapat manfaat penuh dari sistem ni 🙏`
-    },
-    {
-        step: 3, label: 'Tips + Upsell Tahunan', hari: 30,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+Beritahu saya — saya nak pastikan${d.kedai ? ' ' + d.kedai : ' kedai anda'} dapat manfaat penuh dari sistem ni 🙏`},
+    {step:3,label:'Tips + Upsell Tahunan',hari:30,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Sebulan dah guna POSKedai — tahniah! 🎉
 
@@ -1513,11 +1089,8 @@ Tips untuk guna lebih berkesan:
 
 Cuba explore semua tu!
 
-P/S: Kalau nak jimat lebih, boleh consider pakej tahunan — RM270/tahun (jimat RM90!) 💰`
-    },
-    {
-        step: 4, label: 'Reminder Renew (7 hari)', hari: -7,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+P/S: Kalau nak jimat lebih, boleh consider pakej tahunan — RM270/tahun (jimat RM90!) 💰`},
+    {step:4,label:'Reminder Renew (7 hari)',hari:-7,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Sekadar peringatan — langganan POSKedai${d.kedai ? ' ' + d.kedai : ''} akan tamat pada ${d.expiryDate||'[tarikh]'} 📅
 
@@ -1528,11 +1101,8 @@ nucleusriver.bcl.my/form/poskedai-renew-rm30
 
 RM30/bulan sahaja.
 
-Ada soalan? Balas mesej ni terus 😊`
-    },
-    {
-        step: 5, label: 'Terima Kasih Renew', hari: 0,
-        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+Ada soalan? Balas mesej ni terus 😊`},
+    {step:5,label:'Terima Kasih Renew',hari:0,mesej:(d)=>`Assalamualaikum ${d.nama} 👋
 
 Terima kasih kerana renew POSKedai! 🙏
 
@@ -1540,29 +1110,22 @@ Anda dah buktikan komitmen untuk tingkatkan sistem kedai anda — saya bangga ad
 
 Langganan anda dah dipanjangkan. Terus guna dengan sebaik mungkin!
 
-Seperti biasa, saya sedia bantu bila-bila masa 😊`
-    }
+Seperti biasa, saya sedia bantu bila-bila masa 😊`}
 ];
 
-// ── FOLLOWUP STATE (CRM GAS) ───────────────────────────────
 function getFuData(){ return crmFollowup; }
-
 async function saveFuDataRemote(itemId, stepIdx){
     try{
         await crmCall('saveFollowup', {itemId, stepIdx});
-        // Update local cache
         if(!crmFollowup[itemId]) crmFollowup[itemId]=[];
         if(!crmFollowup[itemId].includes(stepIdx)) crmFollowup[itemId].push(stepIdx);
     }catch(e){ console.log('saveFollowup error:', e); }
 }
-
 function getLeads(){ return crmLeads; }
-
 async function saveLeadsRemote(lead){
     try{
         const res = await crmCall('saveLead', lead);
         if(res.success){
-            // Update local cache
             const idx = crmLeads.findIndex(l=>l.id===lead.id);
             if(idx>=0) crmLeads[idx] = {...crmLeads[idx], ...lead};
             else crmLeads.unshift({...lead, id:res.id||lead.id});
@@ -1570,7 +1133,6 @@ async function saveLeadsRemote(lead){
         return res;
     }catch(e){ return {success:false, error:e.message}; }
 }
-
 async function deleteLeadRemote(lid){
     try{
         const res = await crmCall('deleteLead', {id:lid});
@@ -1579,7 +1141,6 @@ async function deleteLeadRemote(lid){
     }catch(e){ return {success:false, error:e.message}; }
 }
 
-// ── RENDER FOLLOWUP TAB ─────────────────────────────────────
 let fuFilter = 'all';
 function setFollowupFilter(f){
     fuFilter = f;
@@ -1590,155 +1151,92 @@ function setFollowupFilter(f){
 
 function renderFollowupTab(){
     const fuData = getFuData();
-    // Combine: clients (dah bayar) + leads yg belum bayar
     const leads  = getLeads().filter(l=>l.status!=='closed'&&l.status!=='lost');
     const clients = allClients.filter(c=>c.status==='active');
-
     let items = [];
-
-    // Dah bayar — dari registry
     if(fuFilter==='all'||fuFilter==='dah_bayar'){
         clients.forEach(c=>{
             const key = 'client_'+c.slug;
             const done = fuData[key]||[];
-            const joined = c.dateAdded ? new Date(c.dateAdded) : new Date();
             const nextStep = SEQ_DAH_BAYAR.find((s,i)=>!done.includes(i));
-            items.push({
-                type:'dah_bayar', id:key, nama:c.shopName||c.slug, kedai:c.shopName,
-                wa:c.whatsapp?c.whatsapp.replace('wa.me/',''):'',
-                slug:c.slug, expiryDate:c.expiryDate, joined,
-                done, seq:SEQ_DAH_BAYAR, nextStep,
-                daysLeft:c.daysLeft
-            });
+            items.push({type:'dah_bayar',id:key,nama:c.shopName||c.slug,kedai:c.shopName,wa:c.whatsapp?c.whatsapp.replace('wa.me/',''):'',slug:c.slug,expiryDate:c.expiryDate,done,seq:SEQ_DAH_BAYAR,nextStep,daysLeft:c.daysLeft});
         });
     }
-
-    // Belum bayar — dari leads
     if(fuFilter==='all'||fuFilter==='belum_bayar'){
         leads.forEach(l=>{
             const key = 'lead_'+l.id;
             const done = fuData[key]||[];
             const nextStep = SEQ_BELUM_BAYAR.find((s,i)=>!done.includes(i));
-            items.push({
-                type:'belum_bayar', id:key, nama:l.nama, kedai:l.kedai,
-                wa:l.wa||'', slug:'', expiryDate:'',
-                joined: new Date(l.tarikh||Date.now()),
-                done, seq:SEQ_BELUM_BAYAR, nextStep,
-                leadStatus:l.status
-            });
+            items.push({type:'belum_bayar',id:key,nama:l.nama,kedai:l.kedai,wa:l.wa||'',slug:'',expiryDate:'',joined:new Date(l.tarikh||Date.now()),done,seq:SEQ_BELUM_BAYAR,nextStep,leadStatus:l.status});
         });
     }
-
-    // Pending alert
     const pendingNow = items.filter(i=>i.nextStep);
     const alertEl = document.getElementById('fuPendingAlert');
-    if(pendingNow.length){
-        alertEl.style.display='block';
-        alertEl.textContent='⚠️ '+pendingNow.length+' kenalan perlu follow up — semak dan hantar mesej!';
-    }else{
-        alertEl.style.display='none';
-    }
-
-    // Sort: pending first
+    if(pendingNow.length){alertEl.style.display='block';alertEl.textContent='⚠️ '+pendingNow.length+' kenalan perlu follow up — semak dan hantar mesej!';}
+    else{alertEl.style.display='none';}
     items.sort((a,b)=>(b.nextStep?1:0)-(a.nextStep?1:0));
-
     const grid = document.getElementById('followupGrid');
-    if(!items.length){
-        grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-light)">Tiada data. Tambah lead atau tunggu client aktif.</div>';
-        return;
-    }
-
+    if(!items.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-light)">Tiada data. Tambah lead atau tunggu client aktif.</div>';return;}
     grid.innerHTML = items.map(item=>{
-        const typeTag = item.type==='dah_bayar'
-            ? '<span class="badge badge-active">🟢 Client</span>'
-            : '<span class="lead-status ls-'+item.leadStatus+'">🔴 Lead</span>';
-
+        const typeTag = item.type==='dah_bayar' ? '<span class="badge badge-active">🟢 Client</span>' : '<span class="lead-status ls-'+item.leadStatus+'">🔴 Lead</span>';
         const stepsHtml = item.seq.map((s,i)=>{
             const isDone = item.done.includes(i);
             const isNext = !isDone && item.seq.slice(0,i).every((_,j)=>item.done.includes(j));
             const cls = isDone?'done':isNext?'pending':'upcoming';
-            const numCls = isDone?'done':isNext?'pending':'upcoming';
             const waBtn = !isDone && isNext && item.wa
                 ? `<button onclick="openMesejForStep('${item.id}','${item.type}',${i})" class="btn-wa-send">💬 Hantar</button>`
                 : isDone ? '<span style="font-size:0.72rem;color:var(--success)">✓ Dah hantar</span>' : '';
-            return '<div class="seq-step '+cls+'">'
-                +'<div class="seq-num '+numCls+'">'+(isDone?'✓':(i+1))+'</div>'
-                +'<div class="seq-info"><div class="seq-label">'+s.label+'</div>'
-                +'<div class="seq-date">Hari '+(s.hari>=0?'+':'')+s.hari+'</div></div>'
-                +waBtn+'</div>';
+            return '<div class="seq-step '+cls+'"><div class="seq-num '+cls+'">'+(isDone?'✓':(i+1))+'</div><div class="seq-info"><div class="seq-label">'+s.label+'</div><div class="seq-date">Hari '+(s.hari>=0?'+':'')+s.hari+'</div></div>'+waBtn+'</div>';
         }).join('');
-
-        return '<div class="fu-card">'
-            +'<div class="fu-card-header">'
-            +'<div><div class="fu-name">'+esc(item.nama)+'</div>'+(item.kedai?'<div class="fu-kedai">'+esc(item.kedai)+'</div>':'')+'</div>'
-            +typeTag+'</div>'
-            +(item.wa?'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:10px">📱 '+esc(item.wa)+'</div>':'')
-            +'<div style="font-size:0.72rem;font-weight:700;color:var(--gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em">Sequence Follow Up</div>'
-            +stepsHtml
-            +'</div>';
+        return '<div class="fu-card"><div class="fu-card-header"><div><div class="fu-name">'+esc(item.nama)+'</div>'+(item.kedai?'<div class="fu-kedai">'+esc(item.kedai)+'</div>':'')+'</div>'+typeTag+'</div>'+(item.wa?'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:10px">📱 '+esc(item.wa)+'</div>':'')+'<div style="font-size:0.72rem;font-weight:700;color:var(--gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em">Sequence Follow Up</div>'+stepsHtml+'</div>';
     }).join('');
 }
 
-// ── MESEJ MODAL ─────────────────────────────────────────────
 let currentMesejItem = null;
 let currentMesejStepIdx = null;
 
 function openMesejForStep(itemId, type, stepIdx){
-    // Find item
     const fuData = getFuData();
     let item = null;
     if(type==='dah_bayar'){
         const slug = itemId.replace('client_','');
         const c = allClients.find(x=>x.slug===slug);
-        if(c) item = {id:itemId, type, nama:c.shopName||slug, kedai:c.shopName, wa:c.whatsapp?c.whatsapp.replace('wa.me/',''):'', slug:c.slug, expiryDate:c.expiryDate, done:fuData[itemId]||[], seq:SEQ_DAH_BAYAR};
+        if(c) item = {id:itemId,type,nama:c.shopName||slug,kedai:c.shopName,wa:c.whatsapp?c.whatsapp.replace('wa.me/',''):'',slug:c.slug,expiryDate:c.expiryDate,done:fuData[itemId]||[],seq:SEQ_DAH_BAYAR};
     }else{
         const leads = getLeads();
         const lid = itemId.replace('lead_','');
         const l = leads.find(x=>x.id===lid);
-        if(l) item = {id:itemId, type, nama:l.nama, kedai:l.kedai, wa:l.wa||'', slug:'', expiryDate:'', done:fuData[itemId]||[], seq:SEQ_BELUM_BAYAR};
+        if(l) item = {id:itemId,type,nama:l.nama,kedai:l.kedai,wa:l.wa||'',slug:'',expiryDate:'',done:fuData[itemId]||[],seq:SEQ_BELUM_BAYAR};
     }
     if(!item) return;
-
     currentMesejItem = item;
     currentMesejStepIdx = stepIdx;
-
     const step = item.seq[stepIdx];
-    const mesej = step.mesej({nama:item.nama, kedai:item.kedai||'', slug:item.slug, expiryDate:item.expiryDate});
-
+    const mesej = step.mesej({nama:item.nama,kedai:item.kedai||'',slug:item.slug,expiryDate:item.expiryDate});
     document.getElementById('mesejModalTitle').textContent = '📩 ' + step.label;
     document.getElementById('mesejModalSub').textContent = item.nama + (item.kedai?' · '+item.kedai:'');
     document.getElementById('mesejText').textContent = mesej;
     document.getElementById('mesejPreview').style.display = 'block';
-
-    // WhatsApp link
     const waNum = item.wa.replace(/[^0-9]/g,'');
     const waUrl = 'https://wa.me/'+waNum+'?text='+encodeURIComponent(mesej);
     const waBtn = document.getElementById('btnSendWa');
     waBtn.href = waUrl;
     waBtn.onclick = () => markStepDone(item.id, stepIdx);
-
     document.getElementById('mesejModal').classList.add('show');
 }
 
 function markStepDone(itemId, stepIdx){
-    // Update local immediately for responsive UI
     if(!crmFollowup[itemId]) crmFollowup[itemId]=[];
     if(!crmFollowup[itemId].includes(stepIdx)) crmFollowup[itemId].push(stepIdx);
     renderFollowupTab();
-    // Save to GAS in background
     saveFuDataRemote(itemId, stepIdx);
 }
-
-function closeMesejModal(){
-    document.getElementById('mesejModal').classList.remove('show');
-}
-
+function closeMesejModal(){ document.getElementById('mesejModal').classList.remove('show'); }
 function copyMesej(){
     const text = document.getElementById('mesejText').textContent;
     navigator.clipboard.writeText(text).then(()=>toast('✅ Mesej disalin!'));
 }
 
-// ── LEAD MANAGEMENT ─────────────────────────────────────────
 let leadFilter = 'all';
 function setLeadFilter(f){
     leadFilter=f;
@@ -1751,40 +1249,21 @@ function renderLeadsTab(){
     let leads = getLeads();
     if(leadFilter!=='all') leads=leads.filter(l=>l.status===leadFilter);
     leads.sort((a,b)=>new Date(b.tarikh)-new Date(a.tarikh));
-
     const grid=document.getElementById('leadsGrid');
-    if(!leads.length){
-        grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-light)">Tiada lead. Tambah lead baru!</div>';
-        return;
-    }
-
+    if(!leads.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-light)">Tiada lead. Tambah lead baru!</div>';return;}
     const statusMap={new:{cls:'ls-new',label:'🆕 Baru'},followup:{cls:'ls-followup',label:'📞 Follow Up'},trial:{cls:'ls-trial',label:'🎁 Trial'},closed:{cls:'ls-closed',label:'✅ Closed'},lost:{cls:'ls-lost',label:'❌ Lost'}};
     const sumberIcon={Facebook:'📘',Instagram:'📷',TikTok:'🎵',Rujukan:'🤝',Threads:'🧵'};
-
     grid.innerHTML=leads.map(function(l){
         const st=statusMap[l.status]||{cls:'ls-new',label:'🆕'};
         const si=sumberIcon[l.sumber]||'📌';
-        const statusOpts=Object.keys(statusMap).map(function(k){
-            return '<option value="'+k+'"'+(l.status===k?' selected':'')+'>'+statusMap[k].label+'</option>';
-        }).join('');
+        const statusOpts=Object.keys(statusMap).map(function(k){return '<option value="'+k+'"'+(l.status===k?' selected':'')+'>'+statusMap[k].label+'</option>';}).join('');
         const lid=l.id;
-        return '<div class="fu-card">'
-            +'<div class="fu-card-header">'
-            +'<div><div class="fu-name">'+esc(l.nama)+'</div>'+(l.kedai?'<div class="fu-kedai">'+esc(l.kedai)+'</div>':'')+'</div>'
-            +'<span class="lead-status '+st.cls+'">'+st.label+'</span>'
-            +'</div>'
-            +(l.wa?'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:6px">📱 '+esc(l.wa)+'</div>':'')
-            +'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:10px">'+si+' '+esc(l.sumber||'-')+' · '+new Date(l.tarikh).toLocaleDateString('ms-MY')+'</div>'
-            +(l.nota?'<div style="font-size:0.78rem;color:var(--dark-3);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:10px">'+esc(l.nota)+'</div>':'')
-            +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
-            +(l.wa?'<button onclick="openMesejLead(this)" data-lid="'+lid+'" class="btn-wa-send">💬 Follow Up</button>':'')
-            +'<button onclick="openEditLead(this)" data-lid="'+lid+'" style="padding:5px 12px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;color:var(--gray);font-family:var(--font)">✏️ Edit</button>'
-            +'<select onchange="updateLeadStatus(this)" data-lid="'+lid+'" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;font-weight:700;color:var(--gray);font-family:var(--font);cursor:pointer">'+statusOpts+'</select>'
-            +'</div></div>';
+        return '<div class="fu-card"><div class="fu-card-header"><div><div class="fu-name">'+esc(l.nama)+'</div>'+(l.kedai?'<div class="fu-kedai">'+esc(l.kedai)+'</div>':'')+'</div><span class="lead-status '+st.cls+'">'+st.label+'</span></div>'+(l.wa?'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:6px">📱 '+esc(l.wa)+'</div>':'')+'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:10px">'+si+' '+esc(l.sumber||'-')+' · '+new Date(l.tarikh).toLocaleDateString('ms-MY')+'</div>'+(l.nota?'<div style="font-size:0.78rem;color:var(--dark-3);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:10px">'+esc(l.nota)+'</div>':'')+'<div style="display:flex;gap:6px;flex-wrap:wrap">'+(l.wa?'<button onclick="openMesejLead(this)" data-lid="'+lid+'" class="btn-wa-send">💬 Follow Up</button>':'')+'<button onclick="openEditLead(this)" data-lid="'+lid+'" style="padding:5px 12px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;color:var(--gray);font-family:var(--font)">✏️ Edit</button><select onchange="updateLeadStatus(this)" data-lid="'+lid+'" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;font-weight:700;color:var(--gray);font-family:var(--font);cursor:pointer">'+statusOpts+'</select></div></div>';
     }).join('');
 }
 
-function openMesejLead(el){const lid=el.dataset.lid;
+function openMesejLead(el){
+    const lid=el.dataset.lid;
     const leads=getLeads();
     const l=leads.find(x=>x.id===lid);
     if(!l)return;
@@ -1807,7 +1286,8 @@ function openAddLead(){
     document.getElementById('leadModal').classList.add('show');
 }
 
-function openEditLead(el){const lid=el.dataset?el.dataset.lid:el;
+function openEditLead(el){
+    const lid=el.dataset?el.dataset.lid:el;
     const leads=getLeads();
     const l=leads.find(x=>x.id===lid);
     if(!l)return;
@@ -1821,46 +1301,25 @@ function openEditLead(el){const lid=el.dataset?el.dataset.lid:el;
     document.getElementById('lead-nota').value=l.nota||'';
     document.getElementById('leadModal').classList.add('show');
 }
-
 function closeLeadModal(){document.getElementById('leadModal').classList.remove('show');}
 
 async function saveLead(){
     const lid=document.getElementById('lead-id').value;
     const existing = lid ? (crmLeads.find(l=>l.id===lid)||{}) : {};
-    const data={
-        id:lid||Date.now().toString(),
-        nama:document.getElementById('lead-nama').value.trim(),
-        kedai:document.getElementById('lead-kedai').value.trim(),
-        wa:document.getElementById('lead-wa').value.trim(),
-        status:document.getElementById('lead-status').value,
-        sumber:document.getElementById('lead-sumber').value,
-        nota:document.getElementById('lead-nota').value.trim(),
-        tarikh:existing.tarikh||new Date().toISOString()
-    };
+    const data={id:lid||Date.now().toString(),nama:document.getElementById('lead-nama').value.trim(),kedai:document.getElementById('lead-kedai').value.trim(),wa:document.getElementById('lead-wa').value.trim(),status:document.getElementById('lead-status').value,sumber:document.getElementById('lead-sumber').value,nota:document.getElementById('lead-nota').value.trim(),tarikh:existing.tarikh||new Date().toISOString()};
     if(!data.nama||!data.wa){toast('❌ Nama dan WhatsApp diperlukan!',true);return;}
     showLoading('Menyimpan lead...');
     const res = await saveLeadsRemote(data);
     hideLoading();
-    if(res.success){
-        closeLeadModal();
-        renderLeadsTab();
-        toast('✅ Lead berjaya disimpan!');
-    }else{
-        toast('❌ '+(res.error||'Gagal simpan'),true);
-    }
+    if(res.success){closeLeadModal();renderLeadsTab();toast('✅ Lead berjaya disimpan!');}
+    else{toast('❌ '+(res.error||'Gagal simpan'),true);}
 }
 
 function updateLeadStatus(el){
     const lid=el.dataset.lid;const status=el.value;
     const l=crmLeads.find(x=>x.id===lid);
-    if(l){
-        l.status=status;
-        renderLeadsTab();
-        toast('✅ Status dikemaskini!');
-        saveLeadsRemote({...l, status}); // save to GAS background
-    }
+    if(l){l.status=status;renderLeadsTab();toast('✅ Status dikemaskini!');saveLeadsRemote({...l,status});}
 }
-
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
