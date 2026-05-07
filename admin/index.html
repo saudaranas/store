@@ -160,6 +160,33 @@
         .chart-wrap{position:relative;height:180px;margin-bottom:4px;}
         .no-orders{text-align:center;padding:20px;color:var(--gray-light);font-size:0.82rem;}
 
+        /* FOLLOWUP & LEAD */
+        .fu-filter-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:0.75rem;font-weight:700;background:white;color:var(--gray);cursor:pointer;font-family:var(--font);transition:all 0.2s;}
+        .fu-filter-btn.active,.fu-filter-btn:hover{background:var(--primary);color:white;border-color:var(--primary);}
+        .fu-card{background:white;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border);}
+        .fu-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+        .fu-name{font-weight:800;font-size:0.92rem;}
+        .fu-kedai{font-size:0.72rem;color:var(--gray-light);margin-top:1px;}
+        .seq-step{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all 0.2s;border:1.5px solid transparent;}
+        .seq-step:hover{background:var(--bg-2);}
+        .seq-step.done{background:var(--success-light);border-color:#86efac;opacity:0.7;}
+        .seq-step.pending{background:var(--warning-light);border-color:#fde68a;}
+        .seq-step.upcoming{background:var(--bg);border-color:var(--border);}
+        .seq-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;flex-shrink:0;}
+        .seq-num.done{background:var(--success);color:white;}
+        .seq-num.pending{background:var(--warning);color:white;}
+        .seq-num.upcoming{background:var(--gray-lighter);color:var(--gray);}
+        .seq-info{flex:1;}
+        .seq-label{font-size:0.78rem;font-weight:700;color:var(--dark);}
+        .seq-date{font-size:0.68rem;color:var(--gray);}
+        .btn-wa-send{background:#25D366;color:white;border:none;border-radius:8px;padding:5px 12px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;text-decoration:none;display:inline-block;}
+        .lead-status{padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:800;}
+        .ls-new{background:#eff6ff;color:#1d4ed8;}
+        .ls-followup{background:var(--warning-light);color:#78350f;}
+        .ls-trial{background:#faf5ff;color:#6d28d9;}
+        .ls-closed{background:var(--success-light);color:var(--success-dark);}
+        .ls-lost{background:var(--danger-light);color:var(--danger-dark);}
+
         @media(max-width:600px){
             .tab-btn{padding:12px 12px;font-size:0.75rem;}
             .stats-grid{grid-template-columns:1fr 1fr;}
@@ -197,6 +224,8 @@
         <button class="tab-btn active" onclick="switchTab('dashboard',this)">📊 Dashboard</button>
         <button class="tab-btn" onclick="switchTab('registry',this)">📋 Registry</button>
         <button class="tab-btn" onclick="switchTab('tambah',this)">➕ Tambah Client</button>
+        <button class="tab-btn" onclick="switchTab('followup',this)">💬 Follow Up</button>
+        <button class="tab-btn" onclick="switchTab('leads',this)">🎯 Lead</button>
     </div>
 
     <!-- TAB: DASHBOARD -->
@@ -284,6 +313,121 @@
             <button onclick="tambahClient()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;font-family:var(--font);margin-top:8px">
                 ➕ Tambah Client
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: FOLLOW UP -->
+<div class="tab-content" id="tab-followup">
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+        <div style="font-weight:800;font-size:0.95rem;flex:1">💬 Follow Up Client</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="setFollowupFilter('all')" class="fu-filter-btn active" id="ff-all">Semua</button>
+            <button onclick="setFollowupFilter('belum_bayar')" class="fu-filter-btn" id="ff-belum_bayar">🔴 Belum Bayar</button>
+            <button onclick="setFollowupFilter('dah_bayar')" class="fu-filter-btn" id="ff-dah_bayar">🟢 Dah Bayar</button>
+        </div>
+    </div>
+    <div id="fuPendingAlert" style="display:none;background:var(--warning-light);border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:0.82rem;font-weight:700;color:#78350f"></div>
+    <div id="followupGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
+</div>
+
+<!-- TAB: LEADS -->
+<div class="tab-content" id="tab-leads">
+    <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+        <div style="font-weight:800;font-size:0.95rem;flex:1">🎯 Tracking Lead</div>
+        <button onclick="openAddLead()" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;padding:8px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font)">➕ Tambah Lead</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button onclick="setLeadFilter('all')" class="fu-filter-btn active" id="lf-all">Semua</button>
+        <button onclick="setLeadFilter('new')" class="fu-filter-btn" id="lf-new">🆕 Baru</button>
+        <button onclick="setLeadFilter('followup')" class="fu-filter-btn" id="lf-followup">📞 Follow Up</button>
+        <button onclick="setLeadFilter('trial')" class="fu-filter-btn" id="lf-trial">🎁 Trial</button>
+        <button onclick="setLeadFilter('closed')" class="fu-filter-btn" id="lf-closed">✅ Closed</button>
+        <button onclick="setLeadFilter('lost')" class="fu-filter-btn" id="lf-lost">❌ Lost</button>
+    </div>
+    <div id="leadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
+</div>
+
+<!-- ADD/EDIT LEAD MODAL -->
+<div class="modal-overlay" id="leadModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="leadModalTitle">🎯 Tambah Lead</div>
+            <button class="modal-close" onclick="closeLeadModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="lead-id">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Nama *</label>
+                    <input type="text" class="form-input" id="lead-nama" placeholder="Nama prospek">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Kedai</label>
+                    <input type="text" class="form-input" id="lead-kedai" placeholder="Nama kedai">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">WhatsApp *</label>
+                    <input type="text" class="form-input" id="lead-wa" placeholder="601xxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-input" id="lead-status">
+                        <option value="new">🆕 Baru</option>
+                        <option value="followup">📞 Follow Up</option>
+                        <option value="trial">🎁 Trial</option>
+                        <option value="closed">✅ Closed</option>
+                        <option value="lost">❌ Lost</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sumber Lead</label>
+                <select class="form-input" id="lead-sumber">
+                    <option value="">Pilih sumber</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="Rujukan">Rujukan</option>
+                    <option value="Threads">Threads</option>
+                    <option value="Lain-lain">Lain-lain</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nota</label>
+                <textarea class="form-input" id="lead-nota" rows="3" placeholder="Nota tentang lead ini..." style="resize:vertical"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeLeadModal()">Batal</button>
+            <button class="btn-save" onclick="saveLead()">💾 Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- MESEJ MODAL -->
+<div class="modal-overlay" id="mesejModal">
+    <div class="modal" style="max-width:540px">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title" id="mesejModalTitle">📩 Hantar Mesej</div>
+                <div style="font-size:0.72rem;color:var(--gray);margin-top:2px" id="mesejModalSub"></div>
+            </div>
+            <button class="modal-close" onclick="closeMesejModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px">Pilih Mesej:</div>
+            <div id="mesejList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+            <div id="mesejPreview" style="display:none">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px">Preview Mesej:</div>
+                <div id="mesejText" style="background:var(--bg-2);border-radius:12px;padding:14px;font-size:0.82rem;line-height:1.7;white-space:pre-wrap;color:var(--dark);border:1px solid var(--border);max-height:250px;overflow-y:auto"></div>
+                <div style="display:flex;gap:8px;margin-top:12px">
+                    <button onclick="copyMesej()" style="flex:1;padding:10px;background:var(--bg-2);border:1.5px solid var(--border);border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:var(--font)">📋 Copy</button>
+                    <a id="btnSendWa" href="#" target="_blank" style="flex:2;padding:10px;background:#25D366;color:white;border:none;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px">💬 Buka WhatsApp & Hantar</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -379,6 +523,8 @@
 // CONFIG
 // ============================================================
 const ADMIN_PASS = '*Yarohim*165';
+const CRM_URL    = 'https://script.google.com/macros/s/AKfycbwd-Poh-RzbTSKDKxhkea4jsulK6cP6VOckefSM9H1xqdHpB_rZqbysppnMtteRlj3l/exec';
+const CRM_KEY    = 'poskedai-crm-2026';
 const MASTER_URL = 'https://script.google.com/macros/s/AKfycbznU2RPkvryyNLyRrbT5iRtA1HTdazlgia_7HcN1-_OpE15pMhr7t1ZRsoqjIWNFAsY/exec';
 const MASTER_KEY = 'poskedai-master-2026';
 const CLIENT_KEY = 'aca6f58aac70a3c722e74b9e0488bd693637e056de95a296f6b40613104b1df7';
@@ -415,6 +561,8 @@ function switchTab(id, btn){
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-'+id).classList.add('active');
+    if(id==='followup') renderFollowupTab();
+    if(id==='leads') renderLeadsTab();
 }
 
 // ============================================================
@@ -439,11 +587,36 @@ async function loadAllData(){
         renderDashboard();
         renderRegistry();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
+
+        // Also load CRM data
+        await loadCRMData();
+
     }catch(e){
         toast('❌ Gagal: ' + e.message, true);
     }finally{
         hideLoading();
     }
+}
+
+// CRM data in memory
+let crmLeads = [];
+let crmFollowup = {};
+
+async function loadCRMData(){
+    try{
+        const [leadsRes, fuRes] = await Promise.all([
+            crmCall('getLeads'),
+            crmCall('getFollowup')
+        ]);
+        if(leadsRes.success) crmLeads = leadsRes.leads || [];
+        if(fuRes.success)    crmFollowup = fuRes.followup || {};
+    }catch(e){
+        console.log('CRM load error:', e.message);
+    }
+}
+
+async function crmCall(action, data){
+    return gasCall(CRM_URL, CRM_KEY, action, data||{});
 }
 
 async function gasCall(url, key, action, data){
@@ -855,6 +1028,481 @@ function toast(msg,isErr){
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>el.style.display='none',3000);
 }
+
+// ============================================================
+// FOLLOWUP SEQUENCES
+// ============================================================
+const DEMO_URL = 'poskedai.store/demo';
+const MY_WA    = '60167388358';
+
+const SEQ_BELUM_BAYAR = [
+    {
+        step: 1, label: 'Intro + Demo Link', hari: 0,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Terima kasih kerana berminat dengan POSKedai!
+
+Saya Nasrol dari POSKedai — sistem POS untuk kedai makan yang paling mudah dan murah di Malaysia.
+
+Cuba tengok demo kami dulu:
+👉 ${DEMO_URL}
+
+Boleh masuk tanpa PIN, terus explore semua fungsi.
+
+Ada soalan? Saya sedia bantu 😊`
+    },
+    {
+        step: 2, label: 'FAQ + Nilai', hari: 3,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Dah sempat cuba demo POSKedai?
+
+Ramai peniaga tanya saya soalan ni:
+
+❓ "Susah ke nak setup?"
+✅ Setup dalam 1 hari. Kami buat semua untuk anda.
+
+❓ "Staff boleh belajar ke?"
+✅ 15 minit je. Sangat mudah.
+
+❓ "Kena beli mesin?"
+✅ Guna phone atau tablet yang ada je.
+
+Harga pun berpatutan — dari RM30/bulan je.
+
+Nak saya tunjukkan macam mana ia boleh bantu${d.kedai ? ' ' + d.kedai : ' kedai anda'}?`
+    },
+    {
+        step: 3, label: 'Social Proof + Offer Trial', hari: 7,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Saya nak kongsi apa yang peniaga lain dapat selepas guna POSKedai:
+
+✅ Tak salah order lagi
+✅ Tahu menu mana paling laris
+✅ Jimat masa kira jualan hujung hari
+✅ Staff lebih teratur
+
+Sekarang ada 12 kedai guna POSKedai setiap hari.
+
+Saya nak offer ${d.nama} cuba PERCUMA 7 hari — tanpa bayar apa-apa.
+
+Berminat? Balas "YA" dan saya setup terus untuk anda 🙏`
+    },
+    {
+        step: 4, label: 'Last Follow Up', hari: 14,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Ini mesej terakhir saya — tak nak ganggu selalu 😊
+
+Kalau ${d.nama} masih fikir-fikir tentang sistem POS untuk kedai, saya ada tawaran khas:
+
+🎁 Trial percuma 7 hari
+🎁 Setup kami buat
+🎁 Support WhatsApp terus dengan saya
+
+Harga: RM30/bulan je selepas trial.
+
+Kalau belum bersedia sekarang, takpe. Simpan nombor saya — bila ready, saya sedia bantu 🙏
+
+Terima kasih ${d.nama}!`
+    }
+];
+
+const SEQ_DAH_BAYAR = [
+    {
+        step: 1, label: 'Welcome + Setup', hari: 0,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Selamat datang ke keluarga POSKedai! 🎉
+
+Ini maklumat sistem anda:
+🔗 Link: poskedai.store/?kedai=${d.slug||'[slug]'}
+🔐 PIN Admin: [pin]
+
+Langkah pertama:
+1️⃣ Buka link di atas
+2️⃣ Login dengan PIN
+3️⃣ Pergi tab Menu → tambah menu kedai anda
+4️⃣ Cuba buat pesanan pertama!
+
+Ada masalah atau soalan, WhatsApp saya terus. Saya sedia bantu 💪`
+    },
+    {
+        step: 2, label: 'Check In Minggu Pertama', hari: 7,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Dah seminggu guna POSKedai — macam mana pengalaman setakat ni? 😊
+
+Ada tak sebarang:
+❓ Fungsi yang tak faham
+❓ Masalah teknikal
+❓ Nak tambah menu baru
+
+Beritahu saya — saya nak pastikan${d.kedai ? ' ' + d.kedai : ' kedai anda'} dapat manfaat penuh dari sistem ni 🙏`
+    },
+    {
+        step: 3, label: 'Tips + Upsell Tahunan', hari: 30,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Sebulan dah guna POSKedai — tahniah! 🎉
+
+Tips untuk guna lebih berkesan:
+
+💡 Tab Jualan — tengok menu mana paling laris minggu ni
+💡 Tab Dapur — staff dapur nampak order terus di phone mereka
+💡 Nota item — boleh tulis arahan khas (kurang pedas, dll)
+
+Cuba explore semua tu!
+
+P/S: Kalau nak jimat lebih, boleh consider pakej tahunan — RM270/tahun (jimat RM90!) 💰`
+    },
+    {
+        step: 4, label: 'Reminder Renew (7 hari)', hari: -7,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Sekadar peringatan — langganan POSKedai${d.kedai ? ' ' + d.kedai : ''} akan tamat pada ${d.expiryDate||'[tarikh]'} 📅
+
+Untuk teruskan guna tanpa gangguan, sila renew sebelum tarikh tersebut:
+
+💳 Renew di sini:
+nucleusriver.bcl.my/form/poskedai-renew-rm30
+
+RM30/bulan sahaja.
+
+Ada soalan? Balas mesej ni terus 😊`
+    },
+    {
+        step: 5, label: 'Terima Kasih Renew', hari: 0,
+        mesej: (d) => `Assalamualaikum ${d.nama} 👋
+
+Terima kasih kerana renew POSKedai! 🙏
+
+Anda dah buktikan komitmen untuk tingkatkan sistem kedai anda — saya bangga ada anda sebagai client POSKedai 💪
+
+Langganan anda dah dipanjangkan. Terus guna dengan sebaik mungkin!
+
+Seperti biasa, saya sedia bantu bila-bila masa 😊`
+    }
+];
+
+// ── FOLLOWUP STATE (CRM GAS) ───────────────────────────────
+function getFuData(){ return crmFollowup; }
+
+async function saveFuDataRemote(itemId, stepIdx){
+    try{
+        await crmCall('saveFollowup', {itemId, stepIdx});
+        // Update local cache
+        if(!crmFollowup[itemId]) crmFollowup[itemId]=[];
+        if(!crmFollowup[itemId].includes(stepIdx)) crmFollowup[itemId].push(stepIdx);
+    }catch(e){ console.log('saveFollowup error:', e); }
+}
+
+function getLeads(){ return crmLeads; }
+
+async function saveLeadsRemote(lead){
+    try{
+        const res = await crmCall('saveLead', lead);
+        if(res.success){
+            // Update local cache
+            const idx = crmLeads.findIndex(l=>l.id===lead.id);
+            if(idx>=0) crmLeads[idx] = {...crmLeads[idx], ...lead};
+            else crmLeads.unshift({...lead, id:res.id||lead.id});
+        }
+        return res;
+    }catch(e){ return {success:false, error:e.message}; }
+}
+
+async function deleteLeadRemote(lid){
+    try{
+        const res = await crmCall('deleteLead', {id:lid});
+        if(res.success) crmLeads = crmLeads.filter(l=>l.id!==lid);
+        return res;
+    }catch(e){ return {success:false, error:e.message}; }
+}
+
+// ── RENDER FOLLOWUP TAB ─────────────────────────────────────
+let fuFilter = 'all';
+function setFollowupFilter(f){
+    fuFilter = f;
+    document.querySelectorAll('[id^="ff-"]').forEach(b=>b.classList.remove('active'));
+    document.getElementById('ff-'+f).classList.add('active');
+    renderFollowupTab();
+}
+
+function renderFollowupTab(){
+    const fuData = getFuData();
+    // Combine: clients (dah bayar) + leads yg belum bayar
+    const leads  = getLeads().filter(l=>l.status!=='closed'&&l.status!=='lost');
+    const clients = allClients.filter(c=>c.status==='active');
+
+    let items = [];
+
+    // Dah bayar — dari registry
+    if(fuFilter==='all'||fuFilter==='dah_bayar'){
+        clients.forEach(c=>{
+            const key = 'client_'+c.slug;
+            const done = fuData[key]||[];
+            const joined = c.dateAdded ? new Date(c.dateAdded) : new Date();
+            const nextStep = SEQ_DAH_BAYAR.find((s,i)=>!done.includes(i));
+            items.push({
+                type:'dah_bayar', id:key, nama:c.shopName||c.slug, kedai:c.shopName,
+                wa:c.whatsapp?c.whatsapp.replace('wa.me/',''):'',
+                slug:c.slug, expiryDate:c.expiryDate, joined,
+                done, seq:SEQ_DAH_BAYAR, nextStep,
+                daysLeft:c.daysLeft
+            });
+        });
+    }
+
+    // Belum bayar — dari leads
+    if(fuFilter==='all'||fuFilter==='belum_bayar'){
+        leads.forEach(l=>{
+            const key = 'lead_'+l.id;
+            const done = fuData[key]||[];
+            const nextStep = SEQ_BELUM_BAYAR.find((s,i)=>!done.includes(i));
+            items.push({
+                type:'belum_bayar', id:key, nama:l.nama, kedai:l.kedai,
+                wa:l.wa||'', slug:'', expiryDate:'',
+                joined: new Date(l.tarikh||Date.now()),
+                done, seq:SEQ_BELUM_BAYAR, nextStep,
+                leadStatus:l.status
+            });
+        });
+    }
+
+    // Pending alert
+    const pendingNow = items.filter(i=>i.nextStep);
+    const alertEl = document.getElementById('fuPendingAlert');
+    if(pendingNow.length){
+        alertEl.style.display='block';
+        alertEl.textContent='⚠️ '+pendingNow.length+' kenalan perlu follow up — semak dan hantar mesej!';
+    }else{
+        alertEl.style.display='none';
+    }
+
+    // Sort: pending first
+    items.sort((a,b)=>(b.nextStep?1:0)-(a.nextStep?1:0));
+
+    const grid = document.getElementById('followupGrid');
+    if(!items.length){
+        grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-light)">Tiada data. Tambah lead atau tunggu client aktif.</div>';
+        return;
+    }
+
+    grid.innerHTML = items.map(item=>{
+        const typeTag = item.type==='dah_bayar'
+            ? '<span class="badge badge-active">🟢 Client</span>'
+            : '<span class="lead-status ls-'+item.leadStatus+'">🔴 Lead</span>';
+
+        const stepsHtml = item.seq.map((s,i)=>{
+            const isDone = item.done.includes(i);
+            const isNext = !isDone && item.seq.slice(0,i).every((_,j)=>item.done.includes(j));
+            const cls = isDone?'done':isNext?'pending':'upcoming';
+            const numCls = isDone?'done':isNext?'pending':'upcoming';
+            const waBtn = !isDone && isNext && item.wa
+                ? `<button onclick="openMesejForStep('${item.id}','${item.type}',${i})" class="btn-wa-send">💬 Hantar</button>`
+                : isDone ? '<span style="font-size:0.72rem;color:var(--success)">✓ Dah hantar</span>' : '';
+            return '<div class="seq-step '+cls+'">'
+                +'<div class="seq-num '+numCls+'">'+(isDone?'✓':(i+1))+'</div>'
+                +'<div class="seq-info"><div class="seq-label">'+s.label+'</div>'
+                +'<div class="seq-date">Hari '+(s.hari>=0?'+':'')+s.hari+'</div></div>'
+                +waBtn+'</div>';
+        }).join('');
+
+        return '<div class="fu-card">'
+            +'<div class="fu-card-header">'
+            +'<div><div class="fu-name">'+esc(item.nama)+'</div>'+(item.kedai?'<div class="fu-kedai">'+esc(item.kedai)+'</div>':'')+'</div>'
+            +typeTag+'</div>'
+            +(item.wa?'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:10px">📱 '+esc(item.wa)+'</div>':'')
+            +'<div style="font-size:0.72rem;font-weight:700;color:var(--gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em">Sequence Follow Up</div>'
+            +stepsHtml
+            +'</div>';
+    }).join('');
+}
+
+// ── MESEJ MODAL ─────────────────────────────────────────────
+let currentMesejItem = null;
+let currentMesejStepIdx = null;
+
+function openMesejForStep(itemId, type, stepIdx){
+    // Find item
+    const fuData = getFuData();
+    let item = null;
+    if(type==='dah_bayar'){
+        const slug = itemId.replace('client_','');
+        const c = allClients.find(x=>x.slug===slug);
+        if(c) item = {id:itemId, type, nama:c.shopName||slug, kedai:c.shopName, wa:c.whatsapp?c.whatsapp.replace('wa.me/',''):'', slug:c.slug, expiryDate:c.expiryDate, done:fuData[itemId]||[], seq:SEQ_DAH_BAYAR};
+    }else{
+        const leads = getLeads();
+        const lid = itemId.replace('lead_','');
+        const l = leads.find(x=>x.id===lid);
+        if(l) item = {id:itemId, type, nama:l.nama, kedai:l.kedai, wa:l.wa||'', slug:'', expiryDate:'', done:fuData[itemId]||[], seq:SEQ_BELUM_BAYAR};
+    }
+    if(!item) return;
+
+    currentMesejItem = item;
+    currentMesejStepIdx = stepIdx;
+
+    const step = item.seq[stepIdx];
+    const mesej = step.mesej({nama:item.nama, kedai:item.kedai||'', slug:item.slug, expiryDate:item.expiryDate});
+
+    document.getElementById('mesejModalTitle').textContent = '📩 ' + step.label;
+    document.getElementById('mesejModalSub').textContent = item.nama + (item.kedai?' · '+item.kedai:'');
+    document.getElementById('mesejText').textContent = mesej;
+    document.getElementById('mesejPreview').style.display = 'block';
+
+    // WhatsApp link
+    const waNum = item.wa.replace(/[^0-9]/g,'');
+    const waUrl = 'https://wa.me/'+waNum+'?text='+encodeURIComponent(mesej);
+    const waBtn = document.getElementById('btnSendWa');
+    waBtn.href = waUrl;
+    waBtn.onclick = () => markStepDone(item.id, stepIdx);
+
+    document.getElementById('mesejModal').classList.add('show');
+}
+
+function markStepDone(itemId, stepIdx){
+    // Update local immediately for responsive UI
+    if(!crmFollowup[itemId]) crmFollowup[itemId]=[];
+    if(!crmFollowup[itemId].includes(stepIdx)) crmFollowup[itemId].push(stepIdx);
+    renderFollowupTab();
+    // Save to GAS in background
+    saveFuDataRemote(itemId, stepIdx);
+}
+
+function closeMesejModal(){
+    document.getElementById('mesejModal').classList.remove('show');
+}
+
+function copyMesej(){
+    const text = document.getElementById('mesejText').textContent;
+    navigator.clipboard.writeText(text).then(()=>toast('✅ Mesej disalin!'));
+}
+
+// ── LEAD MANAGEMENT ─────────────────────────────────────────
+let leadFilter = 'all';
+function setLeadFilter(f){
+    leadFilter=f;
+    document.querySelectorAll('[id^="lf-"]').forEach(b=>b.classList.remove('active'));
+    document.getElementById('lf-'+f).classList.add('active');
+    renderLeadsTab();
+}
+
+function renderLeadsTab(){
+    let leads = getLeads();
+    if(leadFilter!=='all') leads=leads.filter(l=>l.status===leadFilter);
+    leads.sort((a,b)=>new Date(b.tarikh)-new Date(a.tarikh));
+
+    const grid=document.getElementById('leadsGrid');
+    if(!leads.length){
+        grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-light)">Tiada lead. Tambah lead baru!</div>';
+        return;
+    }
+
+    const statusMap={new:{cls:'ls-new',label:'🆕 Baru'},followup:{cls:'ls-followup',label:'📞 Follow Up'},trial:{cls:'ls-trial',label:'🎁 Trial'},closed:{cls:'ls-closed',label:'✅ Closed'},lost:{cls:'ls-lost',label:'❌ Lost'}};
+    const sumberIcon={Facebook:'📘',Instagram:'📷',TikTok:'🎵',Rujukan:'🤝',Threads:'🧵'};
+
+    grid.innerHTML=leads.map(function(l){
+        const st=statusMap[l.status]||{cls:'ls-new',label:'🆕'};
+        const si=sumberIcon[l.sumber]||'📌';
+        const statusOpts=Object.keys(statusMap).map(function(k){
+            return '<option value="'+k+'"'+(l.status===k?' selected':'')+'>'+statusMap[k].label+'</option>';
+        }).join('');
+        const lid=l.id;
+        return '<div class="fu-card">'
+            +'<div class="fu-card-header">'
+            +'<div><div class="fu-name">'+esc(l.nama)+'</div>'+(l.kedai?'<div class="fu-kedai">'+esc(l.kedai)+'</div>':'')+'</div>'
+            +'<span class="lead-status '+st.cls+'">'+st.label+'</span>'
+            +'</div>'
+            +(l.wa?'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:6px">📱 '+esc(l.wa)+'</div>':'')
+            +'<div style="font-size:0.72rem;color:var(--gray);margin-bottom:10px">'+si+' '+esc(l.sumber||'-')+' · '+new Date(l.tarikh).toLocaleDateString('ms-MY')+'</div>'
+            +(l.nota?'<div style="font-size:0.78rem;color:var(--dark-3);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:10px">'+esc(l.nota)+'</div>':'')
+            +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+            +(l.wa?'<button onclick="openMesejLead(this)" data-lid="'+lid+'" class="btn-wa-send">💬 Follow Up</button>':'')
+            +'<button onclick="openEditLead(this)" data-lid="'+lid+'" style="padding:5px 12px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;color:var(--gray);font-family:var(--font)">✏️ Edit</button>'
+            +'<select onchange="updateLeadStatus(this)" data-lid="'+lid+'" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;font-weight:700;color:var(--gray);font-family:var(--font);cursor:pointer">'+statusOpts+'</select>'
+            +'</div></div>';
+    }).join('');
+}
+
+function openMesejLead(el){const lid=el.dataset.lid;
+    const leads=getLeads();
+    const l=leads.find(x=>x.id===lid);
+    if(!l)return;
+    const fuData=getFuData();
+    const done=fuData['lead_'+lid]||[];
+    const nextIdx=SEQ_BELUM_BAYAR.findIndex((_,i)=>!done.includes(i));
+    if(nextIdx>=0) openMesejForStep('lead_'+lid,'belum_bayar',nextIdx);
+    else toast('✅ Semua mesej dah dihantar untuk lead ini!');
+}
+
+function openAddLead(){
+    document.getElementById('leadModalTitle').textContent='🎯 Tambah Lead';
+    document.getElementById('lead-id').value='';
+    document.getElementById('lead-nama').value='';
+    document.getElementById('lead-kedai').value='';
+    document.getElementById('lead-wa').value='';
+    document.getElementById('lead-status').value='new';
+    document.getElementById('lead-sumber').value='';
+    document.getElementById('lead-nota').value='';
+    document.getElementById('leadModal').classList.add('show');
+}
+
+function openEditLead(el){const lid=el.dataset?el.dataset.lid:el;
+    const leads=getLeads();
+    const l=leads.find(x=>x.id===lid);
+    if(!l)return;
+    document.getElementById('leadModalTitle').textContent='✏️ Edit Lead';
+    document.getElementById('lead-id').value=lid;
+    document.getElementById('lead-nama').value=l.nama||'';
+    document.getElementById('lead-kedai').value=l.kedai||'';
+    document.getElementById('lead-wa').value=l.wa||'';
+    document.getElementById('lead-status').value=l.status||'new';
+    document.getElementById('lead-sumber').value=l.sumber||'';
+    document.getElementById('lead-nota').value=l.nota||'';
+    document.getElementById('leadModal').classList.add('show');
+}
+
+function closeLeadModal(){document.getElementById('leadModal').classList.remove('show');}
+
+async function saveLead(){
+    const lid=document.getElementById('lead-id').value;
+    const existing = lid ? (crmLeads.find(l=>l.id===lid)||{}) : {};
+    const data={
+        id:lid||Date.now().toString(),
+        nama:document.getElementById('lead-nama').value.trim(),
+        kedai:document.getElementById('lead-kedai').value.trim(),
+        wa:document.getElementById('lead-wa').value.trim(),
+        status:document.getElementById('lead-status').value,
+        sumber:document.getElementById('lead-sumber').value,
+        nota:document.getElementById('lead-nota').value.trim(),
+        tarikh:existing.tarikh||new Date().toISOString()
+    };
+    if(!data.nama||!data.wa){toast('❌ Nama dan WhatsApp diperlukan!',true);return;}
+    showLoading('Menyimpan lead...');
+    const res = await saveLeadsRemote(data);
+    hideLoading();
+    if(res.success){
+        closeLeadModal();
+        renderLeadsTab();
+        toast('✅ Lead berjaya disimpan!');
+    }else{
+        toast('❌ '+(res.error||'Gagal simpan'),true);
+    }
+}
+
+function updateLeadStatus(el){
+    const lid=el.dataset.lid;const status=el.value;
+    const l=crmLeads.find(x=>x.id===lid);
+    if(l){
+        l.status=status;
+        renderLeadsTab();
+        toast('✅ Status dikemaskini!');
+        saveLeadsRemote({...l, status}); // save to GAS background
+    }
+}
+
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
