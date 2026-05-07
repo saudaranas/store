@@ -586,31 +586,47 @@ function switchTab(id, btn){
 async function loadAllData(){
     showLoading('Mengambil senarai client...');
     try{
-        const reg = await gasCall(MASTER_URL, MASTER_KEY, 'listAll', {});
+        // Step 1: Fetch registry + CRM serentak
+        const [reg, crmRes] = await Promise.all([
+            gasCall(MASTER_URL, MASTER_KEY, 'listAll', {}),
+            loadCRMData()
+        ]);
         if(!reg.success) throw new Error(reg.error);
         allClients = reg.clients || [];
 
-        // Fetch sales parallel (batches of 4)
-        const results = [];
-        for(let i=0;i<allClients.length;i+=4){
-            const batch = allClients.slice(i,i+4);
-            setLoadingSub('Memuatkan jualan ' + Math.min(i+4,allClients.length) + '/' + allClients.length + '...');
-            const bRes = await Promise.all(batch.map(c=>fetchSales(c)));
-            results.push(...bRes);
-        }
-        allClients = results;
+        // Step 2: Render terus tanpa tunggu jualan
         renderDashboard();
         renderRegistry();
+        hideLoading();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 
-        // Also load CRM data
-        await loadCRMData();
+        // Step 3: Load jualan dalam background (silent)
+        loadSalesBackground();
 
     }catch(e){
         toast('❌ Gagal: ' + e.message, true);
-    }finally{
         hideLoading();
     }
+}
+
+async function loadSalesBackground(){
+    // Show subtle indicator
+    document.getElementById('lastUpdated').textContent = '⏳ Memuatkan jualan...';
+    const results = [];
+    for(let i=0;i<allClients.length;i+=4){
+        const batch = allClients.slice(i,i+4);
+        const bRes = await Promise.all(batch.map(c=>fetchSales(c)));
+        results.push(...bRes);
+        // Update cards progressively as each batch completes
+        allClients = [
+            ...results,
+            ...allClients.slice(results.length)
+        ];
+        renderDashboard();
+    }
+    allClients = results;
+    renderDashboard();
+    document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 }
 
 // CRM data in memory
