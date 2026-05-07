@@ -160,6 +160,20 @@
         .chart-wrap{position:relative;height:180px;margin-bottom:4px;}
         .no-orders{text-align:center;padding:20px;color:var(--gray-light);font-size:0.82rem;}
 
+        /* CHARTS DASHBOARD */
+        .chart-card{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);}
+        .chart-title{font-weight:800;font-size:0.95rem;color:var(--dark);margin-bottom:2px;}
+        .chart-sub{font-size:0.72rem;color:var(--gray);margin-bottom:14px;}
+        .chart-legend-item{display:flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:600;color:var(--dark-3);}
+        .chart-legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+        .risk-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:var(--bg);margin-bottom:6px;font-size:0.8rem;}
+        .risk-row-left{display:flex;flex-direction:column;gap:2px;}
+        .risk-name{font-weight:700;}
+        .risk-meta{font-size:0.7rem;color:var(--gray);}
+        @media(max-width:700px){
+            .chart-row-2,.chart-row-3{grid-template-columns:1fr!important;}
+        }
+
         /* FOLLOWUP & LEAD */
         .fu-filter-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:0.75rem;font-weight:700;background:white;color:var(--gray);cursor:pointer;font-family:var(--font);transition:all 0.2s;}
         .fu-filter-btn.active,.fu-filter-btn:hover{background:var(--primary);color:white;border-color:var(--primary);}
@@ -226,6 +240,7 @@
         <button class="tab-btn" onclick="switchTab('tambah',this)">➕ Tambah Client</button>
         <button class="tab-btn" onclick="switchTab('followup',this)">💬 Follow Up</button>
         <button class="tab-btn" onclick="switchTab('leads',this)">🎯 Lead</button>
+        <button class="tab-btn" onclick="switchTab('charts',this)">📈 Dashboard</button>
     </div>
 
     <!-- TAB: DASHBOARD -->
@@ -432,6 +447,80 @@
     </div>
 </div>
 
+<!-- TAB: CHARTS DASHBOARD -->
+<div class="tab-content" id="tab-charts">
+    <!-- Row 1: KPI Cards -->
+    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
+        <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
+        <div class="stat-card"><div class="stat-label">Client Aktif</div><div class="stat-val green" id="kpi-aktif">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dari jumlah client</div></div>
+        <div class="stat-card"><div class="stat-label">Churn Rate</div><div class="stat-val red" id="kpi-churn">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">% client expired</div></div>
+        <div class="stat-card"><div class="stat-label">Conversion</div><div class="stat-val orange" id="kpi-conversion">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Lead → Client</div></div>
+        <div class="stat-card"><div class="stat-label">Jumlah Lead</div><div class="stat-val" id="kpi-leads">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dalam CRM</div></div>
+        <div class="stat-card"><div class="stat-label">At Risk</div><div class="stat-val orange" id="kpi-risk">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Luput dalam 7 hari</div></div>
+    </div>
+
+    <!-- Row 2: Sales Funnel + Client Health -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-2">
+        <!-- Sales Funnel Donut -->
+        <div class="chart-card">
+            <div class="chart-title">🎯 Sales Funnel</div>
+            <div class="chart-sub">Peringkat lead sekarang</div>
+            <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
+                <canvas id="funnelChart"></canvas>
+            </div>
+            <div id="funnelLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+        </div>
+
+        <!-- Client Health Donut -->
+        <div class="chart-card">
+            <div class="chart-title">💚 Kesihatan Client</div>
+            <div class="chart-sub">Status semua client</div>
+            <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
+                <canvas id="healthChart"></canvas>
+            </div>
+            <div id="healthLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+        </div>
+    </div>
+
+    <!-- Row 3: Revenue Bar + Client Type Pie -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-3">
+        <!-- Top Client Revenue Bar -->
+        <div class="chart-card">
+            <div class="chart-title">💰 Top Client — Jualan 7 Hari</div>
+            <div class="chart-sub">Client dengan jualan tertinggi</div>
+            <div style="position:relative;height:220px">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Client Type Pie -->
+        <div class="chart-card">
+            <div class="chart-title">📦 Jenis Pakej</div>
+            <div class="chart-sub">Standard vs Setup</div>
+            <div style="position:relative;height:180px;display:flex;align-items:center;justify-content:center">
+                <canvas id="pakejChart"></canvas>
+            </div>
+            <div id="pakejLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+        </div>
+    </div>
+
+    <!-- Row 4: Client Activity Bar -->
+    <div class="chart-card" style="margin-bottom:16px">
+        <div class="chart-title">🏃 Aktiviti Client — Guna vs Tidak</div>
+        <div class="chart-sub">Berdasarkan jualan 7 hari lepas</div>
+        <div style="position:relative;height:200px">
+            <canvas id="activityChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Row 5: At Risk Table -->
+    <div class="chart-card">
+        <div class="chart-title">⚠️ Client Berisiko</div>
+        <div class="chart-sub">Langganan hampir luput atau tidak aktif</div>
+        <div id="atRiskTable" style="margin-top:12px"></div>
+    </div>
+</div>
+
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
     <div class="modal">
@@ -578,6 +667,7 @@ function switchTab(id, btn){
     document.getElementById('tab-'+id).classList.add('active');
     if(id==='followup') renderFollowupTab();
     if(id==='leads') renderLeadsTab();
+    if(id==='charts') renderChartsDashboard();
 }
 
 // ============================================================
@@ -1052,6 +1142,171 @@ function renderSalesModal(client, weekly, daily){
 function closeSalesModal(){
     document.getElementById('salesModal').classList.remove('show');
     if(salesChart){ salesChart.destroy(); salesChart=null; }
+}
+
+// ============================================================
+// CHARTS DASHBOARD
+// ============================================================
+let chartInstances = {};
+
+function destroyChart(id){
+    if(chartInstances[id]){ chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+function makeChart(id, type, data, options){
+    destroyChart(id);
+    const ctx = document.getElementById(id);
+    if(!ctx) return;
+    chartInstances[id] = new Chart(ctx, { type, data, options: options||{} });
+}
+
+function renderChartsDashboard(){
+    const clients  = allClients;
+    const leads    = crmLeads;
+    const total    = clients.length;
+    const aktif    = clients.filter(c=>c.status==='active').length;
+    const expired  = clients.filter(c=>c.status==='expired').length;
+    const atRisk   = clients.filter(c=>c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=7).length;
+    const standard = clients.filter(c=>c.renewType==='standard').length;
+    const setup    = clients.filter(c=>c.renewType==='setup').length;
+
+    // MRR calculation
+    const mrr = clients.filter(c=>c.status==='active').reduce((s,c)=>{
+        return s + (c.renewType==='standard'?30:80);
+    },0);
+
+    // Conversion rate
+    const closedLeads = leads.filter(l=>l.status==='closed').length;
+    const totalLeads  = leads.length;
+    const conversion  = totalLeads>0 ? Math.round((closedLeads/totalLeads)*100) : 0;
+    const churnRate   = total>0 ? Math.round((expired/total)*100) : 0;
+
+    // Update KPI cards
+    document.getElementById('kpi-mrr').textContent        = 'RM'+mrr;
+    document.getElementById('kpi-aktif').textContent      = aktif+'/'+total;
+    document.getElementById('kpi-churn').textContent      = churnRate+'%';
+    document.getElementById('kpi-conversion').textContent = conversion+'%';
+    document.getElementById('kpi-leads').textContent      = totalLeads;
+    document.getElementById('kpi-risk').textContent       = atRisk;
+
+    // ── CHART 1: Sales Funnel (Donut) ─────────────────────
+    const funnelData = {
+        new:      leads.filter(l=>l.status==='new').length,
+        followup: leads.filter(l=>l.status==='followup').length,
+        trial:    leads.filter(l=>l.status==='trial').length,
+        closed:   leads.filter(l=>l.status==='closed').length,
+        lost:     leads.filter(l=>l.status==='lost').length,
+    };
+    const funnelColors = ['#3b82f6','#f59e0b','#8b5cf6','#16a34a','#ef4444'];
+    const funnelLabels = ['🆕 Baru','📞 Follow Up','🎁 Trial','✅ Closed','❌ Lost'];
+    makeChart('funnelChart','doughnut',{
+        labels: funnelLabels,
+        datasets:[{data:Object.values(funnelData),backgroundColor:funnelColors,borderWidth:2,borderColor:'white'}]
+    },{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+c.raw+' lead';}}}}
+    });
+    document.getElementById('funnelLegend').innerHTML = funnelLabels.map((l,i)=>
+        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+funnelColors[i]+'"></div>'+l+' ('+Object.values(funnelData)[i]+')</div>'
+    ).join('');
+
+    // ── CHART 2: Client Health (Donut) ───────────────────
+    const notActive = clients.filter(c=>c.status==='active'&&c.sales&&c.sales.orders===0).length;
+    const active7   = clients.filter(c=>c.status==='active'&&c.sales&&c.sales.orders>0).length;
+    const healthColors = ['#16a34a','#f59e0b','#ef4444','#94a3b8'];
+    const healthLabels = ['🟢 Aktif (ada jualan)','🟡 Berisiko (luput 7 hari)','🔴 Expired','⚪ Tak aktif'];
+    const healthData   = [active7, atRisk, expired, notActive];
+    makeChart('healthChart','doughnut',{
+        labels:healthLabels,
+        datasets:[{data:healthData,backgroundColor:healthColors,borderWidth:2,borderColor:'white'}]
+    },{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}}
+    });
+    document.getElementById('healthLegend').innerHTML = healthLabels.map((l,i)=>
+        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+healthColors[i]+'"></div>'+l+' ('+healthData[i]+')</div>'
+    ).join('');
+
+    // ── CHART 3: Top Client Revenue (Bar) ────────────────
+    const topClients = [...clients]
+        .filter(c=>c.sales&&c.sales.revenue>0)
+        .sort((a,b)=>(b.sales.revenue)-(a.sales.revenue))
+        .slice(0,7);
+    makeChart('revenueChart','bar',{
+        labels: topClients.map(c=>c.shopName||c.slug),
+        datasets:[{
+            label:'Jualan 7 Hari (RM)',
+            data: topClients.map(c=>c.sales.revenue),
+            backgroundColor: topClients.map((_,i)=>['#f97316','#3b82f6','#16a34a','#8b5cf6','#f59e0b','#ef4444','#06b6d4'][i]||'#f97316'),
+            borderRadius:8, borderSkipped:false,
+        }]
+    },{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+            y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},
+            x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}}
+        }
+    });
+
+    // ── CHART 4: Pakej Type (Pie) ────────────────────────
+    makeChart('pakejChart','pie',{
+        labels:['Standard (RM30)','Setup (RM80)'],
+        datasets:[{data:[standard,setup],backgroundColor:['#3b82f6','#f97316'],borderWidth:2,borderColor:'white'}]
+    },{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}}
+    });
+    document.getElementById('pakejLegend').innerHTML =
+        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#3b82f6"></div>Standard ('+standard+')</div>'+
+        '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f97316"></div>Setup ('+setup+')</div>';
+
+    // ── CHART 5: Activity Bar ───────────────────────────
+    const actLabels = ['Ada jualan','Tiada jualan','Expired'];
+    const actData   = [active7, notActive, expired];
+    const actColors = ['#16a34a','#f59e0b','#ef4444'];
+    makeChart('activityChart','bar',{
+        labels: clients.filter(c=>c.sales||c.status==='expired').map(c=>c.shopName||c.slug),
+        datasets:[{
+            label:'Jualan 7 Hari',
+            data: clients.filter(c=>c.sales||c.status==='expired').map(c=>c.sales?c.sales.revenue:0),
+            backgroundColor: clients.filter(c=>c.sales||c.status==='expired').map(c=>{
+                if(c.status==='expired') return '#ef4444';
+                if(!c.sales||c.sales.orders===0) return '#f59e0b';
+                return '#16a34a';
+            }),
+            borderRadius:6,borderSkipped:false,
+        }]
+    },{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+            y:{grid:{color:'#f1f5f9'},ticks:{callback:v=>'RM'+v,font:{size:10}}},
+            x:{grid:{display:false},ticks:{font:{size:9},maxRotation:35}}
+        }
+    });
+
+    // ── At Risk Table ───────────────────────────────────
+    const riskClients = clients
+        .filter(c=>(c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=14)||(c.status==='active'&&c.sales&&c.sales.orders===0))
+        .sort((a,b)=>(a.daysLeft||999)-(b.daysLeft||999));
+
+    const riskEl = document.getElementById('atRiskTable');
+    if(!riskClients.length){
+        riskEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-light);font-size:0.82rem">✅ Tiada client berisiko sekarang</div>';
+    }else{
+        riskEl.innerHTML = riskClients.map(c=>{
+            const reasons = [];
+            if(c.daysLeft!==null&&c.daysLeft<=14) reasons.push('⏰ Luput dalam '+c.daysLeft+' hari');
+            if(c.sales&&c.sales.orders===0) reasons.push('📉 Tiada pesanan 7 hari');
+            const urgency = c.daysLeft!==null&&c.daysLeft<=7 ? 'var(--danger-light)' : 'var(--warning-light)';
+            return '<div class="risk-row" style="background:'+urgency+'">'
+                +'<div class="risk-row-left"><div class="risk-name">🍽️ '+esc(c.shopName||c.slug)+'</div>'
+                +'<div class="risk-meta">'+reasons.join(' · ')+'</div></div>'
+                +(c.whatsapp?'<a href="https://'+esc(c.whatsapp)+'" target="_blank" class="btn-wa-send">💬 WA</a>':'')
+                +'</div>';
+        }).join('');
+    }
 }
 
 // ============================================================
