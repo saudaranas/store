@@ -758,7 +758,7 @@ function renderDashboard(){
 
         return '<div class="client-card">'
             +'<div class="cc-header"><div><div class="cc-name">🍽️ '+esc(c.shopName||c.slug)+'</div><div class="cc-slug">'+esc(c.slug)+'</div></div>'+statusBadge+'</div>'
-            +(c.adminPin?'<div style="display:inline-flex;align-items:center;gap:6px;background:#1e293b;color:white;padding:4px 12px;border-radius:8px;font-size:0.75rem;font-weight:800;margin-bottom:8px">🔐 PIN Admin: '+esc(c.adminPin)+'</div>':'')
+            +(c.adminPin?'<div style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:8px;font-size:0.78rem;font-weight:700;margin-bottom:8px;border:1px solid #e2e8f0">'+esc(c.adminPin)+'</div>':'')
             +expiryHtml+statsHtml+actHtml
             +'<div class="cc-footer">'
             +'<a href="https://poskedai.store/?kedai='+esc(c.slug)+'" target="_blank" class="btn-link">🔗 Buka App</a>'
