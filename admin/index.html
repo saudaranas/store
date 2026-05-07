@@ -731,7 +731,7 @@ async function loadAllData(){
             loadCRMData()
         ]);
         if(!reg.success) throw new Error(reg.error);
-        allClients = reg.clients || [];
+        allClients = (reg.clients || []).filter(c => c.slug !== 'demo');
 
         // Step 2: Render terus tanpa tunggu jualan
         renderRegistry();
