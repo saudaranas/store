@@ -660,12 +660,25 @@ async function gasCall(url, key, action, data){
 }
 
 async function fetchSales(client){
-    if(!client.gasUrl || client.status==='expired') return {...client,sales:null};
+    if(!client.gasUrl || client.status==='expired') return {...client,sales:null,adminPin:null};
     try{
         const today=new Date();
         const start=new Date(today); start.setDate(today.getDate()-6);
         const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-        const r = await gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:fmt(start),endDate:fmt(today)});
+
+        // Fetch weekly sales + staff list in parallel
+        const [r, staffRes] = await Promise.all([
+            gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:fmt(start),endDate:fmt(today)}),
+            gasCall(client.gasUrl, CLIENT_KEY, 'getStaffList', {})
+        ]);
+
+        // Get admin PIN
+        let adminPin = null;
+        if(staffRes.success && staffRes.staffList){
+            const admin = staffRes.staffList.find(s=>s.role==='admin');
+            if(admin) adminPin = admin.pin;
+        }
+
         if(r.success){
             const byDate = r.byDate||{};
             const lastDate = Object.keys(byDate).filter(d=>byDate[d]>0).sort().reverse()[0]||null;
@@ -674,10 +687,11 @@ async function fetchSales(client){
                 const diff=Math.floor((new Date()-new Date(lastDate))/86400000);
                 activity = diff===0?'active':diff<=3?'recent':'idle';
             }
-            return {...client,sales:{revenue:r.totalRevenue||0,orders:r.totalOrders||0,lastDate,activity}};
+            return {...client,adminPin,sales:{revenue:r.totalRevenue||0,orders:r.totalOrders||0,lastDate,activity}};
         }
+        return {...client,adminPin,sales:null};
     }catch(e){}
-    return {...client,sales:null};
+    return {...client,sales:null,adminPin:null};
 }
 
 // ============================================================
@@ -744,6 +758,7 @@ function renderDashboard(){
 
         return '<div class="client-card">'
             +'<div class="cc-header"><div><div class="cc-name">🍽️ '+esc(c.shopName||c.slug)+'</div><div class="cc-slug">'+esc(c.slug)+'</div></div>'+statusBadge+'</div>'
+            +(c.adminPin?'<div style="display:inline-flex;align-items:center;gap:6px;background:#1e293b;color:white;padding:4px 12px;border-radius:8px;font-size:0.75rem;font-weight:800;margin-bottom:8px">🔐 PIN Admin: '+esc(c.adminPin)+'</div>':'')
             +expiryHtml+statsHtml+actHtml
             +'<div class="cc-footer">'
             +'<a href="https://poskedai.store/?kedai='+esc(c.slug)+'" target="_blank" class="btn-link">🔗 Buka App</a>'
