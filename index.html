@@ -738,9 +738,9 @@ const CLIENT_CACHE_TTL=30000;
 function esc(str){if(!str)return'';const d=document.createElement('div');d.textContent=String(str);return d.innerHTML}
 function debounce(fn,ms=300){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
 function today(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kuala_Lumpur'})}
-function saveSession(){try{sessionStorage.setItem('poskedai_staff',JSON.stringify(S.staff))}catch(e){}}
-function loadSession(){try{const d=sessionStorage.getItem('poskedai_staff');if(d){S.staff=JSON.parse(d);return true}}catch(e){}return false}
-function clearSession(){try{sessionStorage.removeItem('poskedai_staff')}catch(e){}}
+function saveSession(){try{localStorage.setItem('poskedai_staff_'+(window.__PK_GAS_URL__||''),JSON.stringify(S.staff))}catch(e){}}
+function loadSession(){try{const d=localStorage.getItem('poskedai_staff_'+(window.__PK_GAS_URL__||''));if(d){S.staff=JSON.parse(d);return true}}catch(e){}return false}
+function clearSession(){try{localStorage.removeItem('poskedai_staff_'+(window.__PK_GAS_URL__||''))}catch(e){}}
 async function api(action,data={}){const st=Date.now();try{const c=new AbortController();const to=setTimeout(()=>c.abort(),30000);const r=await fetch(C.URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({apiKey:C.KEY,action,data}),redirect:'follow',signal:c.signal});clearTimeout(to);const t=await r.text();console.log('[API]',action,(Date.now()-st)+'ms','status:',r.status);if(t.trim().startsWith('<')){console.error('[API] HTML:',t.substring(0,200));return{success:false,error:'Server error. Cuba semula.'}}if(!t||t.trim()==='')return{success:false,error:'Respons kosong.'};try{return JSON.parse(t)}catch(e){console.error('[API] Parse err:',t.substring(0,200));return{success:false,error:'Format tidak sah.'}}}catch(e){if(e.name==='AbortError')return{success:false,error:'Timeout (30s).'};return{success:false,error:'Gagal sambung: '+e.message}}}
 async function cachedApi(action,data={},ttl=CLIENT_CACHE_TTL){const key=action+JSON.stringify(data);const now=Date.now();if(clientCache[key]&&(now-clientCache[key].time)<ttl){console.log('[CACHE]',action);return clientCache[key].data}const r=await api(action,data);if(r.success)clientCache[key]={data:r,time:now};return r;}
 function clearClientCache(prefix){Object.keys(clientCache).forEach(k=>{if(!prefix||k.startsWith(prefix))delete clientCache[k]})}
