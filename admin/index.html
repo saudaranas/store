@@ -235,7 +235,8 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('charts',this)">📊 Dashboard</button>
+        <button class="tab-btn active" onclick="switchTab('dashboard',this)">📊 Dashboard</button>
+        <button class="tab-btn" onclick="switchTab('charts',this)">📈 Graf</button>
         <button class="tab-btn" onclick="switchTab('registry',this)">📋 Registry</button>
         <button class="tab-btn" onclick="switchTab('tambah',this)">➕ Tambah Client</button>
         <button class="tab-btn" onclick="switchTab('followup',this)">💬 Follow Up</button>
@@ -457,8 +458,21 @@
     </div>
 </div>
 
+<!-- TAB: DASHBOARD -->
+<div class="tab-content active" id="tab-dashboard">
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
+        <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
+        <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
+        <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
+        <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
+        <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
+    </div>
+    <div class="client-grid" id="clientGrid"></div>
+</div>
+
 <!-- TAB: CHARTS DASHBOARD -->
-<div class="tab-content active" id="tab-charts">
+<div class="tab-content" id="tab-charts">
     <!-- Row 1: KPI Cards -->
     <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
         <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
@@ -675,9 +689,10 @@ function switchTab(id, btn){
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-'+id).classList.add('active');
+    if(id==='dashboard') renderDashboard();
     if(id==='followup') renderFollowupTab();
     if(id==='leads') renderLeadsTab();
-    if(id==='charts'){ renderDashboard(); }
+    if(id==='charts') renderChartsDashboard();
 }
 
 let visualsOpen = false;
@@ -736,6 +751,7 @@ async function loadAllData(){
         // Step 2: Render terus tanpa tunggu jualan
         renderRegistry();
         renderDashboard();
+        renderChartsDashboard();
         hideLoading();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 
@@ -1210,8 +1226,7 @@ function makeChart(id, type, data, options){
 }
 
 function renderChartsDashboard(){
-    const sec = document.getElementById('visualSection');
-    if(!sec || sec.style.display==='none') return;
+    // Charts render when tab is active
     const clients  = allClients;
     const leads    = crmLeads;
     const total    = clients.length;
