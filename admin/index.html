@@ -243,7 +243,86 @@
         <button class="tab-btn" onclick="switchTab('leads',this)">🎯 Lead</button>
     </div>
 
+    <!-- TAB: DASHBOARD -->
+    <div class="tab-content active" id="tab-dashboard">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
+            <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
+            <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
+            <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
+            <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
+            <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
+        </div>
+        <div class="client-grid" id="clientGrid"></div>
+    </div>
 
+    <!-- TAB: CHARTS DASHBOARD -->
+    <div class="tab-content" id="tab-charts">
+        <!-- Row 1: KPI Cards -->
+        <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
+            <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
+            <div class="stat-card"><div class="stat-label">Client Aktif</div><div class="stat-val green" id="kpi-aktif">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dari jumlah client</div></div>
+            <div class="stat-card"><div class="stat-label">Churn Rate</div><div class="stat-val red" id="kpi-churn">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">% client expired</div></div>
+            <div class="stat-card"><div class="stat-label">Conversion</div><div class="stat-val orange" id="kpi-conversion">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Lead → Client</div></div>
+            <div class="stat-card"><div class="stat-label">Jumlah Lead</div><div class="stat-val" id="kpi-leads">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dalam CRM</div></div>
+            <div class="stat-card"><div class="stat-label">At Risk</div><div class="stat-val orange" id="kpi-risk">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Luput dalam 7 hari</div></div>
+        </div>
+
+        <!-- Row 2: Sales Funnel + Client Health -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-2">
+            <div class="chart-card">
+                <div class="chart-title">🎯 Sales Funnel</div>
+                <div class="chart-sub">Peringkat lead sekarang</div>
+                <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+                <div id="funnelLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">💚 Kesihatan Client</div>
+                <div class="chart-sub">Status semua client</div>
+                <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
+                    <canvas id="healthChart"></canvas>
+                </div>
+                <div id="healthLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+            </div>
+        </div>
+
+        <!-- Row 3: Revenue Bar + Client Type Pie -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-3">
+            <div class="chart-card">
+                <div class="chart-title">💰 Top Client — Jualan 7 Hari</div>
+                <div class="chart-sub">Client dengan jualan tertinggi</div>
+                <div style="position:relative;height:220px">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">📦 Jenis Pakej</div>
+                <div class="chart-sub">Standard vs Setup</div>
+                <div style="position:relative;height:180px;display:flex;align-items:center;justify-content:center">
+                    <canvas id="pakejChart"></canvas>
+                </div>
+                <div id="pakejLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
+            </div>
+        </div>
+
+        <!-- Row 4: Client Activity Bar -->
+        <div class="chart-card" style="margin-bottom:16px">
+            <div class="chart-title">🏃 Aktiviti Client — Guna vs Tidak</div>
+            <div class="chart-sub">Berdasarkan jualan 7 hari lepas</div>
+            <div style="position:relative;height:200px">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Row 5: At Risk Table -->
+        <div class="chart-card">
+            <div class="chart-title">⚠️ Client Berisiko</div>
+            <div class="chart-sub">Langganan hampir luput atau tidak aktif</div>
+            <div id="atRiskTable" style="margin-top:12px"></div>
+        </div>
+    </div>
 
     <!-- TAB: REGISTRY -->
     <div class="tab-content" id="tab-registry">
@@ -320,59 +399,38 @@
         </div>
     </div>
 
-    <!-- Client Cards Section (collapsible) -->
-    <div class="chart-card" style="margin-top:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleClientSection()">
-            <div>
-                <div class="chart-title">🏪 Senarai Client</div>
-                <div class="chart-sub" id="clientSectionSub">Klik untuk lihat semua client</div>
+    <!-- TAB: FOLLOW UP -->
+    <div class="tab-content" id="tab-followup">
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+            <div style="font-weight:800;font-size:0.95rem;flex:1">💬 Follow Up Client</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onclick="setFollowupFilter('all')" class="fu-filter-btn active" id="ff-all">Semua</button>
+                <button onclick="setFollowupFilter('belum_bayar')" class="fu-filter-btn" id="ff-belum_bayar">🔴 Belum Bayar</button>
+                <button onclick="setFollowupFilter('dah_bayar')" class="fu-filter-btn" id="ff-dah_bayar">🟢 Dah Bayar</button>
             </div>
-            <button id="clientToggleBtn" style="background:var(--primary);color:white;border:none;border-radius:10px;padding:8px 18px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:var(--font);white-space:nowrap">▼ Lihat Client</button>
         </div>
-        <div id="clientSection" style="display:none;margin-top:16px">
-            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:16px">
-                <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
-                <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
-                <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
-                <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
-                <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
-                <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
-            </div>
-            <div class="client-grid" id="clientGrid"></div>
-        </div>
+        <div id="fuPendingAlert" style="display:none;background:var(--warning-light);border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:0.82rem;font-weight:700;color:#78350f"></div>
+        <div id="followupGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
     </div>
-</div>
 
-<!-- TAB: FOLLOW UP -->
-<div class="tab-content" id="tab-followup">
-    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-        <div style="font-weight:800;font-size:0.95rem;flex:1">💬 Follow Up Client</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button onclick="setFollowupFilter('all')" class="fu-filter-btn active" id="ff-all">Semua</button>
-            <button onclick="setFollowupFilter('belum_bayar')" class="fu-filter-btn" id="ff-belum_bayar">🔴 Belum Bayar</button>
-            <button onclick="setFollowupFilter('dah_bayar')" class="fu-filter-btn" id="ff-dah_bayar">🟢 Dah Bayar</button>
+    <!-- TAB: LEADS -->
+    <div class="tab-content" id="tab-leads">
+        <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+            <div style="font-weight:800;font-size:0.95rem;flex:1">🎯 Tracking Lead</div>
+            <button onclick="openAddLead()" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;padding:8px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font)">➕ Tambah Lead</button>
         </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button onclick="setLeadFilter('all')" class="fu-filter-btn active" id="lf-all">Semua</button>
+            <button onclick="setLeadFilter('new')" class="fu-filter-btn" id="lf-new">🆕 Baru</button>
+            <button onclick="setLeadFilter('followup')" class="fu-filter-btn" id="lf-followup">📞 Follow Up</button>
+            <button onclick="setLeadFilter('trial')" class="fu-filter-btn" id="lf-trial">🎁 Trial</button>
+            <button onclick="setLeadFilter('closed')" class="fu-filter-btn" id="lf-closed">✅ Closed</button>
+            <button onclick="setLeadFilter('lost')" class="fu-filter-btn" id="lf-lost">❌ Lost</button>
+        </div>
+        <div id="leadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
     </div>
-    <div id="fuPendingAlert" style="display:none;background:var(--warning-light);border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:0.82rem;font-weight:700;color:#78350f"></div>
-    <div id="followupGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
-</div>
 
-<!-- TAB: LEADS -->
-<div class="tab-content" id="tab-leads">
-    <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-        <div style="font-weight:800;font-size:0.95rem;flex:1">🎯 Tracking Lead</div>
-        <button onclick="openAddLead()" style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;padding:8px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font)">➕ Tambah Lead</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button onclick="setLeadFilter('all')" class="fu-filter-btn active" id="lf-all">Semua</button>
-        <button onclick="setLeadFilter('new')" class="fu-filter-btn" id="lf-new">🆕 Baru</button>
-        <button onclick="setLeadFilter('followup')" class="fu-filter-btn" id="lf-followup">📞 Follow Up</button>
-        <button onclick="setLeadFilter('trial')" class="fu-filter-btn" id="lf-trial">🎁 Trial</button>
-        <button onclick="setLeadFilter('closed')" class="fu-filter-btn" id="lf-closed">✅ Closed</button>
-        <button onclick="setLeadFilter('lost')" class="fu-filter-btn" id="lf-lost">❌ Lost</button>
-    </div>
-    <div id="leadsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px"></div>
-</div>
+</div><!-- end adminApp -->
 
 <!-- ADD/EDIT LEAD MODAL -->
 <div class="modal-overlay" id="leadModal">
@@ -455,93 +513,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- TAB: DASHBOARD -->
-<div class="tab-content active" id="tab-dashboard">
-    <div class="stats-grid" id="statsGrid">
-        <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
-        <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
-        <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
-        <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
-        <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
-        <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
-    </div>
-    <div class="client-grid" id="clientGrid"></div>
-</div>
-
-<!-- TAB: CHARTS DASHBOARD -->
-<div class="tab-content" id="tab-charts">
-    <!-- Row 1: KPI Cards -->
-    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
-        <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
-        <div class="stat-card"><div class="stat-label">Client Aktif</div><div class="stat-val green" id="kpi-aktif">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dari jumlah client</div></div>
-        <div class="stat-card"><div class="stat-label">Churn Rate</div><div class="stat-val red" id="kpi-churn">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">% client expired</div></div>
-        <div class="stat-card"><div class="stat-label">Conversion</div><div class="stat-val orange" id="kpi-conversion">-%</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Lead → Client</div></div>
-        <div class="stat-card"><div class="stat-label">Jumlah Lead</div><div class="stat-val" id="kpi-leads">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Dalam CRM</div></div>
-        <div class="stat-card"><div class="stat-label">At Risk</div><div class="stat-val orange" id="kpi-risk">-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Luput dalam 7 hari</div></div>
-    </div>
-
-    <!-- Row 2: Sales Funnel + Client Health -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-2">
-        <!-- Sales Funnel Donut -->
-        <div class="chart-card">
-            <div class="chart-title">🎯 Sales Funnel</div>
-            <div class="chart-sub">Peringkat lead sekarang</div>
-            <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
-                <canvas id="funnelChart"></canvas>
-            </div>
-            <div id="funnelLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
-        </div>
-
-        <!-- Client Health Donut -->
-        <div class="chart-card">
-            <div class="chart-title">💚 Kesihatan Client</div>
-            <div class="chart-sub">Status semua client</div>
-            <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center">
-                <canvas id="healthChart"></canvas>
-            </div>
-            <div id="healthLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
-        </div>
-    </div>
-
-    <!-- Row 3: Revenue Bar + Client Type Pie -->
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px" class="chart-row-3">
-        <!-- Top Client Revenue Bar -->
-        <div class="chart-card">
-            <div class="chart-title">💰 Top Client — Jualan 7 Hari</div>
-            <div class="chart-sub">Client dengan jualan tertinggi</div>
-            <div style="position:relative;height:220px">
-                <canvas id="revenueChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Client Type Pie -->
-        <div class="chart-card">
-            <div class="chart-title">📦 Jenis Pakej</div>
-            <div class="chart-sub">Standard vs Setup</div>
-            <div style="position:relative;height:180px;display:flex;align-items:center;justify-content:center">
-                <canvas id="pakejChart"></canvas>
-            </div>
-            <div id="pakejLegend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center"></div>
-        </div>
-    </div>
-
-    <!-- Row 4: Client Activity Bar -->
-    <div class="chart-card" style="margin-bottom:16px">
-        <div class="chart-title">🏃 Aktiviti Client — Guna vs Tidak</div>
-        <div class="chart-sub">Berdasarkan jualan 7 hari lepas</div>
-        <div style="position:relative;height:200px">
-            <canvas id="activityChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Row 5: At Risk Table -->
-    <div class="chart-card">
-        <div class="chart-title">⚠️ Client Berisiko</div>
-        <div class="chart-sub">Langganan hampir luput atau tidak aktif</div>
-        <div id="atRiskTable" style="margin-top:12px"></div>
     </div>
 </div>
 
@@ -695,33 +666,12 @@ function switchTab(id, btn){
     if(id==='charts') setTimeout(()=>renderChartsDashboard(), 50);
 }
 
-let clientSectionOpen = false;
-function toggleClientSection(){
-    clientSectionOpen = !clientSectionOpen;
-    const sec = document.getElementById('clientSection');
-    const btn = document.getElementById('clientToggleBtn');
-    const sub = document.getElementById('clientSectionSub');
-    if(clientSectionOpen){
-        sec.style.display = 'block';
-        btn.textContent = '▲ Sembunyikan';
-        btn.style.background = 'var(--gray)';
-        sub.textContent = allClients.length + ' client — klik untuk sembunyikan';
-        renderDashboard();
-    }else{
-        sec.style.display = 'none';
-        btn.textContent = '▼ Lihat Client';
-        btn.style.background = 'var(--primary)';
-        sub.textContent = 'Klik untuk lihat semua client';
-    }
-}
-
 // ============================================================
 // LOAD ALL DATA
 // ============================================================
 async function loadAllData(){
     showLoading('Mengambil senarai client...');
     try{
-        // Step 1: Fetch registry + CRM serentak
         const [reg, crmRes] = await Promise.all([
             gasCall(MASTER_URL, MASTER_KEY, 'listAll', {}),
             loadCRMData()
@@ -729,13 +679,11 @@ async function loadAllData(){
         if(!reg.success) throw new Error(reg.error);
         allClients = (reg.clients || []).filter(c => c.slug !== 'demo');
 
-        // Step 2: Render terus tanpa tunggu jualan
         renderRegistry();
         renderDashboard();
         hideLoading();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 
-        // Step 3: Load jualan dalam background (silent)
         loadSalesBackground();
 
     }catch(e){
@@ -745,14 +693,12 @@ async function loadAllData(){
 }
 
 async function loadSalesBackground(){
-    // Show subtle indicator
     document.getElementById('lastUpdated').textContent = '⏳ Memuatkan jualan...';
     const results = [];
     for(let i=0;i<allClients.length;i+=4){
         const batch = allClients.slice(i,i+4);
         const bRes = await Promise.all(batch.map(c=>fetchSales(c)));
         results.push(...bRes);
-        // Update cards progressively as each batch completes
         allClients = [
             ...results,
             ...allClients.slice(results.length)
@@ -764,7 +710,6 @@ async function loadSalesBackground(){
     document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 }
 
-// CRM data in memory
 let crmLeads = [];
 let crmFollowup = {};
 
@@ -801,13 +746,11 @@ async function fetchSales(client){
         const start=new Date(today); start.setDate(today.getDate()-6);
         const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 
-        // Fetch weekly sales + staff list in parallel
         const [r, staffRes] = await Promise.all([
             gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:fmt(start),endDate:fmt(today)}),
             gasCall(client.gasUrl, CLIENT_KEY, 'getStaffList', {})
         ]);
 
-        // Get admin PIN
         let adminPin = null;
         if(staffRes.success && staffRes.staffList){
             const admin = staffRes.staffList.find(s=>s.role==='admin');
@@ -982,7 +925,6 @@ async function saveEdit(){
     try{
         const r = await gasCall(MASTER_URL, MASTER_KEY, 'update', data);
         if(r.success){
-            // Update local
             const idx = allClients.findIndex(c=>c.slug===slug);
             if(idx>=0) allClients[idx] = {...allClients[idx],...data};
             closeModal();
@@ -1018,7 +960,6 @@ async function tambahClient(){
         const r = await gasCall(MASTER_URL, MASTER_KEY, 'addClient', {slug,shopName,gasUrl,expiryDate,renewType,whatsapp,googleSheet});
         if(r.success){
             toast('✅ '+shopName+' berjaya didaftarkan!');
-            // Clear form
             ['new-slug','new-shopName','new-gasUrl','new-expiryDate','new-whatsapp','new-googleSheet'].forEach(id=>document.getElementById(id).value='');
             document.getElementById('new-renewType').value='setup';
             loadAllData();
@@ -1058,7 +999,6 @@ async function openSales(slug){
         const startStr = fmt(start);
         const endStr   = fmt(today);
 
-        // Fetch weekly + today orders in parallel
         const [weekly, daily] = await Promise.all([
             gasCall(client.gasUrl, CLIENT_KEY, 'getWeeklySales', {startDate:startStr, endDate:endStr}),
             gasCall(client.gasUrl, CLIENT_KEY, 'getOrders', {date:endStr})
@@ -1082,12 +1022,11 @@ function renderSalesModal(client, weekly, daily){
     const maxVal  = Math.max(...values, 1);
     const days    = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 
-    // Build date rows
     const dateRows = dates.map(d => {
         const val   = byDate[d] || 0;
         const pct   = Math.round((val/maxVal)*100);
         const dayName = days[new Date(d).getDay()];
-        const dateShort = d.substring(5); // MM-DD
+        const dateShort = d.substring(5);
         const isToday = d === dates[dates.length-1];
         return '<div class="sales-day-row">'
             +'<div class="sales-day-label">'+(isToday?'<strong>Hari ini</strong>':dayName)+'<div style="font-size:0.62rem;color:var(--gray-light)">'+dateShort+'</div></div>'
@@ -1096,13 +1035,11 @@ function renderSalesModal(client, weekly, daily){
             +'</div>';
     }).join('');
 
-    // Summary stats
     const totalRevenue = weekly.totalRevenue || 0;
     const totalOrders  = weekly.totalOrders  || 0;
     const avgPerDay    = (totalRevenue / 7).toFixed(2);
     const topItems     = (weekly.topItems||[]).slice(0,5);
 
-    // Today orders
     let ordersHtml = '<div class="no-orders">Tiada pesanan hari ini</div>';
     if(daily.success && daily.orders && daily.orders.length){
         const completed = daily.orders.filter(o=>o.status==='completed').slice(0,10);
@@ -1117,7 +1054,6 @@ function renderSalesModal(client, weekly, daily){
         }
     }
 
-    // Top items
     let topHtml = '<div class="no-orders">Tiada data</div>';
     if(topItems.length){
         topHtml = topItems.map(item=>'<div class="order-row">'
@@ -1130,26 +1066,20 @@ function renderSalesModal(client, weekly, daily){
     }
 
     document.getElementById('salesModalBody').innerHTML =
-        // Summary stats
         '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">'
         +'<div class="cc-stat"><div class="cc-stat-label">Jualan 7 Hari</div><div class="cc-stat-val" style="color:var(--success)">RM'+totalRevenue.toFixed(2)+'</div></div>'
         +'<div class="cc-stat"><div class="cc-stat-label">Pesanan</div><div class="cc-stat-val">'+totalOrders+'</div></div>'
         +'<div class="cc-stat"><div class="cc-stat-label">Avg/Hari</div><div class="cc-stat-val">RM'+avgPerDay+'</div></div>'
         +'</div>'
-        // Chart canvas
         +'<div class="sales-section-title">📈 Carta Jualan Harian</div>'
         +'<div class="chart-wrap"><canvas id="salesChartCanvas"></canvas></div>'
-        // Date breakdown
         +'<div class="sales-section-title">📅 Jumlah Per Hari</div>'
         +dateRows
-        // Top menu
         +'<div class="sales-section-title">🍽️ Menu Paling Laris (7 Hari)</div>'
         +topHtml
-        // Today orders
         +'<div class="sales-section-title">🧾 Pesanan Hari Ini</div>'
         +ordersHtml;
 
-    // Render chart
     setTimeout(()=>{
         const ctx = document.getElementById('salesChartCanvas');
         if(!ctx) return;
@@ -1215,18 +1145,15 @@ function renderChartsDashboard(){
     const standard = clients.filter(c=>c.renewType==='standard').length;
     const setup    = clients.filter(c=>c.renewType==='setup').length;
 
-    // MRR calculation
     const mrr = clients.filter(c=>c.status==='active').reduce((s,c)=>{
         return s + (c.renewType==='standard'?30:80);
     },0);
 
-    // Conversion rate
     const closedLeads = leads.filter(l=>l.status==='closed').length;
     const totalLeads  = leads.length;
     const conversion  = totalLeads>0 ? Math.round((closedLeads/totalLeads)*100) : 0;
     const churnRate   = total>0 ? Math.round((expired/total)*100) : 0;
 
-    // Update KPI cards
     document.getElementById('kpi-mrr').textContent        = 'RM'+mrr;
     document.getElementById('kpi-aktif').textContent      = aktif+'/'+total;
     document.getElementById('kpi-churn').textContent      = churnRate+'%';
@@ -1234,7 +1161,6 @@ function renderChartsDashboard(){
     document.getElementById('kpi-leads').textContent      = totalLeads;
     document.getElementById('kpi-risk').textContent       = atRisk;
 
-    // ── CHART 1: Sales Funnel (Donut) ─────────────────────
     const funnelData = {
         new:      leads.filter(l=>l.status==='new').length,
         followup: leads.filter(l=>l.status==='followup').length,
@@ -1255,7 +1181,6 @@ function renderChartsDashboard(){
         '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+funnelColors[i]+'"></div>'+l+' ('+Object.values(funnelData)[i]+')</div>'
     ).join('');
 
-    // ── CHART 2: Client Health (Donut) ───────────────────
     const notActive = clients.filter(c=>c.status==='active'&&c.sales&&c.sales.orders===0).length;
     const active7   = clients.filter(c=>c.status==='active'&&c.sales&&c.sales.orders>0).length;
     const healthColors = ['#16a34a','#f59e0b','#ef4444','#94a3b8'];
@@ -1272,7 +1197,6 @@ function renderChartsDashboard(){
         '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:'+healthColors[i]+'"></div>'+l+' ('+healthData[i]+')</div>'
     ).join('');
 
-    // ── CHART 3: Top Client Revenue (Bar) ────────────────
     const topClients = [...clients]
         .filter(c=>c.sales&&c.sales.revenue>0)
         .sort((a,b)=>(b.sales.revenue)-(a.sales.revenue))
@@ -1294,7 +1218,6 @@ function renderChartsDashboard(){
         }
     });
 
-    // ── CHART 4: Pakej Type (Pie) ────────────────────────
     makeChart('pakejChart','pie',{
         labels:['Standard (RM30)','Setup (RM80)'],
         datasets:[{data:[standard,setup],backgroundColor:['#3b82f6','#f97316'],borderWidth:2,borderColor:'white'}]
@@ -1306,10 +1229,6 @@ function renderChartsDashboard(){
         '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#3b82f6"></div>Standard ('+standard+')</div>'+
         '<div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f97316"></div>Setup ('+setup+')</div>';
 
-    // ── CHART 5: Activity Bar ───────────────────────────
-    const actLabels = ['Ada jualan','Tiada jualan','Expired'];
-    const actData   = [active7, notActive, expired];
-    const actColors = ['#16a34a','#f59e0b','#ef4444'];
     makeChart('activityChart','bar',{
         labels: clients.filter(c=>c.sales||c.status==='expired').map(c=>c.shopName||c.slug),
         datasets:[{
@@ -1331,7 +1250,6 @@ function renderChartsDashboard(){
         }
     });
 
-    // ── At Risk Table ───────────────────────────────────
     const riskClients = clients
         .filter(c=>(c.status==='active'&&c.daysLeft!==null&&c.daysLeft<=14)||(c.status==='active'&&c.sales&&c.sales.orders===0))
         .sort((a,b)=>(a.daysLeft||999)-(b.daysLeft||999));
@@ -1532,13 +1450,11 @@ Seperti biasa, saya sedia bantu bila-bila masa 😊`
     }
 ];
 
-// ── FOLLOWUP STATE (CRM GAS) ───────────────────────────────
 function getFuData(){ return crmFollowup; }
 
 async function saveFuDataRemote(itemId, stepIdx){
     try{
         await crmCall('saveFollowup', {itemId, stepIdx});
-        // Update local cache
         if(!crmFollowup[itemId]) crmFollowup[itemId]=[];
         if(!crmFollowup[itemId].includes(stepIdx)) crmFollowup[itemId].push(stepIdx);
     }catch(e){ console.log('saveFollowup error:', e); }
@@ -1550,7 +1466,6 @@ async function saveLeadsRemote(lead){
     try{
         const res = await crmCall('saveLead', lead);
         if(res.success){
-            // Update local cache
             const idx = crmLeads.findIndex(l=>l.id===lead.id);
             if(idx>=0) crmLeads[idx] = {...crmLeads[idx], ...lead};
             else crmLeads.unshift({...lead, id:res.id||lead.id});
@@ -1567,7 +1482,6 @@ async function deleteLeadRemote(lid){
     }catch(e){ return {success:false, error:e.message}; }
 }
 
-// ── RENDER FOLLOWUP TAB ─────────────────────────────────────
 let fuFilter = 'all';
 function setFollowupFilter(f){
     fuFilter = f;
@@ -1578,13 +1492,11 @@ function setFollowupFilter(f){
 
 function renderFollowupTab(){
     const fuData = getFuData();
-    // Combine: clients (dah bayar) + leads yg belum bayar
     const leads  = getLeads().filter(l=>l.status!=='closed'&&l.status!=='lost');
     const clients = allClients.filter(c=>c.status==='active');
 
     let items = [];
 
-    // Dah bayar — dari registry
     if(fuFilter==='all'||fuFilter==='dah_bayar'){
         clients.forEach(c=>{
             const key = 'client_'+c.slug;
@@ -1601,7 +1513,6 @@ function renderFollowupTab(){
         });
     }
 
-    // Belum bayar — dari leads
     if(fuFilter==='all'||fuFilter==='belum_bayar'){
         leads.forEach(l=>{
             const key = 'lead_'+l.id;
@@ -1617,7 +1528,6 @@ function renderFollowupTab(){
         });
     }
 
-    // Pending alert
     const pendingNow = items.filter(i=>i.nextStep);
     const alertEl = document.getElementById('fuPendingAlert');
     if(pendingNow.length){
@@ -1627,7 +1537,6 @@ function renderFollowupTab(){
         alertEl.style.display='none';
     }
 
-    // Sort: pending first
     items.sort((a,b)=>(b.nextStep?1:0)-(a.nextStep?1:0));
 
     const grid = document.getElementById('followupGrid');
@@ -1667,12 +1576,10 @@ function renderFollowupTab(){
     }).join('');
 }
 
-// ── MESEJ MODAL ─────────────────────────────────────────────
 let currentMesejItem = null;
 let currentMesejStepIdx = null;
 
 function openMesejForStep(itemId, type, stepIdx){
-    // Find item
     const fuData = getFuData();
     let item = null;
     if(type==='dah_bayar'){
@@ -1698,7 +1605,6 @@ function openMesejForStep(itemId, type, stepIdx){
     document.getElementById('mesejText').textContent = mesej;
     document.getElementById('mesejPreview').style.display = 'block';
 
-    // WhatsApp link
     const waNum = item.wa.replace(/[^0-9]/g,'');
     const waUrl = 'https://wa.me/'+waNum+'?text='+encodeURIComponent(mesej);
     const waBtn = document.getElementById('btnSendWa');
@@ -1709,11 +1615,9 @@ function openMesejForStep(itemId, type, stepIdx){
 }
 
 function markStepDone(itemId, stepIdx){
-    // Update local immediately for responsive UI
     if(!crmFollowup[itemId]) crmFollowup[itemId]=[];
     if(!crmFollowup[itemId].includes(stepIdx)) crmFollowup[itemId].push(stepIdx);
     renderFollowupTab();
-    // Save to GAS in background
     saveFuDataRemote(itemId, stepIdx);
 }
 
@@ -1726,7 +1630,6 @@ function copyMesej(){
     navigator.clipboard.writeText(text).then(()=>toast('✅ Mesej disalin!'));
 }
 
-// ── LEAD MANAGEMENT ─────────────────────────────────────────
 let leadFilter = 'all';
 function setLeadFilter(f){
     leadFilter=f;
@@ -1845,10 +1748,9 @@ function updateLeadStatus(el){
         l.status=status;
         renderLeadsTab();
         toast('✅ Status dikemaskini!');
-        saveLeadsRemote({...l, status}); // save to GAS background
+        saveLeadsRemote({...l, status});
     }
 }
-
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
