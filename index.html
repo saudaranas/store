@@ -632,12 +632,13 @@ async function routerInit() {
     // ── Semak cache dulu ──────────────────────────────────
     const cacheKey = '_pk_reg_' + slug;
     try {
-        const cached = localStorage.getItem(cacheKey); // registry cache
+        const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const data = JSON.parse(cached);
             if (data && data.gasUrl) {
+                // Ada cache — buka app TERUS (laju), verify GAS dalam background
                 window.__PK_GAS_URL__ = data.gasUrl;
-                window.__PK_RENEW_DATA__ = data; // simpan untuk renew check
+                window.__PK_RENEW_DATA__ = data;
                 updateSplash('✅ Membuka ' + (data.shopName || slug) + '...', '');
                 preloadAppData(data.gasUrl);
                 setTimeout(() => {
@@ -645,6 +646,37 @@ async function routerInit() {
                     setTimeout(() => { document.getElementById('splashScreen').style.display = 'none'; }, 400);
                     initApp();
                 }, 200);
+
+                // Background verify — kalau expired, block terus walaupun app dah buka
+                (async () => {
+                    try {
+                        const ctrl = new AbortController();
+                        const tid = setTimeout(() => ctrl.abort(), 10000);
+                        const fetchUrl = MASTER_URL + '?slug=' + encodeURIComponent(slug) + '&key=' + encodeURIComponent(MASTER_KEY);
+                        const res = await fetch(fetchUrl, { method: 'GET', redirect: 'follow', signal: ctrl.signal });
+                        clearTimeout(tid);
+                        const fresh = JSON.parse(await res.text());
+                        if (!fresh.success) {
+                            // Expired! Clear cache dan block app segera
+                            try { localStorage.removeItem(cacheKey); } catch(e) {}
+                            // Clear staff session juga
+                            try { localStorage.removeItem('poskedai_staff_' + data.gasUrl); } catch(e) {}
+                            if (fresh.status === 'expired') {
+                                // Hide app, tunjuk expired screen
+                                document.getElementById('appContainer').classList.remove('show');
+                                document.getElementById('loginScreen').style.display = 'none';
+                                showExpiredScreen(fresh);
+                            }
+                        } else {
+                            // Aktif — update cache dengan data terbaru
+                            try { localStorage.setItem(cacheKey, JSON.stringify(fresh)); } catch(e) {}
+                            window.__PK_RENEW_DATA__ = fresh;
+                        }
+                    } catch(e) {
+                        // Tiada internet atau timeout — biarkan app jalan (offline mode)
+                        console.log('[BG verify] Offline/timeout:', e.message);
+                    }
+                })();
                 return;
             }
         }
