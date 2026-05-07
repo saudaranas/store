@@ -520,6 +520,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ============================================================
+// AUTO LOGIN CHECK
+// ============================================================
+window.addEventListener('load', function(){
+    if(localStorage.getItem('_pk_admin_session') === '1'){
+        showAdminApp();
+    }
+});
+
+// ============================================================
 // CONFIG
 // ============================================================
 const ADMIN_PASS = '*Yarohim*165';
@@ -537,9 +546,8 @@ let allClients = [];
 function doLogin(){
     const pw = document.getElementById('pwInput').value;
     if(pw === ADMIN_PASS){
-        document.getElementById('loginWrap').style.display='none';
-        document.getElementById('adminApp').style.display='block';
-        loadAllData();
+        localStorage.setItem('_pk_admin_session', '1');
+        showAdminApp();
     }else{
         const err=document.getElementById('loginErr');
         err.style.display='block';
@@ -547,7 +555,14 @@ function doLogin(){
         setTimeout(()=>err.style.display='none',3000);
     }
 }
+
+function showAdminApp(){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('adminApp').style.display='block';
+    loadAllData();
+}
 function doLogout(){
+    localStorage.removeItem('_pk_admin_session');
     document.getElementById('loginWrap').style.display='flex';
     document.getElementById('adminApp').style.display='none';
     document.getElementById('pwInput').value='';
