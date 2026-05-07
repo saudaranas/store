@@ -235,26 +235,14 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('dashboard',this)">📊 Dashboard</button>
+        <button class="tab-btn active" onclick="switchTab('charts',this)">📊 Dashboard</button>
         <button class="tab-btn" onclick="switchTab('registry',this)">📋 Registry</button>
         <button class="tab-btn" onclick="switchTab('tambah',this)">➕ Tambah Client</button>
         <button class="tab-btn" onclick="switchTab('followup',this)">💬 Follow Up</button>
         <button class="tab-btn" onclick="switchTab('leads',this)">🎯 Lead</button>
-        <button class="tab-btn" onclick="switchTab('charts',this)">📈 Dashboard</button>
     </div>
 
-    <!-- TAB: DASHBOARD -->
-    <div class="tab-content active" id="tab-dashboard">
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
-            <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
-            <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
-            <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
-            <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
-            <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
-        </div>
-        <div class="client-grid" id="clientGrid"></div>
-    </div>
+
 
     <!-- TAB: REGISTRY -->
     <div class="tab-content" id="tab-registry">
@@ -328,6 +316,28 @@
             <button onclick="tambahClient()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;font-family:var(--font);margin-top:8px">
                 ➕ Tambah Client
             </button>
+        </div>
+    </div>
+
+    <!-- Client Cards Section (collapsible) -->
+    <div class="chart-card" style="margin-top:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleClientSection()">
+            <div>
+                <div class="chart-title">🏪 Senarai Client</div>
+                <div class="chart-sub" id="clientSectionSub">Klik untuk lihat semua client</div>
+            </div>
+            <button id="clientToggleBtn" style="background:var(--primary);color:white;border:none;border-radius:10px;padding:8px 18px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:var(--font);white-space:nowrap">▼ Lihat Client</button>
+        </div>
+        <div id="clientSection" style="display:none;margin-top:16px">
+            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:16px">
+                <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
+                <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
+                <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
+                <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
+                <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
+                <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
+            </div>
+            <div class="client-grid" id="clientGrid"></div>
         </div>
     </div>
 </div>
@@ -448,7 +458,7 @@
 </div>
 
 <!-- TAB: CHARTS DASHBOARD -->
-<div class="tab-content" id="tab-charts">
+<div class="tab-content active" id="tab-charts">
     <!-- Row 1: KPI Cards -->
     <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:20px" id="kpiGrid">
         <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div><div style="font-size:0.68rem;color:var(--gray);margin-top:4px">Monthly Recurring Revenue</div></div>
@@ -670,6 +680,26 @@ function switchTab(id, btn){
     if(id==='charts') renderChartsDashboard();
 }
 
+let clientSectionOpen = false;
+function toggleClientSection(){
+    clientSectionOpen = !clientSectionOpen;
+    const sec = document.getElementById('clientSection');
+    const btn = document.getElementById('clientToggleBtn');
+    const sub = document.getElementById('clientSectionSub');
+    if(clientSectionOpen){
+        sec.style.display = 'block';
+        btn.textContent = '▲ Sembunyikan';
+        btn.style.background = 'var(--gray)';
+        sub.textContent = allClients.length + ' client — klik untuk sembunyikan';
+        renderDashboard();
+    }else{
+        sec.style.display = 'none';
+        btn.textContent = '▼ Lihat Client';
+        btn.style.background = 'var(--primary)';
+        sub.textContent = 'Klik untuk lihat semua client';
+    }
+}
+
 // ============================================================
 // LOAD ALL DATA
 // ============================================================
@@ -685,8 +715,8 @@ async function loadAllData(){
         allClients = reg.clients || [];
 
         // Step 2: Render terus tanpa tunggu jualan
-        renderDashboard();
         renderRegistry();
+        renderChartsDashboard();
         hideLoading();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 
