@@ -1145,9 +1145,7 @@ function renderChartsDashboard(){
     const standard = clients.filter(c=>c.renewType==='standard').length;
     const setup    = clients.filter(c=>c.renewType==='setup').length;
 
-    const mrr = clients.filter(c=>c.status==='active').reduce((s,c)=>{
-        return s + (c.renewType==='standard'?30:80);
-    },0);
+    const mrr = clients.filter(c=>c.status==='active').length * 30;
 
     const closedLeads = leads.filter(l=>l.status==='closed').length;
     const totalLeads  = leads.length;
