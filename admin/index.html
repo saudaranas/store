@@ -319,27 +319,27 @@
         </div>
     </div>
 
-    <!-- Client Cards Section (collapsible) -->
-    <div class="chart-card" style="margin-top:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleClientSection()">
-            <div>
-                <div class="chart-title">🏪 Senarai Client</div>
-                <div class="chart-sub" id="clientSectionSub">Klik untuk lihat semua client</div>
-            </div>
-            <button id="clientToggleBtn" style="background:var(--primary);color:white;border:none;border-radius:10px;padding:8px 18px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:var(--font);white-space:nowrap">▼ Lihat Client</button>
-        </div>
-        <div id="clientSection" style="display:none;margin-top:16px">
-            <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:16px">
-                <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
-                <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
-                <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
-                <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
-                <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
-                <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
-            </div>
-            <div class="client-grid" id="clientGrid"></div>
-        </div>
+    </div><!-- end visualSection -->
+
+    <!-- KPI CARDS (always visible) -->
+    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:16px;margin-top:4px">
+        <div class="stat-card"><div class="stat-label">MRR</div><div class="stat-val orange" id="kpi-mrr">RM-</div></div>
+        <div class="stat-card"><div class="stat-label">Aktif/Total</div><div class="stat-val green" id="kpi-aktif">-</div></div>
+        <div class="stat-card"><div class="stat-label">Churn</div><div class="stat-val red" id="kpi-churn">-%</div></div>
+        <div class="stat-card"><div class="stat-label">Conversion</div><div class="stat-val orange" id="kpi-conversion">-%</div></div>
+        <div class="stat-card"><div class="stat-label">Leads</div><div class="stat-val" id="kpi-leads">-</div></div>
+        <div class="stat-card"><div class="stat-label">At Risk</div><div class="stat-val orange" id="kpi-risk">-</div></div>
+        <div class="stat-card"><div class="stat-label">Jumlah Client</div><div class="stat-val" id="st-total">-</div></div>
+        <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val green" id="st-active">-</div></div>
+        <div class="stat-card"><div class="stat-label">Expired</div><div class="stat-val red" id="st-expired">-</div></div>
+        <div class="stat-card"><div class="stat-label">Hampir Luput</div><div class="stat-val orange" id="st-warning">-</div></div>
+        <div class="stat-card"><div class="stat-label">Jualan 7 Hari</div><div class="stat-val orange" id="st-revenue">RM-</div></div>
+        <div class="stat-card"><div class="stat-label">Pesanan 7 Hari</div><div class="stat-val" id="st-orders">-</div></div>
     </div>
+
+    <!-- CLIENT CARDS (always visible) -->
+    <div class="client-grid" id="clientGrid"></div>
+
 </div>
 
 <!-- TAB: FOLLOW UP -->
@@ -677,7 +677,26 @@ function switchTab(id, btn){
     document.getElementById('tab-'+id).classList.add('active');
     if(id==='followup') renderFollowupTab();
     if(id==='leads') renderLeadsTab();
-    if(id==='charts') renderChartsDashboard();
+    if(id==='charts'){ renderDashboard(); }
+}
+
+let visualsOpen = false;
+function toggleVisuals(){
+    visualsOpen = !visualsOpen;
+    const sec = document.getElementById('visualSection');
+    const label = document.getElementById('visualToggleLabel');
+    const btn = document.getElementById('visualToggleBtn');
+    if(visualsOpen){
+        sec.style.display = 'block';
+        label.textContent = 'Sembunyikan Visual & Graf';
+        btn.style.background = 'linear-gradient(135deg,#64748b,#475569)';
+        setTimeout(()=>renderChartsDashboard(), 80);
+    }else{
+        sec.style.display = 'none';
+        label.textContent = 'Tunjuk Visual & Graf';
+        btn.style.background = 'linear-gradient(135deg,#f97316,#ea580c)';
+        Object.keys(chartInstances).forEach(id=>destroyChart(id));
+    }
 }
 
 let clientSectionOpen = false;
@@ -716,7 +735,7 @@ async function loadAllData(){
 
         // Step 2: Render terus tanpa tunggu jualan
         renderRegistry();
-        renderChartsDashboard();
+        renderDashboard();
         hideLoading();
         document.getElementById('lastUpdated').textContent = 'Kemaskini: ' + new Date().toLocaleTimeString('ms-MY');
 
@@ -1191,6 +1210,8 @@ function makeChart(id, type, data, options){
 }
 
 function renderChartsDashboard(){
+    const sec = document.getElementById('visualSection');
+    if(!sec || sec.style.display==='none') return;
     const clients  = allClients;
     const leads    = crmLeads;
     const total    = clients.length;
