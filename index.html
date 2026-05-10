@@ -348,7 +348,12 @@
         .expired-body{padding:24px;}
         .expired-shop{font-size:1.1rem;font-weight:800;color:#1e293b;margin-bottom:4px;}
         .expired-date{font-size:0.82rem;color:#64748b;margin-bottom:20px;}
-        @media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{position:absolute;top:0;left:0}}
+        @media print{
+    body *{visibility:hidden}
+    #receiptPrint,#receiptPrint *{visibility:visible}
+    #receiptPrint{position:fixed;top:0;left:0;right:0;margin:0;padding:20px;width:100%;background:white}
+    #waReceiptClone{display:none!important}
+}
         /* ===== DAPUR SPLIT VIEW ===== */
         .dapur-split{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px;align-items:flex-start}
         .dapur-split::-webkit-scrollbar{height:4px}.dapur-split::-webkit-scrollbar-thumb{background:var(--gray-lighter);border-radius:4px}
@@ -562,6 +567,17 @@
             <p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:12px">💡 Setiap kategori hanya boleh dipilih untuk satu stesen</p>
             <button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveStationConfig()">💾 Simpan Semua Stesen</button>
         </div>
+        <div class="card">
+            <div class="card-title">🖨️ Printer Dapur</div>
+            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:14px">Connect printer Bluetooth untuk auto print slip dapur bila cashier submit order.</p>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg-2);border-radius:12px;margin-bottom:12px;border:1.5px solid var(--border)">
+                <div style="width:10px;height:10px;border-radius:50%;background:var(--gray-lighter);flex-shrink:0;transition:all 0.3s" id="btDotMain"></div>
+                <span style="font-size:0.82rem;font-weight:600;color:var(--gray);flex:1" id="btTextMain">Printer tidak disambung</span>
+            </div>
+            <button class="btn btn-info" style="width:100%;justify-content:center;margin-bottom:8px" id="btnBtMain" onclick="toggleBtMain()">🖨️ Sambung Printer Bluetooth</button>
+            <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center" onclick="printBtTest()">🧪 Test Print</button>
+            <p style="font-size:0.72rem;color:var(--gray-light);text-align:center;margin-top:10px">💡 Guna Chrome di Android. Printer mesti support Bluetooth ESC/POS (cth: Xprinter XP-58).</p>
+        </div>
         <div class="card"><div class="card-title">📱 QR Payment</div><div class="form-group"><label>🔗 Link URL Gambar QR</label><input type="text" class="form-input" id="qrUrl" placeholder="https://i.imgur.com/contoh.jpg"></div><button class="btn btn-info" style="width:100%;justify-content:center;margin-bottom:4px" onclick="saveQRUrl()">💾 Simpan URL</button><p style="font-size:0.72rem;color:var(--gray);text-align:center;margin-bottom:8px">Pastikan link berakhir .jpg / .png</p><div class="qr-divider">atau upload fail gambar</div><div class="form-group"><label>📁 Upload Gambar QR</label><input type="file" class="form-input" id="qrUpload" accept="image/*" onchange="previewQR(this)"></div><div id="qrPreview" style="text-align:center;margin:8px 0"></div><button class="btn btn-info" style="width:100%;justify-content:center" onclick="saveQR()">💾 Simpan Gambar</button></div>
         <div class="card"><div class="card-title">🏦 Maklumat Transfer</div><div class="form-group"><label>Nama Bank</label><input type="text" class="form-input" id="setBankName" placeholder="Maybank"></div><div class="form-group"><label>No. Akaun</label><input type="text" class="form-input" id="setBankAcc" placeholder="1234567890"></div><div class="form-group"><label>Nama Pemilik</label><input type="text" class="form-input" id="setBankHolder" placeholder="Ahmad"></div><button class="btn btn-info" style="width:100%;justify-content:center" onclick="saveBankInfo()">💾 Simpan</button></div>
     </div>
@@ -569,7 +585,7 @@
 <!-- MODALS -->
 <div class="modal-overlay" id="editModal"><div class="modal"><div class="modal-title">✏️ Edit Pesanan <span id="editId"></span></div><div id="editItems"></div><div class="total-bar"><span class="total-label">JUMLAH</span><span class="total-amount">RM <span id="editTotal">0.00</span></span></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('editModal')">Batal</button><button class="btn btn-success" onclick="saveEdit()">💾 Simpan</button></div></div></div>
 <div class="modal-overlay" id="editPendingModal"><div class="modal" style="max-width:520px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:90vh"><div style="padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0"><div class="modal-title" style="margin-bottom:0">✏️ Edit Pesanan <span id="editPendingId" style="color:var(--primary)"></span></div><div style="font-size:0.75rem;color:var(--gray);margin-top:3px">Tambah item baru atau ubah kuantiti</div></div><div style="overflow-y:auto;flex:1;padding:16px 20px"><div style="background:var(--primary-light);border:1.5px solid rgba(249,115,22,0.2);border-radius:14px;padding:14px;margin-bottom:16px"><div style="font-weight:800;font-size:0.85rem;color:var(--primary-dark);margin-bottom:10px">➕ Tambah Item Baru</div><input type="text" id="epMenuSearch" placeholder="🔍 Cari nama menu..." oninput="renderEpMenu()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;font-family:var(--font);background:var(--white);outline:none;margin-bottom:10px"><div id="epCatFilter" style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div><div id="epMenuList" style="max-height:220px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;padding-right:2px"></div></div><div><div style="font-weight:800;font-size:0.85rem;color:var(--dark-2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between"><span>🛒 Item Dalam Pesanan</span><span id="epItemCount" style="background:var(--primary);color:white;padding:2px 8px;border-radius:12px;font-size:0.7rem">0</span></div><div id="editPendingItems"></div></div></div><div style="padding:14px 20px 16px;border-top:2px solid var(--bg);flex-shrink:0;background:var(--white)"><div class="total-bar" style="margin-bottom:12px"><span class="total-label">JUMLAH DIKEMASKINI</span><span class="total-amount">RM <span id="editPendingTotal">0.00</span></span></div><div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="closeM('editPendingModal')" style="flex:1">Batal</button><button class="btn btn-success" onclick="saveEditPending()" style="flex:2">💾 Simpan Perubahan</button></div></div></div></div>
-<div class="modal-overlay" id="menuModal"><div class="modal"><div class="modal-title">✏️ Edit Menu</div><input type="hidden" id="emId"><div class="form-group"><label>Nama</label><input type="text" class="form-input" id="emName"></div><div class="form-row"><div class="form-group"><label>Harga (RM)</label><input type="number" class="form-input" id="emPrice" step="0.50" min="0"></div><div class="form-group"><label>Kategori</label><select class="form-input" id="emCat" onchange="toggleCustomCat('em',this.value)"><option id="emCatFeatured" value="">⭐ (Kategori Utama)</option><option value="Makanan">🍚 Makanan</option><option value="Minuman">🥤 Minuman</option><option value="Kuih">🍰 Kuih</option><option value="Tambahan">➕ Tambahan</option><option value="Set">🍱 Set</option><option value="Lain-lain">📦 Lain-lain</option><option value="__custom__">✏️ Kategori Lain (Taip)...</option></select><input type="text" class="form-input" id="emCatCustom" placeholder="Nama kategori..." style="display:none;margin-top:6px"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('menuModal')">Batal</button><button class="btn btn-success" onclick="saveMenu()">💾 Simpan</button></div></div></div>
+<div class="modal-overlay" id="menuModal"><div class="modal"><div class="modal-title">✏️ Edit Menu</div><input type="hidden" id="emId"><div class="form-group"><label>Nama</label><input type="text" class="form-input" id="emName"></div><div class="form-row"><div class="form-group"><label>Harga (RM)</label><input type="number" class="form-input" id="emPrice" step="0.50" min="0"></div><div class="form-group"><label>Kategori</label><select class="form-input" id="emCat" onchange="toggleCustomCat('em',this.value);autoAssignStation()"><option id="emCatFeatured" value="">⭐ (Kategori Utama)</option><option value="Makanan">🍚 Makanan</option><option value="Minuman">🥤 Minuman</option><option value="Kuih">🍰 Kuih</option><option value="Tambahan">➕ Tambahan</option><option value="Set">🍱 Set</option><option value="Lain-lain">📦 Lain-lain</option><option value="__custom__">✏️ Kategori Lain (Taip)...</option></select><input type="text" class="form-input" id="emCatCustom" placeholder="Nama kategori..." style="display:none;margin-top:6px"></div></div><div class="form-group" id="emStationGroup" style="display:none"><label style="margin-bottom:8px;display:block">🍳 Stesen Dapur <span style="font-size:0.7rem;color:var(--gray-light);font-weight:500">(auto dari kategori, boleh override)</span></label><div id="emStationChecks" style="display:flex;flex-wrap:wrap;gap:8px"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('menuModal')">Batal</button><button class="btn btn-success" onclick="saveMenu()">💾 Simpan</button></div></div></div>
 <div class="modal-overlay" id="receiptModal"><div class="modal"><div id="receiptBox"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('receiptModal')">Tutup</button><button class="btn btn-whatsapp" onclick="openWaModal()">📲 WhatsApp</button><button class="btn btn-info" onclick="window.print()">🖨️ Cetak</button></div></div></div>
 <div class="modal-overlay wa-modal" id="waModal"><div class="modal" style="max-width:380px"><div class="modal-title">📲 Hantar Resit ke WhatsApp</div><p style="font-size:0.82rem;color:var(--gray);margin-bottom:14px">Masukkan nombor telefon pelanggan</p><label style="font-weight:700;font-size:0.8rem;color:var(--dark-3);display:block;margin-bottom:6px">No. Telefon</label><div class="wa-phone-wrap"><span class="wa-prefix">🇲🇾 +60</span><input type="tel" class="wa-phone-input" id="waPhone" placeholder="123456789" maxlength="12" inputmode="tel" onkeyup="if(event.key==='Enter')sendWhatsApp()"></div><p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:14px">Contoh: 123456789 (tanpa 0 di depan)</p><div style="font-weight:700;font-size:0.8rem;color:var(--dark-3);margin-bottom:6px">📋 Pratonton Resit</div><div class="wa-receipt-preview" id="waReceiptPreview">-</div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('waModal')">Batal</button><button class="btn btn-whatsapp" onclick="sendWhatsApp()" id="btnSendWa">📲 Hantar</button></div></div></div>
 <div class="modal-overlay" id="completeModal"><div class="modal"><div class="modal-title">💰 Selesaikan Pesanan <span id="completeOrderNum"></span></div><div id="completeItems"></div><div class="total-bar"><span class="total-label">JUMLAH</span><span class="total-amount">RM <span id="completeTotal">0.00</span></span></div><div style="font-weight:700;font-size:0.82rem;margin:10px 0 6px">💰 Cara Bayar</div><div class="payment-methods"><button class="pay-btn active" id="cPayCash" onclick="pickCompletePay('cash')"><span class="pay-icon">💵</span>Tunai</button><button class="pay-btn" id="cPayQr" onclick="pickCompletePay('qr')"><span class="pay-icon">📱</span>QR</button><button class="pay-btn" id="cPayTransfer" onclick="pickCompletePay('transfer')"><span class="pay-icon">🏦</span>Transfer</button></div><div class="cash-calc show" id="completeCashCalc"><div class="cash-row"><label>💵 Diterima:</label><input type="number" class="cash-input" id="completeCashIn" oninput="calcCompleteChange()" placeholder="0.00" step="0.50"></div><div class="change-box" id="completeChangeBox">-</div></div><div class="pay-info-box" id="completeQrBox"></div><div class="pay-info-box" id="completeTransferBox"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('completeModal')">Batal</button><button class="btn btn-success" onclick="doCompleteOrder()" id="btnComplete">✅ Selesai & Bayar</button></div></div></div>
@@ -922,12 +938,22 @@ function renderPaymentInfo(){const qC=document.getElementById('qrContent'),cq=do
 async function saveQRUrl(){const url=document.getElementById('qrUrl').value.trim();if(!url){toast('Masukkan URL!','error');return}if(!url.startsWith('http')){toast('URL tidak sah!','error');return}const btn=event.target;btn.disabled=true;btn.textContent='⏳...';const r=await api('saveSettings',{qrImage:url});btn.disabled=false;btn.textContent='💾 Simpan URL';if(r.success){S.qrImage=url;S.qrBase64='';clearClientCache('getSettings');renderPaymentInfo();document.getElementById('qrPreview').innerHTML='<img src="'+url+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)" onerror="this.parentNode.innerHTML=\'<p style=color:red>⚠️ URL tidak boleh dipapar</p>\'">';toast('✅ URL QR disimpan!')}else toast('❌ '+r.error,'error')}
 function previewQR(input){if(input.files&&input.files[0]){const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');const MAX=350;let w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX}else{w=Math.round(w*MAX/h);h=MAX}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);let q=0.7,b64=canvas.toDataURL('image/jpeg',q);while(b64.length>120000&&q>0.2){q-=0.1;b64=canvas.toDataURL('image/jpeg',q)}S.qrBase64=b64;const sk=(b64.length*0.75/1024).toFixed(0);document.getElementById('qrPreview').innerHTML='<img src="'+b64+'" style="max-width:200px;border-radius:14px;border:1px solid var(--border)"><p style="font-size:0.75rem;color:var(--success-dark);margin-top:6px">✅ Preview ('+sk+'KB)</p>'};img.src=e.target.result};reader.readAsDataURL(input.files[0])}}
 async function saveQR(){if(!S.qrBase64){toast('Upload gambar dulu!','error');return}if(S.qrBase64.length>200000){toast('❌ Gambar terlalu besar. Cuba gambar lain.','error');return}const btn=document.querySelector('[onclick="saveQR()"]');if(btn){btn.disabled=true;btn.textContent='⏳...'}const r=await api('saveSettings',{qrImage:S.qrBase64});if(btn){btn.disabled=false;btn.textContent='💾 Simpan Gambar'}if(r.success){S.qrImage=S.qrBase64;clearClientCache('getSettings');renderPaymentInfo();toast('✅ QR disimpan!')}else toast('❌ '+r.error,'error')}
-async function submitOrder(){if(!S.cart.length){toast('Pilih menu!','error');return}const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳...';const disc=parseFloat(document.getElementById('discountAmt').value)||0;const tn=document.getElementById('tableNo').value||'-';const cashReceived=S.pay==='cash'?(parseFloat(document.getElementById('cashIn').value)||0):0;const subtotal=S.cart.reduce((s,i)=>s+(i.price*i.qty),0);const total=Math.max(0,subtotal-disc);const changeGiven=S.pay==='cash'&&cashReceived>0?Math.max(0,cashReceived-total):0;const r=await api('createOrder',{items:S.cart.map(i=>({name:i.name,price:i.price,qty:i.qty,note:i.note||''})),tableNo:tn,customerName,customerPhone,paymentMethod:S.pay,staffName:S.staff.name,discount:disc,cashReceived,changeGiven});btn.disabled=false;btn.innerHTML='✅ Bayar';if(r.success){beep(true);toast('✅ '+r.message);S.count=r.orderNo;document.getElementById('orderCounter').textContent='#'+r.orderNo;showReceipt(r,S.cart,disc);resetOrder();clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal'),'error')}}
-async function saveOrderPending(){if(!S.cart.length){toast('Pilih menu!','error');return}const btn=document.getElementById('btnSave');btn.disabled=true;btn.textContent='⏳...';const disc=parseFloat(document.getElementById('discountAmt').value)||0;const tn=document.getElementById('tableNo').value||'-';const r=await api('saveOrder',{items:S.cart.map(i=>({name:i.name,price:i.price,qty:i.qty,note:i.note||''})),tableNo:tn,staffName:S.staff.name,discount:disc});btn.disabled=false;btn.innerHTML='💾 Simpan';if(r.success){beep(true);toast('✅ '+r.message);S.count=r.orderNo;document.getElementById('orderCounter').textContent='#'+r.orderNo;resetOrder();clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal'),'error')}}
+async function submitOrder(){if(!S.cart.length){toast('Pilih menu!','error');return}const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳...';const disc=parseFloat(document.getElementById('discountAmt').value)||0;const tn=document.getElementById('tableNo').value||'-';const cashReceived=S.pay==='cash'?(parseFloat(document.getElementById('cashIn').value)||0):0;const subtotal=S.cart.reduce((s,i)=>s+(i.price*i.qty),0);const total=Math.max(0,subtotal-disc);const changeGiven=S.pay==='cash'&&cashReceived>0?Math.max(0,cashReceived-total):0;const customerNameVal=document.getElementById('customerName').value.trim();
+    const customerPhoneVal=document.getElementById('customerPhone').value.trim();
+    const r=await api('createOrder',{items:S.cart.map(i=>({name:i.name,price:i.price,qty:i.qty,note:i.note||''})),tableNo:tn,customerName:customerNameVal,customerPhone:customerPhoneVal,paymentMethod:S.pay,staffName:S.staff.name,discount:disc,cashReceived,changeGiven});btn.disabled=false;btn.innerHTML='✅ Bayar';if(r.success){beep(true);toast('✅ '+r.message);S.count=r.orderNo;document.getElementById('orderCounter').textContent='#'+r.orderNo;
+    // Auto print slip dapur kalau printer connected
+    const orderForPrint={orderNo:r.orderNo,tableNo:tn,staffName:S.staff.name,items:S.cart.map(i=>({name:i.name,price:i.price,qty:i.qty,note:i.note||''}))};
+    autoPrintKitchenSlips(orderForPrint);
+    showReceipt(r,S.cart,disc);resetOrder();clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal'),'error')}}
+async function saveOrderPending(){if(!S.cart.length){toast('Pilih menu!','error');return}const btn=document.getElementById('btnSave');btn.disabled=true;btn.textContent='⏳...';const disc=parseFloat(document.getElementById('discountAmt').value)||0;const tn=document.getElementById('tableNo').value||'-';const r=await api('saveOrder',{items:S.cart.map(i=>({name:i.name,price:i.price,qty:i.qty,note:i.note||''})),tableNo:tn,staffName:S.staff.name,discount:disc});btn.disabled=false;btn.innerHTML='💾 Simpan';if(r.success){beep(true);toast('✅ '+r.message);S.count=r.orderNo;document.getElementById('orderCounter').textContent='#'+r.orderNo;
+    // Auto print slip dapur
+    const orderForPrint={orderNo:r.orderNo,tableNo:tn,staffName:S.staff.name,items:S.cart.map(i=>({name:i.name,price:i.price,qty:i.qty,note:i.note||''}))};
+    autoPrintKitchenSlips(orderForPrint);
+    resetOrder();clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal'),'error')}}
 function resetOrder(){S.cart=[];document.getElementById('tableNo').value='';document.getElementById('customerName').value='';document.getElementById('customerPhone').value='';document.getElementById('cashIn').value='';document.getElementById('discountAmt').value='0';document.getElementById('changeBox').textContent='-';document.getElementById('changeBox').className='change-box';renderCart();renderMenu()}
 function buildReceiptText(order,items,disc,tableNo,payMethod){const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};let sub=0,txt='';txt+='━━━━━━━━━━━━━━━━━\n   🍽️ '+S.shop.shopName+'\n';if(S.shop.shopAddress)txt+='   '+S.shop.shopAddress+'\n';txt+='━━━━━━━━━━━━━━━━━\n';txt+='Pesanan #'+(order.orderNo||'?')+'\n';const now=new Date();txt+=now.toLocaleDateString('ms-MY')+' '+now.toLocaleTimeString('ms-MY')+'\n';txt+='Meja: '+tableNo+'\n─────────────────\n';items.forEach(i=>{const st=i.price*i.qty;sub+=st;txt+=i.name+' x'+i.qty+'\n  RM'+st.toFixed(2)+'\n'});txt+='─────────────────\nSubtotal: RM'+sub.toFixed(2)+'\n';if(disc>0)txt+='Diskaun: -RM'+disc.toFixed(2)+'\n';txt+='─────────────────\nJUMLAH: RM'+(order.total||sub.toFixed(2))+'\nBayar: '+(pL[payMethod]||payMethod)+'\n';txt+='━━━━━━━━━━━━━━━━━\nTerima Kasih! 🙏\nSila datang lagi!';return txt}
 function buildReceiptTextFromOrder(o){const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const items=Array.isArray(o.items)?o.items:[];const discount=parseFloat(o.discount)||0,total=parseFloat(o.total)||0;let sub=0,txt='';txt+='━━━━━━━━━━━━━━━━━\n   🍽️ '+(S.shop.shopName||'Kedai')+'\n';if(S.shop.shopAddress)txt+='   '+S.shop.shopAddress+'\n';txt+='━━━━━━━━━━━━━━━━━\nPesanan #'+(o.orderNo||'?')+'\n'+(o.date||'')+' '+(o.time||'')+'\nMeja: '+(o.tableNo||'-')+'\n─────────────────\n';items.forEach(i=>{const p=parseFloat(i.price)||0,q=parseInt(i.qty)||1;const st=p*q;sub+=st;txt+=(i.name||'')+' x'+q+'\n  RM'+st.toFixed(2)+'\n'});txt+='─────────────────\nSubtotal: RM'+sub.toFixed(2)+'\n';if(discount>0)txt+='Diskaun: -RM'+discount.toFixed(2)+'\n';txt+='─────────────────\nJUMLAH: RM'+total.toFixed(2)+'\nBayar: '+(pL[o.paymentMethod]||'Tunai')+'\n━━━━━━━━━━━━━━━━━\nTerima Kasih! 🙏\nSila datang lagi!';return txt}
-function showReceipt(order,items,disc){const total=parseFloat(order.total);const cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn').value)||total):total;const change=cashIn-total;const table=document.getElementById('tableNo').value||'-';const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const now=new Date();let sub=0;const ih=items.map(i=>{const st=i.price*i.qty;sub+=st;const noteHtml=i.note?'<div style="font-size:0.65rem;color:#888;font-style:italic">📝 '+esc(i.note)+'</div>':'';return'<div class="receipt-line"><span>'+esc(i.name)+' x'+i.qty+''+noteHtml+'</span><span>'+st.toFixed(2)+'</span></div>'}).join('');document.getElementById('receiptBox').innerHTML='<div class="receipt" id="receiptPrint"><div class="receipt-header"><div class="receipt-shop">'+esc(S.shop.shopName)+'</div>'+(S.shop.shopAddress?'<div class="receipt-addr">'+esc(S.shop.shopAddress)+'</div>':'')+(S.shop.shopPhone?'<div class="receipt-addr">'+esc(S.shop.shopPhone)+'</div>':'')+'<div style="margin-top:5px">Pesanan #'+order.orderNo+'</div><div>'+now.toLocaleDateString('ms-MY')+' '+now.toLocaleTimeString('ms-MY')+'</div><div>Meja: '+esc(table)+' | Staff: '+esc(S.staff.name)+'</div>'+(customerName?'<div style="margin-top:3px;font-weight:700">👤 '+esc(customerName)+(customerPhone?' · 📱 '+esc(customerPhone):'')+'</div>':'')+'</div>'+ih+'<div class="receipt-divider"></div><div class="receipt-line"><span>Subtotal</span><span>RM '+sub.toFixed(2)+'</span></div>'+(disc>0?'<div class="receipt-line" style="color:var(--success)"><span>Diskaun</span><span>-'+disc.toFixed(2)+'</span></div>':'')+'<div class="receipt-divider"></div><div class="receipt-total"><div class="receipt-line"><span>JUMLAH</span><span>RM '+total.toFixed(2)+'</span></div></div><div class="receipt-divider"></div><div class="receipt-line"><span>Bayar ('+pL[S.pay]+')</span><span>RM '+cashIn.toFixed(2)+'</span></div>'+(S.pay==='cash'?'<div class="receipt-line"><span>Baki</span><span>RM '+change.toFixed(2)+'</span></div>':'')+'<div class="receipt-footer">Terima Kasih! 🙏<br>Sila datang lagi</div></div>';S.waReceiptText=buildReceiptText(order,items,disc,table,S.pay);document.getElementById('receiptModal').classList.add('show')}
+function showReceipt(order,items,disc){const total=parseFloat(order.total);const cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn').value)||total):total;const change=cashIn-total;const table=document.getElementById('tableNo').value||'-';const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const now=new Date();let sub=0;const ih=items.map(i=>{const st=i.price*i.qty;sub+=st;const noteHtml=i.note?'<div style="font-size:0.65rem;color:#888;font-style:italic">📝 '+esc(i.note)+'</div>':'';return'<div class="receipt-line"><span>'+esc(i.name)+' x'+i.qty+''+noteHtml+'</span><span>'+st.toFixed(2)+'</span></div>'}).join('');document.getElementById('receiptBox').innerHTML='<div class="receipt" id="receiptPrint"><div class="receipt-header"><div class="receipt-shop">'+esc(S.shop.shopName)+'</div>'+(S.shop.shopAddress?'<div class="receipt-addr">'+esc(S.shop.shopAddress)+'</div>':'')+(S.shop.shopPhone?'<div class="receipt-addr">'+esc(S.shop.shopPhone)+'</div>':'')+'<div style="margin-top:5px">Pesanan #'+order.orderNo+'</div><div>'+now.toLocaleDateString('ms-MY')+' '+now.toLocaleTimeString('ms-MY')+'</div><div>Meja: '+esc(table)+' | Staff: '+esc(S.staff.name)+'</div>'+(document.getElementById('customerName').value.trim()?'<div style="margin-top:3px;font-weight:700">👤 '+esc(document.getElementById('customerName').value.trim())+(document.getElementById('customerPhone').value.trim()?' · 📱 '+esc(document.getElementById('customerPhone').value.trim()):'')+'</div>':'')+'</div>'+ih+'<div class="receipt-divider"></div><div class="receipt-line"><span>Subtotal</span><span>RM '+sub.toFixed(2)+'</span></div>'+(disc>0?'<div class="receipt-line" style="color:var(--success)"><span>Diskaun</span><span>-'+disc.toFixed(2)+'</span></div>':'')+'<div class="receipt-divider"></div><div class="receipt-total"><div class="receipt-line"><span>JUMLAH</span><span>RM '+total.toFixed(2)+'</span></div></div><div class="receipt-divider"></div><div class="receipt-line"><span>Bayar ('+pL[S.pay]+')</span><span>RM '+cashIn.toFixed(2)+'</span></div>'+(S.pay==='cash'?'<div class="receipt-line"><span>Baki</span><span>RM '+change.toFixed(2)+'</span></div>':'')+'<div class="receipt-footer">Terima Kasih! 🙏<br>Sila datang lagi</div></div>';S.waReceiptText=buildReceiptText(order,items,disc,table,S.pay);document.getElementById('receiptModal').classList.add('show')}
 function viewReceipt(o){const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const items=Array.isArray(o.items)?o.items:[];const discount=parseFloat(o.discount)||0,total=parseFloat(o.total)||0;let sub=0;const ih=items.map(i=>{const p=parseFloat(i.price)||0,q=parseInt(i.qty)||1;const st=p*q;sub+=st;const noteHtml=i.note?'<div style="font-size:0.65rem;color:#888;font-style:italic">📝 '+esc(i.note)+'</div>':'';return'<div class="receipt-line"><span>'+esc(i.name||'')+' x'+q+''+noteHtml+'</span><span>'+st.toFixed(2)+'</span></div>'}).join('');document.getElementById('receiptBox').innerHTML='<div class="receipt" id="receiptPrint"><div class="receipt-header"><div class="receipt-shop">'+esc(S.shop.shopName)+'</div>'+(S.shop.shopAddress?'<div class="receipt-addr">'+esc(S.shop.shopAddress)+'</div>':'')+'<div style="margin-top:5px">Pesanan #'+(o.orderNo||'?')+'</div><div>'+esc(o.date||'')+' '+esc(o.time||'')+'</div><div>Meja: '+esc(o.tableNo||'-')+' | Staff: '+esc(o.staffName||'-')+'</div></div>'+ih+'<div class="receipt-divider"></div>'+(discount>0?'<div class="receipt-line"><span>Subtotal</span><span>'+sub.toFixed(2)+'</span></div><div class="receipt-line" style="color:var(--success)"><span>Diskaun</span><span>-'+discount.toFixed(2)+'</span></div><div class="receipt-divider"></div>':'')+'<div class="receipt-total"><div class="receipt-line"><span>JUMLAH</span><span>RM '+total.toFixed(2)+'</span></div></div><div class="receipt-line"><span>Bayar: '+(pL[o.paymentMethod]||'Tunai')+'</span><span></span></div>'+(parseFloat(o.cashReceived)>0?'<div class="receipt-line"><span>Diterima</span><span>RM '+parseFloat(o.cashReceived).toFixed(2)+'</span></div><div class="receipt-line"><span>Baki</span><span>RM '+parseFloat(o.changeGiven||0).toFixed(2)+'</span></div>':'')+'<div class="receipt-footer">Terima Kasih! 🙏<br>Sila datang lagi</div></div>';S.waReceiptText=buildReceiptTextFromOrder(o);document.getElementById('receiptModal').classList.add('show')}
 function openWaModal(){const receiptEl=document.getElementById('receiptPrint');if(receiptEl)document.getElementById('waReceiptClone').innerHTML=receiptEl.outerHTML;document.getElementById('receiptModal').classList.remove('show');document.getElementById('waPhone').value='';document.getElementById('waReceiptPreview').innerHTML='<div style="text-align:center;padding:12px;color:var(--gray);font-size:0.8rem">📋 Tekan Hantar untuk jana gambar resit</div>';document.getElementById('waModal').classList.add('show');setTimeout(()=>document.getElementById('waPhone').focus(),300)}
 async function sendWhatsApp(){let phone=document.getElementById('waPhone').value.trim().replace(/\D/g,'');if(phone.startsWith('0'))phone=phone.substring(1);if(phone.length<9||phone.length>12){toast('Nombor telefon tidak sah','error');return}const fullPhone='60'+phone;const btn=document.getElementById('btnSendWa');btn.disabled=true;btn.textContent='⏳ Jana gambar...';try{const cloneContainer=document.getElementById('waReceiptClone');const receiptEl=cloneContainer.querySelector('.receipt');if(!receiptEl){window.open('https://wa.me/'+fullPhone+'?text='+encodeURIComponent(S.waReceiptText||'Resit dari '+S.shop.shopName),'_blank');toast('✅ WhatsApp dibuka');btn.disabled=false;btn.innerHTML='📲 Hantar';return}cloneContainer.style.display='block';const canvas=await html2canvas(receiptEl,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false,allowTaint:true});cloneContainer.style.display='none';const imgSrc=canvas.toDataURL('image/png');document.getElementById('waReceiptPreview').innerHTML='<img src="'+imgSrc+'" style="width:100%;border-radius:8px;border:1px solid var(--border)">';const link=document.createElement('a');link.download='resit-'+Date.now()+'.png';link.href=imgSrc;document.body.appendChild(link);link.click();document.body.removeChild(link);setTimeout(()=>window.open('https://wa.me/'+fullPhone+'?text='+encodeURIComponent('Terima kasih kerana datang ke '+S.shop.shopName+'. Ini resit anda 🙂'),'_blank'),800);toast('✅ Gambar resit dimuat turun! WhatsApp dibuka.')}catch(e){console.error('html2canvas:',e);document.getElementById('waReceiptClone').style.display='none';window.open('https://wa.me/'+fullPhone+'?text='+encodeURIComponent(S.waReceiptText||'Resit dari '+S.shop.shopName),'_blank');toast('WhatsApp dibuka (teks sahaja)')}btn.disabled=false;btn.innerHTML='📲 Hantar'}
@@ -979,10 +1005,110 @@ function toggleCustomCat(prefix,val){const customEl=document.getElementById(pref
 function getSelectedCat(prefix){const sel=document.getElementById(prefix==='new'?'newCat':'emCat');const custom=document.getElementById(prefix==='new'?'newCatCustom':'emCatCustom');if(sel.value==='__custom__')return(custom?custom.value.trim():'')||'Lain-lain';if(!sel.value)return S.featuredCat||'Lain-lain';return sel.value}
 async function loadMenuManage(){const r=await cachedApi('getMenu',{},60000);if(!r.success){document.getElementById('menuManage').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong>'+esc(r.error)+'</div>';return}const isAdmin=S.staff.role==='admin';if(isAdmin){document.getElementById('menuAdminView').style.display='';document.getElementById('menuStaffView').style.display='none';renderMenuManage(r.menu)}else{document.getElementById('menuAdminView').style.display='none';document.getElementById('menuStaffView').style.display='';renderMenuStaffView(r.menu)}}
 function renderMenuStaffView(menu){const el=document.getElementById('menuStaffList');if(!menu.length){el.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(menu.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};el.innerHTML=ordered.map(cat=>{const items=menu.filter(m=>m.category===cat);if(!items.length)return'';const isF=featured&&cat===featured;return'<div class="menu-cat-section"><div class="menu-cat-header '+(isF?'featured-section':'normal-section')+'"><span>'+(isF?'⭐':(ic[cat]||'📦'))+'</span> <span>'+esc(cat)+'</span>'+(isF?'<span class="featured-badge" style="margin-left:auto">UTAMA</span>':'')+'</div><div class="menu-readonly-grid">'+items.map(m=>'<div class="menu-readonly-item"><div class="mri-cat">'+esc(m.category)+'</div><div class="mri-name">'+esc(m.name)+'</div><div class="mri-price">RM '+m.price.toFixed(2)+'</div></div>').join('')+'</div></div>'}).join('')}
-function renderMenuManage(l){const c=document.getElementById('menuManage');if(!l.length){c.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(l.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};let html='';ordered.forEach(cat=>{const items=l.filter(m=>m.category===cat);if(!items.length)return;const isF=featured&&cat===featured;html+='<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-weight:800;font-size:0.82rem;'+(isF?'background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white':'background:var(--bg-2);color:var(--dark-3)')+'">'+(isF?'⭐':(ic[cat]||'📦'))+' '+esc(cat)+(isF?'<span style="margin-left:auto;font-size:0.65rem;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:8px">UTAMA</span>':'')+'</div>';items.forEach(m=>{html+='<div class="menu-manage-item"><div class="mm-info"><div class="mm-name">'+esc(m.name)+'</div><div class="mm-cat">'+esc(m.category)+'</div><div class="mm-price">RM '+m.price.toFixed(2)+'</div></div><div class="mm-actions"><button class="btn btn-warning btn-sm" onclick="openMenuEdit(\''+esc(m.id)+'\',\''+esc(m.name).replace(/'/g,"\\'")+'\','+m.price+',\''+esc(m.category)+'\')">✏️</button><button class="btn btn-danger btn-sm" onclick="delMenu(\''+esc(m.id)+'\',\''+esc(m.name).replace(/'/g,"\\'")+'\')">🗑️</button></div></div>'});html+='</div>'});c.innerHTML=html}
+function renderMenuManage(l){const c=document.getElementById('menuManage');if(!l.length){c.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(l.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};let html='';ordered.forEach(cat=>{const items=l.filter(m=>m.category===cat);if(!items.length)return;const isF=featured&&cat===featured;html+='<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-weight:800;font-size:0.82rem;'+(isF?'background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white':'background:var(--bg-2);color:var(--dark-3)')+'">'+(isF?'⭐':(ic[cat]||'📦'))+' '+esc(cat)+(isF?'<span style="margin-left:auto;font-size:0.65rem;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:8px">UTAMA</span>':'')+'</div>';items.forEach(m=>{
+        const stBadges=(m.stations&&m.stations.length)
+            ?m.stations.map(function(s){return'<span style="font-size:0.6rem;background:var(--primary-light);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-weight:700">'+esc(s)+'</span>'}).join(' ')
+            :'<span style="font-size:0.6rem;color:var(--gray-lighter)">Tiada stesen</span>';
+        const safeId=esc(m.id);
+        const safeName=esc(m.name).replace(/'/g,"\\'");
+        html+='<div class="menu-manage-item" style="flex-direction:column;gap:8px">'
+            +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+            +'<div class="mm-info"><div class="mm-name">'+esc(m.name)+'</div><div class="mm-cat">'+esc(m.category)+'</div><div class="mm-price">RM '+m.price.toFixed(2)+'</div></div>'
+            +'<div class="mm-actions">'
+            +'<button class="btn btn-warning btn-sm" onclick="openMenuEditById(\''+safeId+'\')">✏️</button>'
+            +'<button class="btn btn-danger btn-sm" onclick="delMenu(\''+safeId+'\',\''+safeName+'\')">🗑️</button>'
+            +'</div></div>'
+            +'<div style="display:flex;gap:4px;flex-wrap:wrap;padding-top:4px;border-top:1px dashed var(--border)">🍳 '+stBadges+'</div>'
+            +'</div>';
+    });html+='</div>'});c.innerHTML=html}
+
+function openMenuEditById(id){
+    const m=S.menu.find(x=>x.id===id);
+    if(!m)return;
+    openMenuEdit(m.id,m.name,m.price,m.category,m.stations||[]);
+}
 async function addMenu(){const n=document.getElementById('newName').value.trim(),p=document.getElementById('newPrice').value;const c=getSelectedCat('new');if(!n||!p){toast('Isi nama & harga!','error');return}if(!c){toast('Pilih atau taip kategori!','error');return}const r=await api('addMenu',{name:n,price:parseFloat(p),category:c});if(r.success){toast('✅ '+r.message);document.getElementById('newName').value='';document.getElementById('newPrice').value='';document.getElementById('newCat').value='';document.getElementById('newCatCustom').value='';document.getElementById('newCatCustom').style.display='none';clearClientCache('getMenu');loadMenuManage();loadMenu()}else toast('❌ '+(r.error||'Gagal'),'error')}
-function openMenuEdit(id,n,p,c){document.getElementById('emId').value=id;document.getElementById('emName').value=n;document.getElementById('emPrice').value=p;const standardCats=['','Makanan','Minuman','Kuih','Tambahan','Set','Lain-lain'];const featuredVal=S.featuredCat||'';const emSel=document.getElementById('emCat');const emCustom=document.getElementById('emCatCustom');if(standardCats.includes(c)||(featuredVal&&c===featuredVal)){emSel.value=(featuredVal&&c===featuredVal)?'':c;emCustom.style.display='none';emCustom.value=''}else{emSel.value='__custom__';emCustom.style.display='block';emCustom.value=c}document.getElementById('menuModal').classList.add('show')}
-async function saveMenu(){const id=document.getElementById('emId').value,n=document.getElementById('emName').value.trim(),p=document.getElementById('emPrice').value;const c=getSelectedCat('em');if(!n||!p){toast('Isi semua!','error');return}const r=await api('updateMenu',{id,name:n,price:parseFloat(p),category:c});if(r.success){toast('✅ '+r.message);closeM('menuModal');clearClientCache('getMenu');loadMenuManage();loadMenu()}else toast('❌ '+(r.error||'Gagal'),'error')}
+function openMenuEdit(id,n,p,c,stations){
+    document.getElementById('emId').value=id;
+    document.getElementById('emName').value=n;
+    document.getElementById('emPrice').value=p;
+    const standardCats=['','Makanan','Minuman','Kuih','Tambahan','Set','Lain-lain'];
+    const featuredVal=S.featuredCat||'';
+    const emSel=document.getElementById('emCat');
+    const emCustom=document.getElementById('emCatCustom');
+    if(standardCats.includes(c)||(featuredVal&&c===featuredVal)){
+        emSel.value=(featuredVal&&c===featuredVal)?'':c;
+        emCustom.style.display='none';
+        emCustom.value='';
+    }else{
+        emSel.value='__custom__';
+        emCustom.style.display='block';
+        emCustom.value=c;
+    }
+    // Load station checkboxes
+    renderStationChecks(Array.isArray(stations)?stations:[],c);
+    document.getElementById('menuModal').classList.add('show');
+}
+
+function renderStationChecks(selectedStations,cat){
+    const grp=document.getElementById('emStationGroup');
+    const box=document.getElementById('emStationChecks');
+    if(!S.stations||!S.stations.length){grp.style.display='none';return;}
+    grp.style.display='block';
+    const COLORS=['#f97316','#3b82f6','#16a34a','#8b5cf6'];
+    box.innerHTML=S.stations.map((st,si)=>{
+        const col=COLORS[si%COLORS.length];
+        const checked=selectedStations.includes(st.name);
+        const emoji=st.emoji||['🍚','🥤','🔥','⭐'][si]||'🍳';
+        return'<label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;cursor:pointer;border:2px solid '+(checked?col:'var(--border)')+';background:'+(checked?col+'18':'var(--white)')+';transition:all 0.2s;user-select:none">'
+            +'<input type="checkbox" value="'+esc(st.name)+'" '+(checked?'checked':'')+' style="display:none" onchange="onStationCheck()">'
+            +'<span style="font-size:1rem">'+emoji+'</span>'
+            +'<span style="font-weight:700;font-size:0.8rem;color:'+(checked?col:'var(--gray)')+'">'+esc(st.name)+'</span>'
+            +'</label>';
+    }).join('');
+}
+
+function onStationCheck(){
+    // Re-render to update colors
+    const selected=getSelectedStations();
+    renderStationChecks(selected,document.getElementById('emCat').value);
+}
+
+function getSelectedStations(){
+    return Array.from(document.querySelectorAll('#emStationChecks input[type=checkbox]:checked')).map(el=>el.value);
+}
+
+function autoAssignStation(){
+    // Auto assign stesen berdasarkan kategori yang dipilih
+    const cat=(document.getElementById('emCat').value||'').trim();
+    const catLow=cat.toLowerCase();
+    const autoStations=[];
+    (S.stations||[]).forEach(st=>{
+        const stCats=(st.categories||[]).map(c=>c.toLowerCase());
+        if(stCats.includes(catLow)) autoStations.push(st.name);
+    });
+    renderStationChecks(autoStations,cat);
+}
+async function saveMenu(){
+    const id=document.getElementById('emId').value;
+    const n=document.getElementById('emName').value.trim();
+    const p=document.getElementById('emPrice').value;
+    const c=getSelectedCat('em');
+    const stations=getSelectedStations();
+    if(!n||!p){toast('Isi semua!','error');return}
+    // Update menu + stations serentak
+    const [r1,r2]=await Promise.all([
+        api('updateMenu',{id,name:n,price:parseFloat(p),category:c}),
+        api('updateMenuStation',{id,stations})
+    ]);
+    if(r1.success){
+        toast('✅ '+r1.message);
+        closeM('menuModal');
+        clearClientCache('getMenu');
+        loadMenuManage();
+        loadMenu();
+    }else toast('❌ '+(r1.error||'Gagal'),'error');
+}
 async function delMenu(id,n){if(!confirm('Padam "'+n+'"?'))return;const r=await api('deleteMenu',{id});if(r.success){toast('✅ '+r.message);clearClientCache('getMenu');loadMenuManage();loadMenu()}else toast('❌ '+(r.error||'Gagal'),'error')}
 async function loadStaffList(){const r=await cachedApi('getStaffList',{},60000);if(r.success){const l=r.staffList||[];const c=document.getElementById('staffList');if(!l.length){c.innerHTML='<div class="empty"><div class="empty-icon">👥</div>Tiada staff</div>';return}c.innerHTML=l.map(s=>{const isOriginalAdmin=s.role==='admin'&&_isFirstAdmin(s.pin,l);const safePin=esc(s.pin);const safeName=esc(s.name).replace(/'/g,"\\'");const showPin=showingPin[s.pin]||false;const pinDisplay=showPin?s.pin:'••••';return'<div class="staff-item"><div class="si-info"><div class="si-name">'+esc(s.name)+'</div><div class="si-role">'+(s.role==='admin'?'👑 Admin':'👤 Staff')+'</div><div class="si-pin" style="margin-top:3px;display:flex;align-items:center;gap:6px"><span style="font-size:0.72rem;color:var(--gray-light);font-weight:600">PIN: </span><span style="font-family:monospace;font-size:0.8rem;font-weight:700;letter-spacing:2px;color:var(--dark-3)">'+pinDisplay+'</span><button onclick="togglePin(\''+safePin+'\')" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:var(--primary);font-weight:600;padding:0;font-family:var(--font)">'+(showPin?'🙈 Sorok':'👁️ Lihat')+'</button></div></div><div style="display:flex;gap:5px;flex-shrink:0">'+(isOriginalAdmin?'<span style="font-size:0.68rem;color:var(--gray-light);padding:6px 8px;background:var(--bg-2);border-radius:8px;border:1px solid var(--border)">🔒 Dilindungi</span>':'<button class="btn btn-warning btn-sm" onclick="openEditStaff(\''+safePin+'\',\''+safeName+'\',\''+s.role+'\')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteStaff(\''+safePin+'\',\''+safeName+'\')">🗑️</button>')+'</div></div>'}).join('')}else document.getElementById('staffList').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong>'+esc(r.error)+'</div>'}
 async function addStaff(){const p=document.getElementById('newStaffPin').value.trim(),n=document.getElementById('newStaffName').value.trim(),r2=document.getElementById('newStaffRole').value;if(!p||!n){toast('Isi PIN dan Nama!','error');return}const r=await api('addStaff',{pin:p,name:n,role:r2});if(r.success){toast('✅ '+r.message);document.getElementById('newStaffPin').value='';document.getElementById('newStaffName').value='';clearClientCache('getStaff');loadStaffList()}else toast('❌ '+(r.error||'Gagal'),'error')}
@@ -1625,6 +1751,206 @@ function dismissRenewPopup() {
     try {
         localStorage.setItem(dismissKey, new Date().toDateString());
     } catch(e) {}
+}
+
+
+// ============================================================
+// BLUETOOTH PRINTER ENGINE (Mode 1 — Print dari Cashier)
+// ============================================================
+const ESC=0x1B,GS=0x1D;
+const BCMD={
+    INIT:[ESC,0x40],
+    LEFT:[ESC,0x61,0x00],
+    CENTER:[ESC,0x61,0x01],
+    BOLD_ON:[ESC,0x45,0x01],
+    BOLD_OFF:[ESC,0x45,0x00],
+    DOUBLE_ON:[GS,0x21,0x11],
+    DOUBLE_OFF:[GS,0x21,0x00],
+    FEED:[ESC,0x64,0x04],
+    CUT:[GS,0x56,0x42,0x00],
+    LF:[0x0A],
+};
+let btDeviceMain=null,btCharMain=null;
+
+function setBtStatusMain(state,msg){
+    const dot=document.getElementById('btDotMain');
+    const txt=document.getElementById('btTextMain');
+    const btn=document.getElementById('btnBtMain');
+    if(!dot||!txt)return;
+    const colors={disconnected:'#94a3b8',connecting:'#f59e0b',connected:'#16a34a'};
+    dot.style.background=colors[state]||'#94a3b8';
+    if(state==='connecting')dot.style.animation='pulse 1s infinite';
+    else dot.style.animation='none';
+    txt.textContent=msg;
+    if(btn){
+        if(state==='connected'){btn.textContent='🔌 Putus Printer';btn.className='btn btn-danger';btn.style.cssText='width:100%;justify-content:center;margin-bottom:8px'}
+        else{btn.textContent='🖨️ Sambung Printer Bluetooth';btn.className='btn btn-info';btn.style.cssText='width:100%;justify-content:center;margin-bottom:8px'}
+    }
+}
+
+async function toggleBtMain(){
+    if(btDeviceMain&&btDeviceMain.gatt.connected){disconnectBtMain();return;}
+    await connectBtMain();
+}
+
+async function connectBtMain(){
+    if(!navigator.bluetooth){
+        toast('Web Bluetooth tidak disokong. Guna Chrome di Android.','error');
+        return;
+    }
+    const btn=document.getElementById('btnBtMain');
+    if(btn){btn.disabled=true;}
+    setBtStatusMain('connecting','Mencari printer...');
+    try{
+        btDeviceMain=await navigator.bluetooth.requestDevice({
+            filters:[
+                {services:['000018f0-0000-1000-8000-00805f9b34fb']},
+                {namePrefix:'Xprinter'},{namePrefix:'XP-'},
+                {namePrefix:'RPP'},{namePrefix:'MTP'},
+                {namePrefix:'GOOJPRT'},{namePrefix:'Printer'},
+                {namePrefix:'BlueTooth'},
+            ],
+            optionalServices:[
+                '000018f0-0000-1000-8000-00805f9b34fb',
+                '0000ff00-0000-1000-8000-00805f9b34fb',
+                'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+            ]
+        });
+        setBtStatusMain('connecting','Menyambung ke '+btDeviceMain.name+'...');
+        const server=await btDeviceMain.gatt.connect();
+        const serviceUUIDs=['000018f0-0000-1000-8000-00805f9b34fb','0000ff00-0000-1000-8000-00805f9b34fb','e7810a71-73ae-499d-8c15-faa9aef0c3f2'];
+        let service;
+        for(const uuid of serviceUUIDs){try{service=await server.getPrimaryService(uuid);break;}catch(e){}}
+        if(!service)throw new Error('Servis printer tidak dijumpai');
+        const charUUIDs=['00002af1-0000-1000-8000-00805f9b34fb','0000ff01-0000-1000-8000-00805f9b34fb','bef8d6c9-9c21-4c9e-b632-bd58c1009f9f'];
+        for(const uuid of charUUIDs){try{btCharMain=await service.getCharacteristic(uuid);break;}catch(e){}}
+        if(!btCharMain)throw new Error('Characteristic tidak dijumpai');
+        btDeviceMain.addEventListener('gattserverdisconnected',()=>{btCharMain=null;setBtStatusMain('disconnected','Printer diputuskan');});
+        setBtStatusMain('connected','✅ '+btDeviceMain.name+' — Tersambung');
+        if(btn)btn.disabled=false;
+        toast('✅ Printer berjaya disambung!');
+    }catch(e){
+        btCharMain=null;btDeviceMain=null;
+        setBtStatusMain('disconnected','Gagal: '+(e.message||'Cuba semula'));
+        if(btn)btn.disabled=false;
+        if(e.name!=='NotFoundError')toast('❌ '+e.message,'error');
+    }
+}
+
+function disconnectBtMain(){
+    if(btDeviceMain&&btDeviceMain.gatt.connected)btDeviceMain.gatt.disconnect();
+    btCharMain=null;
+    setBtStatusMain('disconnected','Printer diputuskan');
+    toast('Printer diputuskan');
+}
+
+async function sendBtBytes(bytes){
+    if(!btCharMain)return false;
+    try{
+        const CHUNK=512;
+        for(let i=0;i<bytes.length;i+=CHUNK){
+            await btCharMain.writeValue(bytes.slice(i,i+CHUNK));
+            await new Promise(r=>setTimeout(r,50));
+        }
+        return true;
+    }catch(e){
+        console.error('[BT]',e);
+        setBtStatusMain('disconnected','Error: '+e.message);
+        return false;
+    }
+}
+
+function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,staffName,items){
+    const enc=new TextEncoder();
+    const lines=[];
+    const push=b=>lines.push(b);
+    const text=s=>push(enc.encode(s+'\x0a'));
+    const cmd=c=>push(new Uint8Array(c));
+    cmd(BCMD.INIT);
+    cmd(BCMD.CENTER);
+    cmd(BCMD.DOUBLE_ON);cmd(BCMD.BOLD_ON);
+    text(stationEmoji+' '+stationName.toUpperCase());
+    cmd(BCMD.DOUBLE_OFF);cmd(BCMD.BOLD_OFF);
+    cmd(BCMD.LEFT);
+    text('--------------------------------');
+    cmd(BCMD.BOLD_ON);
+    text('Order #'+orderNo+'   Meja: '+tableNo);
+    cmd(BCMD.BOLD_OFF);
+    text('Masa  : '+timeStr);
+    text('Cashier: '+staffName);
+    text('--------------------------------');
+    items.forEach(item=>{
+        cmd(BCMD.BOLD_ON);
+        text(item.qty+'x '+item.name);
+        cmd(BCMD.BOLD_OFF);
+        if(item.note)text('   ** '+item.note+' **');
+    });
+    text('--------------------------------');
+    cmd(BCMD.FEED);
+    cmd(BCMD.CUT);
+    const total=lines.reduce((s,b)=>s+b.length,0);
+    const buf=new Uint8Array(total);
+    let off=0;
+    lines.forEach(b=>{buf.set(b,off);off+=b.length;});
+    return buf;
+}
+
+// Auto print semua slip stesen bila order baru
+async function autoPrintKitchenSlips(order){
+    if(!btCharMain){console.log('[Print] No printer connected');return;}
+    if(!S.stations||!S.stations.length){
+        // Tiada stesen — print 1 slip semua item
+        const now=new Date();
+        const timeStr=now.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
+        const bytes=buildKitchenSlipBytes('DAPUR','🍳',order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',order.items||[]);
+        await sendBtBytes(bytes);
+        return;
+    }
+    // Ada stesen — print slip per stesen
+    const menuCatMap={};
+    S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase();});
+    const emojis=['🍚','🥤','🔥','⭐','🍳','🫕'];
+    const now=new Date();
+    const timeStr=now.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
+    for(let si=0;si<S.stations.length;si++){
+        const st=S.stations[si];
+        const cats=(st.categories||[]).map(c=>c.toLowerCase());
+        // Filter items untuk stesen ni
+        // Priority: item.stations assignment, fallback ikut kategori
+        const stItems=(order.items||[]).filter(item=>{
+            // Check station assignment dulu
+            const menuItem=S.menu.find(m=>m.name.toLowerCase()===item.name.toLowerCase());
+            if(menuItem&&menuItem.stations&&menuItem.stations.length){
+                return menuItem.stations.includes(st.name);
+            }
+            // Fallback ikut kategori
+            if(!cats.length)return true;
+            const itemCat=menuCatMap[item.name.toLowerCase()]||'';
+            return cats.includes(itemCat);
+        });
+        if(!stItems.length)continue; // skip stesen kalau tiada item
+        const emoji=st.emoji||emojis[si%emojis.length];
+        const bytes=buildKitchenSlipBytes(st.name,emoji,order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',stItems);
+        await sendBtBytes(bytes);
+        await new Promise(r=>setTimeout(r,300)); // gap antara slip
+    }
+    toast('🖨️ Slip dapur diprint!');
+}
+
+async function printBtTest(){
+    if(!btCharMain){toast('Sambung printer dulu!','error');return;}
+    const enc=new TextEncoder();
+    const bytes=new Uint8Array([
+        ...BCMD.INIT,...BCMD.CENTER,...BCMD.BOLD_ON,
+        ...enc.encode('POSKedai\x0a'),
+        ...BCMD.BOLD_OFF,
+        ...enc.encode('Test Print OK!\x0a'),
+        ...enc.encode(new Date().toLocaleTimeString('ms-MY')+'\x0a'),
+        ...BCMD.FEED,
+    ]);
+    const ok=await sendBtBytes(bytes);
+    if(ok)toast('✅ Test print berjaya!');
+    else toast('❌ Print gagal — semak printer','error');
 }
 
 // Start router bila page load
