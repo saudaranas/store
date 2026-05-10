@@ -1006,19 +1006,40 @@ function getSelectedCat(prefix){const sel=document.getElementById(prefix==='new'
 async function loadMenuManage(){const r=await cachedApi('getMenu',{},60000);if(!r.success){document.getElementById('menuManage').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong>'+esc(r.error)+'</div>';return}const isAdmin=S.staff.role==='admin';if(isAdmin){document.getElementById('menuAdminView').style.display='';document.getElementById('menuStaffView').style.display='none';renderMenuManage(r.menu)}else{document.getElementById('menuAdminView').style.display='none';document.getElementById('menuStaffView').style.display='';renderMenuStaffView(r.menu)}}
 function renderMenuStaffView(menu){const el=document.getElementById('menuStaffList');if(!menu.length){el.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(menu.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};el.innerHTML=ordered.map(cat=>{const items=menu.filter(m=>m.category===cat);if(!items.length)return'';const isF=featured&&cat===featured;return'<div class="menu-cat-section"><div class="menu-cat-header '+(isF?'featured-section':'normal-section')+'"><span>'+(isF?'⭐':(ic[cat]||'📦'))+'</span> <span>'+esc(cat)+'</span>'+(isF?'<span class="featured-badge" style="margin-left:auto">UTAMA</span>':'')+'</div><div class="menu-readonly-grid">'+items.map(m=>'<div class="menu-readonly-item"><div class="mri-cat">'+esc(m.category)+'</div><div class="mri-name">'+esc(m.name)+'</div><div class="mri-price">RM '+m.price.toFixed(2)+'</div></div>').join('')+'</div></div>'}).join('')}
 function renderMenuManage(l){const c=document.getElementById('menuManage');if(!l.length){c.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(l.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};let html='';ordered.forEach(cat=>{const items=l.filter(m=>m.category===cat);if(!items.length)return;const isF=featured&&cat===featured;html+='<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-weight:800;font-size:0.82rem;'+(isF?'background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white':'background:var(--bg-2);color:var(--dark-3)')+'">'+(isF?'⭐':(ic[cat]||'📦'))+' '+esc(cat)+(isF?'<span style="margin-left:auto;font-size:0.65rem;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:8px">UTAMA</span>':'')+'</div>';items.forEach(m=>{
-        const stBadges=(m.stations&&m.stations.length)
-            ?m.stations.map(function(s){return'<span style="font-size:0.6rem;background:var(--primary-light);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-weight:700">'+esc(s)+'</span>'}).join(' ')
-            :'<span style="font-size:0.6rem;color:var(--gray-lighter)">Tiada stesen</span>';
         const safeId=esc(m.id);
-        const safeName=esc(m.name).replace(/'/g,"\\'");
-        html+='<div class="menu-manage-item" style="flex-direction:column;gap:8px">'
-            +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
-            +'<div class="mm-info"><div class="mm-name">'+esc(m.name)+'</div><div class="mm-cat">'+esc(m.category)+'</div><div class="mm-price">RM '+m.price.toFixed(2)+'</div></div>'
+        const safeName=esc(m.name).replace(/'/g,"\'");
+        // Auto assign station badge — dari explicit assignment ATAU kategori
+        let stationBadges=[];
+        if(m.stations&&m.stations.length){
+            stationBadges=m.stations;
+        } else {
+            // Fallback: match dari kategori
+            (S.stations||[]).forEach(st=>{
+                const stCats=(st.categories||[]).map(c=>c.toLowerCase());
+                if(stCats.includes((m.category||'').toLowerCase())) stationBadges.push(st.name);
+            });
+        }
+        const COLORS=['#f97316','#3b82f6','#16a34a','#8b5cf6'];
+        const badgeHtml=stationBadges.length
+            ?stationBadges.map(function(s){
+                const si=(S.stations||[]).findIndex(function(x){return x.name===s;});
+                const col=COLORS[si>=0?si%COLORS.length:0];
+                return'<span style="font-size:0.62rem;background:'+col+'18;color:'+col+';padding:2px 8px;border-radius:6px;font-weight:700;border:1px solid '+col+'44">'+esc(s)+'</span>';
+            }).join(' ')
+            :'';
+        html+='<div class="menu-manage-item">'
+            +'<div class="mm-info">'
+            +'<div class="mm-name">'+esc(m.name)+'</div>'
+            +'<div style="display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap">'
+            +'<span class="mm-cat">'+esc(m.category)+'</span>'
+            +(badgeHtml?'<span style="color:var(--gray-lighter)">·</span>'+badgeHtml:'')
+            +'</div>'
+            +'<div class="mm-price">RM '+m.price.toFixed(2)+'</div>'
+            +'</div>'
             +'<div class="mm-actions">'
             +'<button class="btn btn-warning btn-sm" onclick="openMenuEditById(\''+safeId+'\')">✏️</button>'
             +'<button class="btn btn-danger btn-sm" onclick="delMenu(\''+safeId+'\',\''+safeName+'\')">🗑️</button>'
-            +'</div></div>'
-            +'<div style="display:flex;gap:4px;flex-wrap:wrap;padding-top:4px;border-top:1px dashed var(--border)">🍳 '+stBadges+'</div>'
+            +'</div>'
             +'</div>';
     });html+='</div>'});c.innerHTML=html}
 
