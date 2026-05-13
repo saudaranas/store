@@ -1028,23 +1028,26 @@ function printSlipBrowser(order) {
   const timeStr = now.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit' });
   const dateStr = now.toLocaleDateString('ms-MY');
   const itemsHtml = (order.items || []).map(i =>
-    `<div style="font-weight:700">${i.qty}x ${i.name}</div>${i.note ? `<div style="padding-left:12px;font-style:italic">** ${i.note} **</div>` : ''}`
+    '<div style="font-weight:700;margin:4px 0">' + i.qty + 'x ' + (i.name||'') + '</div>' +
+    (i.note ? '<div style="padding-left:12px;font-style:italic;color:#555">** ' + i.note + ' **</div>' : '')
   ).join('');
 
-  document.getElementById('slipPrint').innerHTML = `
-    <div style="text-align:center;font-weight:900;font-size:14px">DAPUR</div>
-    <div style="text-align:center;font-size:12px">${STATION_NAME}</div>
-    <div>--------------------------------</div>
-    <div>Order #${order.orderNo || '-'}</div>
-    <div>Meja  : ${order.tableNo || '-'}</div>
-    <div>Masa  : ${timeStr} ${dateStr}</div>
-    <div>--------------------------------</div>
-    ${itemsHtml}
-    <div>--------------------------------</div>
-  `;
+  const slipHtml =
+    '<div style="text-align:center;font-weight:900;font-size:16px;margin-bottom:4px">' + (document.getElementById('stationEmoji').textContent||'🍳') + ' ' + STATION_NAME.toUpperCase() + '</div>' +
+    '<div style="border-top:2px dashed #000;margin:6px 0"></div>' +
+    '<div style="font-weight:800;font-size:14px">Order #' + (order.orderNo||'-') + '   Meja: ' + (order.tableNo||'-') + '</div>' +
+    '<div>Masa: ' + timeStr + ' ' + dateStr + '</div>' +
+    '<div>Cashier: ' + (order.staffName||'-') + '</div>' +
+    '<div style="border-top:1px dashed #000;margin:6px 0"></div>' +
+    itemsHtml +
+    '<div style="border-top:2px dashed #000;margin:6px 0"></div>';
+
+  document.getElementById('slipPrint').innerHTML = slipHtml;
   document.getElementById('slipPrint').style.display = 'block';
   window.print();
-  document.getElementById('slipPrint').style.display = 'none';
+  setTimeout(() => {
+    document.getElementById('slipPrint').style.display = 'none';
+  }, 1000);
 }
 
 // ============================================================
