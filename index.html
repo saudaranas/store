@@ -1985,28 +1985,56 @@ async function printBtTest(){
 // PRINT RECEIPT — popup window 58mm
 // ============================================================
 function printReceipt(){
+    // Cari element resit yang betul
     var el=document.getElementById('receiptPrint');
     if(!el){window.print();return;}
-    var html=el.outerHTML;
-    var css='@page{size:58mm auto;margin:0}'
-        +'*{margin:0;padding:0;box-sizing:border-box}'
-        +'body{width:58mm;font-family:Courier New,Courier,monospace;font-size:9px;line-height:1.4;background:white;color:black}'
-        +'.receipt{width:58mm;padding:3mm;background:white}'
+
+    // Bersihkan id supaya hanya 1 resit
+    var cleanHtml=el.outerHTML
+        .replace(/id="receiptPrint2"/g,'')
+        .replace(/id="receiptPrint"/g,'id="rp"');
+
+    // Buat iframe tersembunyi
+    var existIframe=document.getElementById('_printFrame');
+    if(existIframe)existIframe.remove();
+
+    var iframe=document.createElement('iframe');
+    iframe.id='_printFrame';
+    iframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;opacity:0';
+    document.body.appendChild(iframe);
+
+    var css='@page{size:58mm auto;margin:0mm}'
+        +'html,body{margin:0;padding:0;width:58mm}'
+        +'*{box-sizing:border-box}'
+        +'body{font-family:Courier New,Courier,monospace;font-size:9px;line-height:1.4;background:white;color:black}'
+        +'.receipt{width:58mm;padding:2mm;margin:0}'
         +'.receipt-header{text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #000}'
         +'.receipt-shop{font-weight:700;font-size:11px}'
         +'.receipt-addr{font-size:8px;color:#333}'
         +'.receipt-line{display:flex;justify-content:space-between;padding:1px 0;gap:4px}'
         +'.receipt-line span:first-child{flex:1;word-break:break-word}'
-        +'.receipt-line span:last-child{white-space:nowrap}'
+        +'.receipt-line span:last-child{white-space:nowrap;font-size:9px}'
         +'.receipt-divider{border-top:1px dashed #000;margin:4px 0}'
         +'.receipt-total .receipt-line{font-weight:700;font-size:10px}'
         +'.receipt-footer{text-align:center;margin-top:8px;font-size:8px;color:#555}';
-    var win=window.open('','_blank','width=250,height=600,scrollbars=no,toolbar=no,menubar=no');
-    if(!win){window.print();return;}
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+css+'</style></head><body>'+html+'</body></html>');
-    win.document.close();
-    win.focus();
-    setTimeout(function(){win.print();setTimeout(function(){win.close();},500);},300);
+
+    var doc=iframe.contentWindow.document;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+css+'</style></head><body>'+cleanHtml+'</body></html>');
+    doc.close();
+
+    setTimeout(function(){
+        try{
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        }catch(e){
+            // Fallback
+            window.print();
+        }
+        setTimeout(function(){
+            try{iframe.remove();}catch(e){}
+        },2000);
+    },500);
 }
 
 // Start router bila page load
