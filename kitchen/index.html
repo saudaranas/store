@@ -260,13 +260,18 @@ html,body{height:100%;overflow:hidden;background:var(--dark);font-family:var(--f
 
 /* Slip print CSS */
 @media print{
+  @page{
+    size:58mm auto;
+    margin:0;
+  }
   body *{visibility:hidden}
   #slipPrint,#slipPrint *{visibility:visible}
   #slipPrint{
     position:fixed;top:0;left:0;
-    width:58mm;padding:8px;
+    width:58mm;padding:4mm;
     font-family:'Courier New',monospace;
-    font-size:11px;color:black;background:white;
+    font-size:10px;color:black;background:white;
+    line-height:1.4;
   }
 }
 </style>
