@@ -963,7 +963,16 @@ async function saveOrderPending(){if(!S.cart.length){toast('Pilih menu!','error'
 function resetOrder(){S.cart=[];document.getElementById('tableNo').value='';document.getElementById('customerName').value='';document.getElementById('customerPhone').value='';document.getElementById('cashIn').value='';document.getElementById('discountAmt').value='0';document.getElementById('changeBox').textContent='-';document.getElementById('changeBox').className='change-box';renderCart();renderMenu()}
 function buildReceiptText(order,items,disc,tableNo,payMethod){const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};let sub=0,txt='';txt+='━━━━━━━━━━━━━━━━━\n   🍽️ '+S.shop.shopName+'\n';if(S.shop.shopAddress)txt+='   '+S.shop.shopAddress+'\n';txt+='━━━━━━━━━━━━━━━━━\n';txt+='Pesanan #'+(order.orderNo||'?')+'\n';const now=new Date();txt+=now.toLocaleDateString('ms-MY',{timeZone:'Asia/Kuala_Lumpur'})+' '+now.toLocaleTimeString('ms-MY',{timeZone:'Asia/Kuala_Lumpur',hour:'2-digit',minute:'2-digit'})+'\n';txt+='Meja: '+tableNo+'\n─────────────────\n';items.forEach(i=>{const st=i.price*i.qty;sub+=st;txt+=i.name+' x'+i.qty+'\n  RM'+st.toFixed(2)+'\n'});txt+='─────────────────\nSubtotal: RM'+sub.toFixed(2)+'\n';if(disc>0)txt+='Diskaun: -RM'+disc.toFixed(2)+'\n';txt+='─────────────────\nJUMLAH: RM'+(order.total||sub.toFixed(2))+'\nBayar: '+(pL[payMethod]||payMethod)+'\n';txt+='━━━━━━━━━━━━━━━━━\nTerima Kasih! 🙏\nSila datang lagi!';return txt}
 function buildReceiptTextFromOrder(o){const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const items=Array.isArray(o.items)?o.items:[];const discount=parseFloat(o.discount)||0,total=parseFloat(o.total)||0;let sub=0,txt='';txt+='━━━━━━━━━━━━━━━━━\n   🍽️ '+(S.shop.shopName||'Kedai')+'\n';if(S.shop.shopAddress)txt+='   '+S.shop.shopAddress+'\n';txt+='━━━━━━━━━━━━━━━━━\nPesanan #'+(o.orderNo||'?')+'\n'+(o.date||'')+' '+(o.time||'')+'\nMeja: '+(o.tableNo||'-')+'\n─────────────────\n';items.forEach(i=>{const p=parseFloat(i.price)||0,q=parseInt(i.qty)||1;const st=p*q;sub+=st;txt+=(i.name||'')+' x'+q+'\n  RM'+st.toFixed(2)+'\n'});txt+='─────────────────\nSubtotal: RM'+sub.toFixed(2)+'\n';if(discount>0)txt+='Diskaun: -RM'+discount.toFixed(2)+'\n';txt+='─────────────────\nJUMLAH: RM'+total.toFixed(2)+'\nBayar: '+(pL[o.paymentMethod]||'Tunai')+'\n━━━━━━━━━━━━━━━━━\nTerima Kasih! 🙏\nSila datang lagi!';return txt}
-function showReceipt(order,items,disc){const total=parseFloat(order.total);const cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn').value)||total):total;const change=cashIn-total;const table=document.getElementById('tableNo').value||'-';const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const now=new Date();let sub=0;const ih=items.map(i=>{const st=i.price*i.qty;sub+=st;const noteHtml=i.note?'<div style="font-size:0.65rem;color:#888;font-style:italic">📝 '+esc(i.note)+'</div>':'';return'<div class="receipt-line"><span>'+esc(i.name)+' x'+i.qty+''+noteHtml+'</span><span>'+st.toFixed(2)+'</span></div>'}).join('');document.getElementById('receiptBox').innerHTML='<div class="receipt" id="receiptPrint"><div class="receipt-header"><div class="receipt-shop">'+esc(S.shop.shopName)+'</div>'+(S.shop.shopAddress?'<div class="receipt-addr">'+esc(S.shop.shopAddress)+'</div>':'')+(S.shop.shopPhone?'<div class="receipt-addr">'+esc(S.shop.shopPhone)+'</div>':'')+'<div style="margin-top:5px">Pesanan #'+order.orderNo+'</div><div>'+now.toLocaleDateString('ms-MY',{timeZone:'Asia/Kuala_Lumpur'})+' '+now.toLocaleTimeString('ms-MY',{timeZone:'Asia/Kuala_Lumpur',hour:'2-digit',minute:'2-digit'})+'</div><div>Meja: '+esc(table)+' | Staff: '+esc(S.staff.name)+'</div>'+(document.getElementById('customerName').value.trim()?'<div style="margin-top:3px;font-weight:700">👤 '+esc(document.getElementById('customerName').value.trim())+(document.getElementById('customerPhone').value.trim()?' · 📱 '+esc(document.getElementById('customerPhone').value.trim()):'')+'</div>':'')+'</div>'+ih+'<div class="receipt-divider"></div><div class="receipt-line"><span>Subtotal</span><span>RM '+sub.toFixed(2)+'</span></div>'+(disc>0?'<div class="receipt-line" style="color:var(--success)"><span>Diskaun</span><span>-'+disc.toFixed(2)+'</span></div>':'')+'<div class="receipt-divider"></div><div class="receipt-total"><div class="receipt-line"><span>JUMLAH</span><span>RM '+total.toFixed(2)+'</span></div></div><div class="receipt-divider"></div><div class="receipt-line"><span>Bayar ('+pL[S.pay]+')</span><span>RM '+cashIn.toFixed(2)+'</span></div>'+(S.pay==='cash'?'<div class="receipt-line"><span>Baki</span><span>RM '+change.toFixed(2)+'</span></div>':'')+'<div class="receipt-footer">Terima Kasih! 🙏<br>Sila datang lagi</div></div>';S.waReceiptText=buildReceiptText(order,items,disc,table,S.pay);window._lastViewedOrder=null;document.getElementById('receiptModal').classList.add('show')}
+function showReceipt(order,items,disc){const total=parseFloat(order.total);const cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn').value)||total):total;const change=cashIn-total;const table=document.getElementById('tableNo').value||'-';const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const now=new Date();let sub=0;const ih=items.map(i=>{const st=i.price*i.qty;sub+=st;const noteHtml=i.note?'<div style="font-size:0.65rem;color:#888;font-style:italic">📝 '+esc(i.note)+'</div>':'';return'<div class="receipt-line"><span>'+esc(i.name)+' x'+i.qty+''+noteHtml+'</span><span>'+st.toFixed(2)+'</span></div>'}).join('');document.getElementById('receiptBox').innerHTML='<div class="receipt" id="receiptPrint"><div class="receipt-header"><div class="receipt-shop">'+esc(S.shop.shopName)+'</div>'+(S.shop.shopAddress?'<div class="receipt-addr">'+esc(S.shop.shopAddress)+'</div>':'')+(S.shop.shopPhone?'<div class="receipt-addr">'+esc(S.shop.shopPhone)+'</div>':'')+'<div style="margin-top:5px">Pesanan #'+order.orderNo+'</div><div>'+now.toLocaleDateString('ms-MY',{timeZone:'Asia/Kuala_Lumpur'})+' '+now.toLocaleTimeString('ms-MY',{timeZone:'Asia/Kuala_Lumpur',hour:'2-digit',minute:'2-digit'})+'</div><div>Meja: '+esc(table)+' | Staff: '+esc(S.staff.name)+'</div>'+(document.getElementById('customerName').value.trim()?'<div style="margin-top:3px;font-weight:700">👤 '+esc(document.getElementById('customerName').value.trim())+(document.getElementById('customerPhone').value.trim()?' · 📱 '+esc(document.getElementById('customerPhone').value.trim()):'')+'</div>':'')+'</div>'+ih+'<div class="receipt-divider"></div><div class="receipt-line"><span>Subtotal</span><span>RM '+sub.toFixed(2)+'</span></div>'+(disc>0?'<div class="receipt-line" style="color:var(--success)"><span>Diskaun</span><span>-'+disc.toFixed(2)+'</span></div>':'')+'<div class="receipt-divider"></div><div class="receipt-total"><div class="receipt-line"><span>JUMLAH</span><span>RM '+total.toFixed(2)+'</span></div></div><div class="receipt-divider"></div><div class="receipt-line"><span>Bayar ('+pL[S.pay]+')</span><span>RM '+cashIn.toFixed(2)+'</span></div>'+(S.pay==='cash'?'<div class="receipt-line"><span>Baki</span><span>RM '+change.toFixed(2)+'</span></div>':'')+'<div class="receipt-footer">Terima Kasih! 🙏<br>Sila datang lagi</div></div>';S.waReceiptText=buildReceiptText(order,items,disc,table,S.pay);window._lastViewedOrder={
+        orderNo:order.orderNo,
+        items:items,
+        discount:disc,
+        paymentMethod:S.pay,
+        cashReceived:S.pay==='cash'?cashIn:0,
+        changeGiven:S.pay==='cash'?change:0,
+        tableNo:table,
+        staffName:S.staff.name
+    };document.getElementById('receiptModal').classList.add('show')}
 function viewReceipt(o){const pL={cash:'Tunai',qr:'QR Pay',transfer:'Pindahan'};const items=Array.isArray(o.items)?o.items:[];const discount=parseFloat(o.discount)||0,total=parseFloat(o.total)||0;let sub=0;const ih=items.map(i=>{const p=parseFloat(i.price)||0,q=parseInt(i.qty)||1;const st=p*q;sub+=st;const noteHtml=i.note?'<div style="font-size:0.65rem;color:#888;font-style:italic">📝 '+esc(i.note)+'</div>':'';return'<div class="receipt-line"><span>'+esc(i.name||'')+' x'+q+''+noteHtml+'</span><span>'+st.toFixed(2)+'</span></div>'}).join('');document.getElementById('receiptBox').innerHTML='<div class="receipt" id="receiptPrint2"><div class="receipt-header"><div class="receipt-shop">'+esc(S.shop.shopName)+'</div>'+(S.shop.shopAddress?'<div class="receipt-addr">'+esc(S.shop.shopAddress)+'</div>':'')+'<div style="margin-top:5px">Pesanan #'+(o.orderNo||'?')+'</div><div>'+esc(o.date||'')+' '+esc(o.time||'')+'</div><div>Meja: '+esc(o.tableNo||'-')+' | Staff: '+esc(o.staffName||'-')+'</div></div>'+ih+'<div class="receipt-divider"></div>'+(discount>0?'<div class="receipt-line"><span>Subtotal</span><span>'+sub.toFixed(2)+'</span></div><div class="receipt-line" style="color:var(--success)"><span>Diskaun</span><span>-'+discount.toFixed(2)+'</span></div><div class="receipt-divider"></div>':'')+'<div class="receipt-total"><div class="receipt-line"><span>JUMLAH</span><span>RM '+total.toFixed(2)+'</span></div></div><div class="receipt-line"><span>Bayar: '+(pL[o.paymentMethod]||'Tunai')+'</span><span></span></div>'+(parseFloat(o.cashReceived)>0?'<div class="receipt-line"><span>Diterima</span><span>RM '+parseFloat(o.cashReceived).toFixed(2)+'</span></div><div class="receipt-line"><span>Baki</span><span>RM '+parseFloat(o.changeGiven||0).toFixed(2)+'</span></div>':'')+'<div class="receipt-footer">Terima Kasih! 🙏<br>Sila datang lagi</div></div>';S.waReceiptText=buildReceiptTextFromOrder(o);window._lastViewedOrder=o;document.getElementById('receiptModal').classList.add('show')}
 function openWaModal(){const receiptEl=document.getElementById('receiptPrint');if(receiptEl)document.getElementById('waReceiptClone').innerHTML=receiptEl.outerHTML;document.getElementById('receiptModal').classList.remove('show');document.getElementById('waPhone').value='';document.getElementById('waReceiptPreview').innerHTML='<div style="text-align:center;padding:12px;color:var(--gray);font-size:0.8rem">📋 Tekan Hantar untuk jana gambar resit</div>';document.getElementById('waModal').classList.add('show');setTimeout(()=>document.getElementById('waPhone').focus(),300)}
 async function sendWhatsApp(){let phone=document.getElementById('waPhone').value.trim().replace(/\D/g,'');if(phone.startsWith('0'))phone=phone.substring(1);if(phone.length<9||phone.length>12){toast('Nombor telefon tidak sah','error');return}const fullPhone='60'+phone;const btn=document.getElementById('btnSendWa');btn.disabled=true;btn.textContent='⏳ Jana gambar...';try{const cloneContainer=document.getElementById('waReceiptClone');const receiptEl=cloneContainer.querySelector('.receipt');if(!receiptEl){window.open('https://wa.me/'+fullPhone+'?text='+encodeURIComponent(S.waReceiptText||'Resit dari '+S.shop.shopName),'_blank');toast('✅ WhatsApp dibuka');btn.disabled=false;btn.innerHTML='📲 Hantar';return}cloneContainer.style.display='block';const canvas=await html2canvas(receiptEl,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false,allowTaint:true});cloneContainer.style.display='none';const imgSrc=canvas.toDataURL('image/png');document.getElementById('waReceiptPreview').innerHTML='<img src="'+imgSrc+'" style="width:100%;border-radius:8px;border:1px solid var(--border)">';const link=document.createElement('a');link.download='resit-'+Date.now()+'.png';link.href=imgSrc;document.body.appendChild(link);link.click();document.body.removeChild(link);setTimeout(()=>window.open('https://wa.me/'+fullPhone+'?text='+encodeURIComponent('Terima kasih kerana datang ke '+S.shop.shopName+'. Ini resit anda 🙂'),'_blank'),800);toast('✅ Gambar resit dimuat turun! WhatsApp dibuka.')}catch(e){console.error('html2canvas:',e);document.getElementById('waReceiptClone').style.display='none';window.open('https://wa.me/'+fullPhone+'?text='+encodeURIComponent(S.waReceiptText||'Resit dari '+S.shop.shopName),'_blank');toast('WhatsApp dibuka (teks sahaja)')}btn.disabled=false;btn.innerHTML='📲 Hantar'}
@@ -2165,38 +2174,33 @@ function buildReceiptBytes(order,items,disc,tableNo,payMethod,cashIn,change){
 async function printReceiptBt(){
     if(!btCharMain){toast('Sambung printer dulu!','error');return;}
 
-    var items, disc, orderNo, payMethod, cashIn, change, tableNo, order;
+    var items, disc, orderNo, payMethod, cashIn, change, tableNo;
 
-    if(window._lastViewedOrder){
-        // Dari tab Senarai — guna order yang sedang dipapar
-        var o=window._lastViewedOrder;
-        items=o.items||[];
-        disc=parseFloat(o.discount)||0;
-        orderNo=o.orderNo||'?';
-        payMethod=o.paymentMethod||'cash';
-        cashIn=parseFloat(o.cashReceived)||0;
-        change=parseFloat(o.changeGiven)||0;
-        tableNo=o.tableNo||'-';
-        order={orderNo:orderNo};
-    } else {
-        // Dari cashier — guna S.cart
-        items=S.cart.map(function(i){return{name:i.name,price:i.price,qty:i.qty,note:i.note||''};});
-        disc=parseFloat(document.getElementById('discountAmt')?document.getElementById('discountAmt').value:0)||0;
-        orderNo=S.count||'?';
-        payMethod=S.pay||'cash';
-        cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn')?document.getElementById('cashIn').value:0)||0):0;
-        var total=parseFloat(document.getElementById('cartTotal')?document.getElementById('cartTotal').textContent:0)||0;
-        change=Math.max(0,cashIn-total);
-        tableNo=document.getElementById('tableNo')?document.getElementById('tableNo').value||'-':'-';
-        order={orderNo:orderNo};
+    // SENTIASA guna _lastViewedOrder — resit yang sedang dipapar
+    if(!window._lastViewedOrder){
+        toast('Tiada resit untuk print','error');
+        return;
     }
 
-    if(!items||!items.length){toast('Tiada item untuk print','error');return;}
+    var o = window._lastViewedOrder;
+    items    = Array.isArray(o.items) ? o.items : [];
+    disc     = parseFloat(o.discount)     || 0;
+    orderNo  = o.orderNo  || '?';
+    payMethod= o.paymentMethod || 'cash';
+    cashIn   = parseFloat(o.cashReceived) || 0;
+    change   = parseFloat(o.changeGiven)  || 0;
+    tableNo  = o.tableNo  || '-';
 
-    var bytes=buildReceiptBytes(order,items,disc,tableNo,payMethod,cashIn,change);
-    var ok=await sendBtBytes(bytes);
-    if(ok)toast('✅ Resit diprint!');
-    else toast('❌ Print gagal','error');
+    if(!items.length){
+        toast('Tiada item dalam resit','error');
+        return;
+    }
+
+    var order  = { orderNo: orderNo };
+    var bytes  = buildReceiptBytes(order, items, disc, tableNo, payMethod, cashIn, change);
+    var ok     = await sendBtBytes(bytes);
+    if(ok) toast('✅ Resit diprint!');
+    else   toast('❌ Print gagal — semak printer','error');
 }
 
 // Start router bila page load
