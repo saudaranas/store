@@ -1890,10 +1890,10 @@ function disconnectBtMain(){
 async function sendBtBytes(bytes){
     if(!btCharMain)return false;
     try{
-        const CHUNK=512;
+        const CHUNK=128;
         for(let i=0;i<bytes.length;i+=CHUNK){
             await btCharMain.writeValue(bytes.slice(i,i+CHUNK));
-            await new Promise(r=>setTimeout(r,50));
+            await new Promise(r=>setTimeout(r,120));
         }
         return true;
     }catch(e){
@@ -2161,8 +2161,8 @@ function buildReceiptBytes(order,items,disc,tableNo,payMethod,cashIn,change){
     text('');
     text('Terima Kasih!');
     text('Sila datang lagi');
-    cmd([0x1B,0x64,0x04]); // FEED
-    cmd([0x1D,0x56,0x42,0x00]); // CUT
+    cmd([0x1B,0x64,0x06]); // FEED 6 lines — lebih space sebelum cut
+    cmd([0x1D,0x56,0x41,0x10]); // PARTIAL CUT — lebih selamat
 
     var totalLen=parts.reduce(function(s,b){return s+b.length;},0);
     var buf=new Uint8Array(totalLen);
@@ -2197,6 +2197,11 @@ async function printReceiptBt(){
     }
 
     var order  = { orderNo: orderNo };
+    // Send INIT dulu untuk clear buffer printer
+    var initBytes = new Uint8Array([0x1B, 0x40]); // ESC @
+    await sendBtBytes(initBytes);
+    await new Promise(r=>setTimeout(r,200));
+
     var bytes  = buildReceiptBytes(order, items, disc, tableNo, payMethod, cashIn, change);
     var ok     = await sendBtBytes(bytes);
     if(ok) toast('✅ Resit diprint!');
