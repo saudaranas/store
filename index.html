@@ -497,6 +497,11 @@
             <div class="order-right">
                 <div class="card" id="cartCard">
                     <div class="card-title">🛒 Troli <span id="cartCount" style="background:var(--primary);color:white;padding:2px 8px;border-radius:16px;font-size:0.7rem;margin-left:4px">0</span><span style="margin-left:auto"><button class="btn btn-ghost btn-sm" onclick="clearCart()">🗑️ Kosong</button></span></div>
+                    <div id="cartPrinterStatus" style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin:8px 16px 0;border-radius:10px;background:var(--bg-2);border:1px solid var(--border);font-size:0.75rem;font-weight:600;cursor:pointer" onclick="btCharMain?null:toggleBtMain()">
+                        <div id="cpDot" style="width:8px;height:8px;border-radius:50%;background:var(--gray-lighter);flex-shrink:0"></div>
+                        <span id="cpText" style="color:var(--gray);flex:1">Printer tidak disambung</span>
+                        <span style="font-size:0.65rem;color:var(--gray-light)">Tetapan →</span>
+                    </div>
                     <div id="cartEmpty" class="cart-empty"><div class="cart-empty-icon">🛒</div><div class="cart-empty-text">Troli kosong</div><div class="cart-empty-hint">Tekan menu untuk tambah</div></div>
                     <div id="cartContent">
                         <div class="cart-scroll" id="cartScroll">
@@ -807,6 +812,16 @@ function beep(ok){try{const ctx=new(window.AudioContext||window.webkitAudioConte
 async function doLogin(){const pin=document.getElementById('pinInput').value;if(!pin){toast('Masukkan PIN!','error');return}const btn=document.querySelector('.btn-login');btn.textContent='⏳...';btn.disabled=true;const r=await api('login',{pin});btn.textContent='🔓 Masuk';btn.disabled=false;if(r.success){S.staff=r.staff;saveSession();enterApp()}else{beep(false);toast('❌ '+(r.error||'PIN tidak sah'),'error')}}
 function skipLogin(){S.staff={name:'Admin',role:'admin'};saveSession();enterApp()}
 async function enterApp(){
+    // Show last printer name hint
+    try{
+        const lastName=localStorage.getItem('_pk_last_printer');
+        if(lastName){
+            const cpText=document.getElementById('cpText');
+            if(cpText&&!btCharMain){
+                cpText.textContent='🖨️ Tap untuk sambung semula: '+lastName;
+            }
+        }
+    }catch(e){}
     // Semak renew warning
     if(window.__PK_RENEW_DATA__){
         checkAndShowRenewPopup(window.__PK_RENEW_DATA__);
@@ -1837,6 +1852,29 @@ function setBtStatusMain(state,msg){
         if(state==='connected'){btn.textContent='🔌 Putus Printer';btn.className='btn btn-danger';btn.style.cssText='width:100%;justify-content:center;margin-bottom:8px'}
         else{btn.textContent='🖨️ Sambung Printer Bluetooth';btn.className='btn btn-info';btn.style.cssText='width:100%;justify-content:center;margin-bottom:8px'}
     }
+    // Update cart printer status bar
+    const cpDot=document.getElementById('cpDot');
+    const cpText=document.getElementById('cpText');
+    const cpBar=document.getElementById('cartPrinterStatus');
+    if(cpDot&&cpText&&cpBar){
+        cpDot.style.background=colors[state]||'#94a3b8';
+        if(state==='connected'){
+            cpText.textContent='🖨️ Printer tersambung';
+            cpText.style.color='var(--success-dark)';
+            cpBar.style.borderColor='rgba(16,185,129,0.3)';
+            cpBar.style.background='var(--success-light)';
+        } else if(state==='connecting'){
+            cpText.textContent='⏳ Menyambung printer...';
+            cpText.style.color='var(--warning-dark)';
+            cpBar.style.borderColor='rgba(245,158,11,0.3)';
+            cpBar.style.background='#fffbeb';
+        } else {
+            cpText.textContent='🖨️ Printer tidak disambung — Tap untuk sambung';
+            cpText.style.color='var(--gray)';
+            cpBar.style.borderColor='var(--border)';
+            cpBar.style.background='var(--bg-2)';
+        }
+    }
 }
 
 async function toggleBtMain(){
@@ -1880,6 +1918,8 @@ async function connectBtMain(){
         setBtStatusMain('connected','✅ '+btDeviceMain.name+' — Tersambung');
         if(btn)btn.disabled=false;
         toast('✅ Printer berjaya disambung!');
+        // Simpan nama printer untuk hint
+        try{localStorage.setItem('_pk_last_printer',btDeviceMain.name);}catch(e){}
     }catch(e){
         btCharMain=null;btDeviceMain=null;
         setBtStatusMain('disconnected','Gagal: '+(e.message||'Cuba semula'));
