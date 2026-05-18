@@ -1888,38 +1888,80 @@ async function sendBtBytes(bytes){
 
 function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,staffName,items){
     const enc=new TextEncoder();
-    const lines=[];
-    const push=b=>lines.push(b);
-    const text=s=>push(enc.encode(s+'\x0a'));
+    const parts=[];
+    const push=b=>parts.push(b);
     const cmd=c=>push(new Uint8Array(c));
-    cmd(BCMD.INIT);
-    cmd(BCMD.CENTER);
-    cmd(BCMD.DOUBLE_ON);cmd(BCMD.BOLD_ON);
-    text(stationEmoji+' '+stationName.toUpperCase());
-    cmd(BCMD.DOUBLE_OFF);cmd(BCMD.BOLD_OFF);
-    cmd(BCMD.LEFT);
-    text('--------------------------------');
-    cmd(BCMD.BOLD_ON);
-    text('Order #'+orderNo+'   Meja: '+tableNo);
-    cmd(BCMD.BOLD_OFF);
-    text('Masa  : '+timeStr);
-    text('Cashier: '+staffName);
-    text('--------------------------------');
-    items.forEach(item=>{
-        cmd(BCMD.BOLD_ON);
-        text(item.qty+'x '+item.name);
-        cmd(BCMD.BOLD_OFF);
-        if(item.note)text('   ** '+item.note+' **');
+
+    // Buang semua non-ASCII (emoji, aksara khas) — printer thermal basic tak support
+    // Ini fix: emoji jadi kotak hitam & kacau alignment pada printer 58mm
+    function toAscii(str){
+        return String(str||'').replace(/[^\x00-\x7F]/g,'').trim();
+    }
+
+    // INIT
+    cmd([0x1B,0x40]);
+
+    // === TAJUK STESEN ===
+    // FIX 1: Buang GS double size (0x1D 0x21 0x11) — punca nama panjang wrap/overflow
+    // FIX 2: Buang emoji dari tajuk — printer tak support, jadi kotak hitam
+    // Guna bold + center sahaja — selamat untuk semua panjang nama stesen
+    cmd([0x1B,0x61,0x01]);  // center
+    cmd([0x1B,0x45,0x01]);  // bold on
+    push(enc.encode('*** '+toAscii(stationName).toUpperCase()+' ***\x0a'));
+    cmd([0x1B,0x45,0x00]);  // bold off
+    cmd([0x1B,0x61,0x00]);  // left align (lepas tajuk)
+
+    // === ORDER INFO ===
+    push(enc.encode('--------------------------------\x0a'));
+    cmd([0x1B,0x45,0x01]);  // bold on
+    push(enc.encode('Order #'+orderNo+'    Meja: '+tableNo+'\x0a'));
+    cmd([0x1B,0x45,0x00]);  // bold off
+    push(enc.encode('Masa   : '+timeStr+'\x0a'));
+    push(enc.encode('Cashier: '+toAscii(staffName)+'\x0a'));
+    push(enc.encode('--------------------------------\x0a'));
+
+    // === ITEMS ===
+    // Wrap text — 58mm printer = 32 char per line
+    function wrapLine(str,maxLen){
+        const words=str.split(' ');
+        const lines=[];
+        let cur='';
+        words.forEach(function(w){
+            if((cur+' '+w).trim().length<=maxLen){
+                cur=(cur+' '+w).trim();
+            }else{
+                if(cur)lines.push(cur);
+                cur=w;
+            }
+        });
+        if(cur)lines.push(cur);
+        return lines.join('\x0a');
+    }
+
+    items.forEach(function(item){
+        cmd([0x1B,0x45,0x01]);  // bold on
+        const itemLine=(item.qty||1)+'x  '+toAscii(item.name);
+        push(enc.encode(wrapLine(itemLine,32)+'\x0a'));
+        cmd([0x1B,0x45,0x00]);  // bold off
+        // FIX 3: Semak field 'note' DAN 'notes'
+        const nota=String(item.note||item.notes||'').trim();
+        if(nota){
+            push(enc.encode('   >> '+wrapLine(toAscii(nota),27)+'\x0a'));
+        }
     });
-    text('--------------------------------');
-    cmd(BCMD.FEED);
-    cmd(BCMD.CUT);
-    const total=lines.reduce((s,b)=>s+b.length,0);
-    const buf=new Uint8Array(total);
+
+    push(enc.encode('--------------------------------\x0a'));
+    cmd([0x1B,0x64,0x04]);      // feed 4 lines
+    cmd([0x1D,0x56,0x42,0x00]); // full cut
+
+    const totalLen=parts.reduce(function(s,b){return s+b.length;},0);
+    const buf=new Uint8Array(totalLen);
     let off=0;
-    lines.forEach(b=>{buf.set(b,off);off+=b.length;});
+    parts.forEach(function(b){buf.set(b,off);off+=b.length;});
     return buf;
 }
+
+
 
 // Auto print semua slip stesen bila order baru
 async function autoPrintKitchenSlips(order){
@@ -1985,56 +2027,70 @@ async function printBtTest(){
 // PRINT RECEIPT — popup window 58mm
 // ============================================================
 function printReceipt(){
-    // Cari element resit yang betul
+    // Tutup modal dulu, print, lepas tu buka semula
     var el=document.getElementById('receiptPrint');
-    if(!el){window.print();return;}
+    if(!el){return;}
 
-    // Bersihkan id supaya hanya 1 resit
-    var cleanHtml=el.outerHTML
+    // Simpan HTML resit
+    var receiptHtml=el.outerHTML
         .replace(/id="receiptPrint2"/g,'')
         .replace(/id="receiptPrint"/g,'id="rp"');
 
-    // Buat iframe tersembunyi
-    var existIframe=document.getElementById('_printFrame');
-    if(existIframe)existIframe.remove();
+    // Tutup modal supaya print dialog nampak elok
+    document.getElementById('receiptModal').classList.remove('show');
 
-    var iframe=document.createElement('iframe');
-    iframe.id='_printFrame';
-    iframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;opacity:0';
-    document.body.appendChild(iframe);
+    // Set CSS print untuk resit
+    var styleId='_receiptPrintStyle';
+    var existStyle=document.getElementById(styleId);
+    if(existStyle)existStyle.remove();
 
-    var css='@page{size:58mm auto;margin:0mm}'
-        +'html,body{margin:0;padding:0;width:58mm}'
-        +'*{box-sizing:border-box}'
-        +'body{font-family:Courier New,Courier,monospace;font-size:9px;line-height:1.4;background:white;color:black}'
-        +'.receipt{width:58mm;padding:2mm;margin:0}'
-        +'.receipt-header{text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #000}'
-        +'.receipt-shop{font-weight:700;font-size:11px}'
-        +'.receipt-addr{font-size:8px;color:#333}'
-        +'.receipt-line{display:flex;justify-content:space-between;padding:1px 0;gap:4px}'
-        +'.receipt-line span:first-child{flex:1;word-break:break-word}'
-        +'.receipt-line span:last-child{white-space:nowrap;font-size:9px}'
-        +'.receipt-divider{border-top:1px dashed #000;margin:4px 0}'
-        +'.receipt-total .receipt-line{font-weight:700;font-size:10px}'
-        +'.receipt-footer{text-align:center;margin-top:8px;font-size:8px;color:#555}';
+    var style=document.createElement('style');
+    style.id=styleId;
+    style.textContent=[
+        '@media print{',
+        '@page{size:58mm auto;margin:0}',
+        'body *{visibility:hidden!important}',
+        '#_receiptPrintArea,#_receiptPrintArea *{visibility:visible!important}',
+        '#_receiptPrintArea{',
+            'position:fixed!important;top:0!important;left:0!important;',
+            'width:58mm!important;padding:2mm!important;margin:0!important;',
+            'background:white!important;',
+            'font-family:Courier New,Courier,monospace!important;',
+            'font-size:9px!important;line-height:1.4!important;',
+        '}',
+        '.receipt{width:58mm;padding:0;margin:0}',
+        '.receipt-header{text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #000}',
+        '.receipt-shop{font-weight:700;font-size:11px}',
+        '.receipt-addr{font-size:8px;color:#333}',
+        '.receipt-line{display:flex;justify-content:space-between;padding:1px 0;gap:4px}',
+        '.receipt-line span:first-child{flex:1;word-break:break-word}',
+        '.receipt-line span:last-child{white-space:nowrap;font-size:9px}',
+        '.receipt-divider{border-top:1px dashed #000;margin:4px 0}',
+        '.receipt-total .receipt-line{font-weight:700;font-size:10px}',
+        '.receipt-footer{text-align:center;margin-top:8px;font-size:8px;color:#555}',
+        '}'
+    ].join('');
+    document.head.appendChild(style);
 
-    var doc=iframe.contentWindow.document;
-    doc.open();
-    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+css+'</style></head><body>'+cleanHtml+'</body></html>');
-    doc.close();
+    // Buat div print area
+    var existArea=document.getElementById('_receiptPrintArea');
+    if(existArea)existArea.remove();
+    var area=document.createElement('div');
+    area.id='_receiptPrintArea';
+    area.innerHTML=receiptHtml;
+    document.body.appendChild(area);
 
+    // Print
     setTimeout(function(){
-        try{
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-        }catch(e){
-            // Fallback
-            window.print();
-        }
+        window.print();
+        // Lepas print, clean up dan buka semula modal
         setTimeout(function(){
-            try{iframe.remove();}catch(e){}
-        },2000);
-    },500);
+            try{style.remove();}catch(e){}
+            try{area.remove();}catch(e){}
+            // Buka semula modal
+            document.getElementById('receiptModal').classList.add('show');
+        },1000);
+    },300);
 }
 
 // Start router bila page load
