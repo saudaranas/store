@@ -478,6 +478,23 @@
         </div>
         <div class="header-right"><span class="offline-dot" id="offDot"></span><span class="header-counter" id="orderCounter">#0</span><span class="header-time" id="clock"></span><button class="btn-logout" onclick="doLogout()">Keluar</button></div>
     </div>
+    <!-- Header Second Row -->
+    <div id="headerSecondRow" style="display:none;background:rgba(0,0,0,0.15);backdrop-filter:blur(8px);padding:5px 16px;display:none;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.1)">
+        <!-- Iklan Printer -->
+        <a id="headerPrinterAd" href="https://shopee.com.my/search?keyword=thermal+printer+bluetooth+58mm+ESC+POS" target="_blank" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.12);padding:4px 12px;border-radius:20px;text-decoration:none;border:1px solid rgba(255,255,255,0.2);transition:all 0.2s">
+            <span style="font-size:0.8rem">🖨️</span>
+            <span style="font-size:0.7rem;font-weight:700;color:white">Beli Printer Thermal</span>
+            <span style="font-size:0.65rem;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:8px">Shopee →</span>
+        </a>
+        <!-- Renew Reminder -->
+        <div id="headerRenewReminder" style="display:none;align-items:center;gap:6px;cursor:pointer" onclick="document.getElementById('renewPopup').style.display='flex'">
+            <div id="headerRenewTimer" style="display:flex;align-items:center;gap:6px;background:rgba(239,68,68,0.25);padding:4px 12px;border-radius:20px;border:1px solid rgba(239,68,68,0.4)">
+                <span style="font-size:0.8rem">⚠️</span>
+                <span id="headerRenewText" style="font-size:0.7rem;font-weight:700;color:white">Renew dalam 7 hari</span>
+                <span style="font-size:0.65rem;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:8px">Renew →</span>
+            </div>
+        </div>
+    </div>
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="go('order',this)"><span class="tab-icon">🛒</span>Pesanan</button>
         <button class="nav-tab" onclick="go('list',this)"><span class="tab-icon">📋</span>Senarai</button>
@@ -487,6 +504,13 @@
         <button class="nav-tab" onclick="go('settings',this)" id="tabSettings"><span class="tab-icon">⚙️</span>Tetapan</button>
     </div>
     <div class="toast-wrap" id="toastWrap"></div>
+    <!-- Printer promo banner -->
+    <div id="printerPromoBanner" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:linear-gradient(135deg,#fff7ed,#ffedd5);border-bottom:1px solid rgba(249,115,22,0.2)">
+        <span style="font-size:0.95rem">🖨️</span>
+        <span style="font-size:0.78rem;font-weight:600;color:#9a3412;flex:1">Tiada printer? Beli <strong>PrinterMax M58</strong> atau <strong>Xprinter XP-58IIH</strong> untuk auto print slip dapur & resit</span>
+        <a href="https://shopee.com.my/search?keyword=thermal+printer+bluetooth+58mm+ESC+POS" target="_blank" style="background:var(--primary);color:white;padding:5px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Beli di Shopee →</a>
+        <button onclick="dismissPrinterBanner()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1rem;padding:0;flex-shrink:0">×</button>
+    </div>
     <div class="tab-content active" id="tab-order" style="padding-top:8px">
         <div class="category-filter" id="catFilter" style="margin-bottom:8px"></div>
         <div class="order-layout">
@@ -822,10 +846,19 @@ async function enterApp(){
             }
         }
     }catch(e){}
+    // Show printer promo banner if no printer and not dismissed
+    try{
+        const dismissed=localStorage.getItem('_pk_printer_banner_dismissed');
+        if(!dismissed&&!btCharMain){
+            document.getElementById('printerPromoBanner').style.display='flex';
+        }
+    }catch(e){}
     // Semak renew warning
     if(window.__PK_RENEW_DATA__){
         checkAndShowRenewPopup(window.__PK_RENEW_DATA__);
-    }const isAdmin=S.staff.role==='admin';document.getElementById('tabSales').style.display=isAdmin?'':'none';document.getElementById('tabSettings').style.display=isAdmin?'':'none';document.getElementById('tabMenu').style.display=isAdmin?'':'none';document.getElementById('tabDapur').style.display='';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tabOrder=document.querySelector('#appContainer .nav-tabs .nav-tab:first-child');if(tabOrder)tabOrder.classList.add('active');document.getElementById('tab-order').classList.add('active');document.getElementById('loginScreen').style.display='none';document.getElementById('appContainer').classList.add('show');document.getElementById('staffBadge').textContent='👤 '+esc(S.staff.name);await Promise.all([loadMenu(),loadCount(),loadPaymentInfo()]);applyPakejLimits()}
+    }const isAdmin=S.staff.role==='admin';document.getElementById('tabSales').style.display=isAdmin?'':'none';document.getElementById('tabSettings').style.display=isAdmin?'':'none';document.getElementById('tabMenu').style.display=isAdmin?'':'none';document.getElementById('tabDapur').style.display='';document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tabOrder=document.querySelector('#appContainer .nav-tabs .nav-tab:first-child');if(tabOrder)tabOrder.classList.add('active');document.getElementById('tab-order').classList.add('active');document.getElementById('loginScreen').style.display='none';document.getElementById('appContainer').classList.add('show');document.getElementById('staffBadge').textContent='👤 '+esc(S.staff.name);await Promise.all([loadMenu(),loadCount(),loadPaymentInfo()]);applyPakejLimits();
+    // Update header second row
+    updateHeaderSecondRow();}
 function doLogout(){if(S.cart.length>0&&!confirm('Ada item dalam troli. Keluar?'))return;if(dapurInterval){clearInterval(dapurInterval);dapurInterval=null}clearSession();document.getElementById('loginScreen').style.display='flex';document.getElementById('appContainer').classList.remove('show');document.getElementById('pinInput').value='';S.cart=[];['tabSales','tabMenu','tabSettings','tabDapur'].forEach(id=>document.getElementById(id).style.display='')}
 function go(tab,el){
     document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -1808,6 +1841,8 @@ function checkAndShowRenewPopup(data) {
     setTimeout(() => {
         document.getElementById('renewPopup').style.display = 'flex';
     }, 1500);
+    // Update header row
+    updateHeaderSecondRow();
 }
 
 function dismissRenewPopup() {
@@ -1920,6 +1955,11 @@ async function connectBtMain(){
         toast('✅ Printer berjaya disambung!');
         // Simpan nama printer untuk hint
         try{localStorage.setItem('_pk_last_printer',btDeviceMain.name);}catch(e){}
+        // Sembunyikan promo banner bila printer dah sambung
+        var banner=document.getElementById('printerPromoBanner');
+        if(banner)banner.style.display='none';
+        // Update header row
+        updateHeaderSecondRow();
     }catch(e){
         btCharMain=null;btDeviceMain=null;
         setBtStatusMain('disconnected','Gagal: '+(e.message||'Cuba semula'));
@@ -2257,6 +2297,57 @@ async function printReceiptBt(){
     var ok     = await sendBtBytes(bytes);
     if(ok) toast('✅ Resit diprint!');
     else   toast('❌ Print gagal — semak printer','error');
+}
+
+
+function dismissPrinterBanner(){
+    const banner=document.getElementById('printerPromoBanner');
+    if(banner)banner.style.display='none';
+    try{localStorage.setItem('_pk_printer_banner_dismissed','1');}catch(e){}
+}
+
+// ============================================================
+// HEADER SECOND ROW — Printer Ad + Renew Reminder
+// ============================================================
+function updateHeaderSecondRow(){
+    const row        = document.getElementById('headerSecondRow');
+    const printerAd  = document.getElementById('headerPrinterAd');
+    const renewDiv   = document.getElementById('headerRenewReminder');
+    if(!row) return;
+
+    // Printer ad — tunjuk bila tiada printer
+    const showPrinter = !btCharMain;
+    if(printerAd){
+        printerAd.style.display = showPrinter ? 'flex' : 'none';
+    }
+
+    // Renew reminder — tunjuk bila ≤7 hari
+    let showRenew = false;
+    if(window.__PK_RENEW_DATA__){
+        const d = window.__PK_RENEW_DATA__;
+        if(d.daysLeft !== undefined && d.daysLeft !== null && d.daysLeft <= 7){
+            showRenew = true;
+            const txt = document.getElementById('headerRenewText');
+            if(txt){
+                const timer = document.getElementById('headerRenewTimer');
+                if(d.daysLeft <= 0){
+                    txt.textContent = 'Langganan tamat hari ini!';
+                    if(timer) timer.style.background = 'rgba(239,68,68,0.4)';
+                } else if(d.daysLeft === 1){
+                    txt.textContent = 'Renew esok!';
+                    if(timer) timer.style.background = 'rgba(239,68,68,0.35)';
+                } else {
+                    txt.textContent = 'Renew dalam ' + d.daysLeft + ' hari';
+                    if(timer) timer.style.background = 'rgba(239,68,68,0.25)';
+                }
+            }
+            if(renewDiv) renewDiv.style.display = 'flex';
+        }
+    }
+    if(!showRenew && renewDiv) renewDiv.style.display = 'none';
+
+    // Tunjuk row kalau ada mana-mana satu
+    row.style.display = (showPrinter || showRenew) ? 'flex' : 'none';
 }
 
 // Start router bila page load
