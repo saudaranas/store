@@ -478,23 +478,7 @@
         </div>
         <div class="header-right"><span class="offline-dot" id="offDot"></span><span class="header-counter" id="orderCounter">#0</span><span class="header-time" id="clock"></span><button class="btn-logout" onclick="doLogout()">Keluar</button></div>
     </div>
-    <!-- Header Second Row -->
-    <div id="headerSecondRow" style="display:none;background:rgba(0,0,0,0.15);backdrop-filter:blur(8px);padding:5px 16px;display:none;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.1)">
-        <!-- Iklan Printer -->
-        <a id="headerPrinterAd" href="https://shopee.com.my/search?keyword=thermal+printer+bluetooth+58mm+ESC+POS" target="_blank" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.12);padding:4px 12px;border-radius:20px;text-decoration:none;border:1px solid rgba(255,255,255,0.2);transition:all 0.2s">
-            <span style="font-size:0.8rem">🖨️</span>
-            <span style="font-size:0.7rem;font-weight:700;color:white">Beli Printer Thermal</span>
-            <span style="font-size:0.65rem;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:8px">Shopee →</span>
-        </a>
-        <!-- Renew Reminder -->
-        <div id="headerRenewReminder" style="display:none;align-items:center;gap:6px;cursor:pointer" onclick="document.getElementById('renewPopup').style.display='flex'">
-            <div id="headerRenewTimer" style="display:flex;align-items:center;gap:6px;background:rgba(239,68,68,0.25);padding:4px 12px;border-radius:20px;border:1px solid rgba(239,68,68,0.4)">
-                <span style="font-size:0.8rem">⚠️</span>
-                <span id="headerRenewText" style="font-size:0.7rem;font-weight:700;color:white">Renew dalam 7 hari</span>
-                <span style="font-size:0.65rem;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:8px">Renew →</span>
-            </div>
-        </div>
-    </div>
+
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="go('order',this)"><span class="tab-icon">🛒</span>Pesanan</button>
         <button class="nav-tab" onclick="go('list',this)"><span class="tab-icon">📋</span>Senarai</button>
@@ -508,8 +492,14 @@
     <div id="printerPromoBanner" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:linear-gradient(135deg,#fff7ed,#ffedd5);border-bottom:1px solid rgba(249,115,22,0.2)">
         <span style="font-size:0.95rem">🖨️</span>
         <span style="font-size:0.78rem;font-weight:600;color:#9a3412;flex:1">Tiada printer? Beli <strong>PrinterMax M58</strong> atau <strong>Xprinter XP-58IIH</strong> untuk auto print slip dapur & resit</span>
-        <a href="https://shopee.com.my/search?keyword=thermal+printer+bluetooth+58mm+ESC+POS" target="_blank" style="background:var(--primary);color:white;padding:5px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Beli di Shopee →</a>
+        <a href="https://s.shopee.com.my/2BBoYYfm6z" target="_blank" style="background:var(--primary);color:white;padding:5px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Beli di Shopee →</a>
         <button onclick="dismissPrinterBanner()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1rem;padding:0;flex-shrink:0">×</button>
+    </div>
+    <!-- Renew Reminder Banner -->
+    <div id="renewReminderBanner" style="display:none;align-items:center;gap:10px;padding:7px 16px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border-bottom:1px solid rgba(239,68,68,0.2)">
+        <span style="font-size:0.9rem">⚠️</span>
+        <span id="renewBannerText" style="font-size:0.78rem;font-weight:600;color:#991b1b;flex:1">Langganan akan tamat dalam 7 hari</span>
+        <button onclick="document.getElementById('renewPopup').style.display='flex'" style="background:#ef4444;color:white;border:none;padding:5px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">Renew Sekarang →</button>
     </div>
     <div class="tab-content active" id="tab-order" style="padding-top:8px">
         <div class="category-filter" id="catFilter" style="margin-bottom:8px"></div>
@@ -2307,47 +2297,32 @@ function dismissPrinterBanner(){
 }
 
 // ============================================================
-// HEADER SECOND ROW — Printer Ad + Renew Reminder
+// BANNERS — Printer Ad + Renew Reminder
 // ============================================================
 function updateHeaderSecondRow(){
-    const row        = document.getElementById('headerSecondRow');
-    const printerAd  = document.getElementById('headerPrinterAd');
-    const renewDiv   = document.getElementById('headerRenewReminder');
-    if(!row) return;
-
-    // Printer ad — tunjuk bila tiada printer
-    const showPrinter = !btCharMain;
-    if(printerAd){
-        printerAd.style.display = showPrinter ? 'flex' : 'none';
+    // Printer promo banner
+    const printerBanner = document.getElementById('printerPromoBanner');
+    const dismissed = (() => { try{ return localStorage.getItem('_pk_printer_banner_dismissed'); }catch(e){ return null; } })();
+    if(printerBanner){
+        printerBanner.style.display = (!btCharMain && !dismissed) ? 'flex' : 'none';
     }
 
-    // Renew reminder — tunjuk bila ≤7 hari
-    let showRenew = false;
-    if(window.__PK_RENEW_DATA__){
+    // Renew reminder banner
+    const renewBanner = document.getElementById('renewReminderBanner');
+    const renewText   = document.getElementById('renewBannerText');
+    if(renewBanner && window.__PK_RENEW_DATA__){
         const d = window.__PK_RENEW_DATA__;
-        if(d.daysLeft !== undefined && d.daysLeft !== null && d.daysLeft <= 7){
-            showRenew = true;
-            const txt = document.getElementById('headerRenewText');
-            if(txt){
-                const timer = document.getElementById('headerRenewTimer');
-                if(d.daysLeft <= 0){
-                    txt.textContent = 'Langganan tamat hari ini!';
-                    if(timer) timer.style.background = 'rgba(239,68,68,0.4)';
-                } else if(d.daysLeft === 1){
-                    txt.textContent = 'Renew esok!';
-                    if(timer) timer.style.background = 'rgba(239,68,68,0.35)';
-                } else {
-                    txt.textContent = 'Renew dalam ' + d.daysLeft + ' hari';
-                    if(timer) timer.style.background = 'rgba(239,68,68,0.25)';
-                }
+        if(d.daysLeft !== undefined && d.daysLeft <= 7){
+            if(renewText){
+                if(d.daysLeft <= 0) renewText.textContent = '⚠️ Langganan tamat hari ini! Renew segera.';
+                else if(d.daysLeft === 1) renewText.textContent = '⚠️ Langganan tamat esok! Renew sekarang.';
+                else renewText.textContent = '⚠️ Langganan tamat dalam ' + d.daysLeft + ' hari';
             }
-            if(renewDiv) renewDiv.style.display = 'flex';
+            renewBanner.style.display = 'flex';
+        } else {
+            renewBanner.style.display = 'none';
         }
     }
-    if(!showRenew && renewDiv) renewDiv.style.display = 'none';
-
-    // Tunjuk row kalau ada mana-mana satu
-    row.style.display = (showPrinter || showRenew) ? 'flex' : 'none';
 }
 
 // Start router bila page load
