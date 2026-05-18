@@ -272,7 +272,7 @@
         @media(min-width:869px){
 .order-layout{display:flex;flex-direction:row;gap:20px;align-items:flex-start}
 .menu-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
-.order-right{width:380px;flex-shrink:0;position:sticky;top:105px;height:calc(100vh - 110px);overflow-y:hidden;display:flex;flex-direction:column}
+.order-right{width:380px;flex-shrink:0;position:sticky;top:105px;height:calc(100vh - 110px);overflow-y:hidden;display:flex;flex-direction:column;align-self:flex-start}
 .order-right .card{flex:1;min-height:0;display:flex;flex-direction:column}
 #cartCard .card-title{padding:16px 16px 12px;margin-bottom:0;border-bottom:1px solid var(--bg);position:sticky;top:0;background:var(--white);z-index:1;border-radius:0;flex-shrink:0}
 #cartContent{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -489,10 +489,10 @@
     </div>
     <div class="toast-wrap" id="toastWrap"></div>
     <div class="tab-content active" id="tab-order">
+        <div class="category-filter" id="catFilter" style="margin-bottom:10px"></div>
         <div class="order-layout">
             <div class="order-left">
                 <div class="search-bar"><input type="text" id="menuSearch" placeholder="Cari menu..."></div>
-                <div class="category-filter" id="catFilter"></div>
                 <div class="menu-grid" id="menuGrid"><div class="loading"><div class="spinner"></div>Memuatkan menu...</div></div>
             </div>
             <div class="order-right">
