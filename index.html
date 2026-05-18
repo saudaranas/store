@@ -2164,23 +2164,11 @@ function buildReceiptBytes(order,items,disc,tableNo,payMethod,cashIn,change){
 
 async function printReceiptBt(){
     if(!btCharMain){toast('Sambung printer dulu!','error');return;}
-    var el=document.getElementById('receiptPrint')||document.getElementById('receiptPrint2');
-    if(!el){toast('Tiada resit untuk print','error');return;}
 
-    // Get receipt data from S state
-    var cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn')?document.getElementById('cashIn').value:0)||0):0;
-    var total=parseFloat(document.getElementById('cartTotal')?document.getElementById('cartTotal').textContent:0)||0;
-    var change=Math.max(0,cashIn-total);
-    var tableNo=document.getElementById('tableNo')?document.getElementById('tableNo').value||'-':'-';
+    var items, disc, orderNo, payMethod, cashIn, change, tableNo, order;
 
-    // For viewReceipt (from tab senarai), use completeOrderData or last viewed order
-    var items=S.cart.length>0?S.cart:(S.completeOrderData?S.completeOrderData.items:[]);
-    var disc=S.cart.length>0?(parseFloat(document.getElementById('discountAmt')?document.getElementById('discountAmt').value:0)||0):(S.completeOrderData?parseFloat(S.completeOrderData.discount)||0:0);
-    var orderNo=S.count||'?';
-    var payMethod=S.pay||'cash';
-
-    // If from viewReceipt, get from lastViewedOrder
     if(window._lastViewedOrder){
+        // Dari tab Senarai — guna order yang sedang dipapar
         var o=window._lastViewedOrder;
         items=o.items||[];
         disc=parseFloat(o.discount)||0;
@@ -2189,9 +2177,22 @@ async function printReceiptBt(){
         cashIn=parseFloat(o.cashReceived)||0;
         change=parseFloat(o.changeGiven)||0;
         tableNo=o.tableNo||'-';
+        order={orderNo:orderNo};
+    } else {
+        // Dari cashier — guna S.cart
+        items=S.cart.map(function(i){return{name:i.name,price:i.price,qty:i.qty,note:i.note||''};});
+        disc=parseFloat(document.getElementById('discountAmt')?document.getElementById('discountAmt').value:0)||0;
+        orderNo=S.count||'?';
+        payMethod=S.pay||'cash';
+        cashIn=S.pay==='cash'?(parseFloat(document.getElementById('cashIn')?document.getElementById('cashIn').value:0)||0):0;
+        var total=parseFloat(document.getElementById('cartTotal')?document.getElementById('cartTotal').textContent:0)||0;
+        change=Math.max(0,cashIn-total);
+        tableNo=document.getElementById('tableNo')?document.getElementById('tableNo').value||'-':'-';
+        order={orderNo:orderNo};
     }
 
-    var order={orderNo:orderNo};
+    if(!items||!items.length){toast('Tiada item untuk print','error');return;}
+
     var bytes=buildReceiptBytes(order,items,disc,tableNo,payMethod,cashIn,change);
     var ok=await sendBtBytes(bytes);
     if(ok)toast('✅ Resit diprint!');
