@@ -480,10 +480,10 @@
     </div>
     <div class="toast-wrap" id="toastWrap"></div>
     <div class="tab-content active" id="tab-order">
+        <div class="search-bar" style="margin-bottom:10px"><input type="text" id="menuSearch" placeholder="Cari menu..."></div>
+        <div class="category-filter" id="catFilter" style="margin-bottom:10px"></div>
         <div class="order-layout">
             <div class="order-left">
-                <div class="search-bar"><input type="text" id="menuSearch" placeholder="Cari menu..."></div>
-                <div class="category-filter" id="catFilter"></div>
                 <div class="menu-grid" id="menuGrid"><div class="loading"><div class="spinner"></div>Memuatkan menu...</div></div>
             </div>
             <div class="order-right">
@@ -1975,7 +1975,7 @@ function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,
     });
 
     push(enc.encode('--------------------------------\x0a'));
-    cmd([0x1B,0x64,0x04]);      // feed 4 lines
+    cmd([0x1B,0x64,0x02]);      // feed 2 lines
     cmd([0x1D,0x56,0x42,0x00]); // full cut
 
     const totalLen=parts.reduce(function(s,b){return s+b.length;},0);
@@ -2024,7 +2024,7 @@ async function autoPrintKitchenSlips(order){
         const emoji=st.emoji||emojis[si%emojis.length];
         const bytes=buildKitchenSlipBytes(st.name,emoji,order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',stItems);
         await sendBtBytes(bytes);
-        await new Promise(r=>setTimeout(r,300)); // gap antara slip
+        await new Promise(r=>setTimeout(r,500)); // gap antara slip — bagi masa cut
     }
     toast('🖨️ Slip dapur diprint!');
 }
@@ -2161,8 +2161,8 @@ function buildReceiptBytes(order,items,disc,tableNo,payMethod,cashIn,change){
     text('');
     text('Terima Kasih!');
     text('Sila datang lagi');
-    cmd([0x1B,0x64,0x06]); // FEED 6 lines — lebih space sebelum cut
-    cmd([0x1D,0x56,0x41,0x10]); // PARTIAL CUT — lebih selamat
+    cmd([0x1B,0x64,0x03]); // FEED 3 lines
+    cmd([0x1D,0x56,0x42,0x00]); // FULL CUT
 
     var totalLen=parts.reduce(function(s,b){return s+b.length;},0);
     var buf=new Uint8Array(totalLen);
@@ -2197,10 +2197,13 @@ async function printReceiptBt(){
     }
 
     var order  = { orderNo: orderNo };
-    // Send INIT dulu untuk clear buffer printer
-    var initBytes = new Uint8Array([0x1B, 0x40]); // ESC @
+    // Send INIT untuk clear buffer printer + flush
+    var initBytes = new Uint8Array([
+        0x1B, 0x40,  // ESC @ — reset
+        0x1B, 0x64, 0x00  // Feed 0 — flush
+    ]);
     await sendBtBytes(initBytes);
-    await new Promise(r=>setTimeout(r,200));
+    await new Promise(r=>setTimeout(r,300));
 
     var bytes  = buildReceiptBytes(order, items, disc, tableNo, payMethod, cashIn, change);
     var ok     = await sendBtBytes(bytes);
