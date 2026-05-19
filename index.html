@@ -609,7 +609,13 @@
 <!-- MODALS -->
 <div class="modal-overlay" id="editModal"><div class="modal"><div class="modal-title">✏️ Edit Pesanan <span id="editId"></span></div><div id="editItems"></div><div class="total-bar"><span class="total-label">JUMLAH</span><span class="total-amount">RM <span id="editTotal">0.00</span></span></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('editModal')">Batal</button><button class="btn btn-success" onclick="saveEdit()">💾 Simpan</button></div></div></div>
 <div class="modal-overlay" id="editPendingModal"><div class="modal" style="max-width:520px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:90vh"><div style="padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0"><div class="modal-title" style="margin-bottom:0">✏️ Edit Pesanan <span id="editPendingId" style="color:var(--primary)"></span></div><div style="font-size:0.75rem;color:var(--gray);margin-top:3px">Tambah item baru atau ubah kuantiti</div></div><div style="overflow-y:auto;flex:1;padding:16px 20px"><div style="background:var(--primary-light);border:1.5px solid rgba(249,115,22,0.2);border-radius:14px;padding:14px;margin-bottom:16px"><div style="font-weight:800;font-size:0.85rem;color:var(--primary-dark);margin-bottom:10px">➕ Tambah Item Baru</div><input type="text" id="epMenuSearch" placeholder="🔍 Cari nama menu..." oninput="renderEpMenu()" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;font-family:var(--font);background:var(--white);outline:none;margin-bottom:10px"><div id="epCatFilter" style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div><div id="epMenuList" style="max-height:220px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;padding-right:2px"></div></div><div><div style="font-weight:800;font-size:0.85rem;color:var(--dark-2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between"><span>🛒 Item Dalam Pesanan</span><span id="epItemCount" style="background:var(--primary);color:white;padding:2px 8px;border-radius:12px;font-size:0.7rem">0</span></div><div id="editPendingItems"></div></div></div><div style="padding:14px 20px 16px;border-top:2px solid var(--bg);flex-shrink:0;background:var(--white)"><div class="total-bar" style="margin-bottom:12px"><span class="total-label">JUMLAH DIKEMASKINI</span><span class="total-amount">RM <span id="editPendingTotal">0.00</span></span></div><div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="closeM('editPendingModal')" style="flex:1">Batal</button><button class="btn btn-success" onclick="saveEditPending()" style="flex:2">💾 Simpan Perubahan</button></div></div></div></div>
-<div class="modal-overlay" id="menuModal"><div class="modal"><div class="modal-title">✏️ Edit Menu</div><input type="hidden" id="emId"><div class="form-group"><label>Nama</label><input type="text" class="form-input" id="emName"></div><div class="form-row"><div class="form-group"><label>Harga (RM)</label><input type="number" class="form-input" id="emPrice" step="0.50" min="0"></div><div class="form-group"><label>Kategori</label><select class="form-input" id="emCat" onchange="toggleCustomCat('em',this.value);autoAssignStation()"><option id="emCatFeatured" value="">⭐ (Kategori Utama)</option><option value="Makanan">🍚 Makanan</option><option value="Minuman">🥤 Minuman</option><option value="Kuih">🍰 Kuih</option><option value="Tambahan">➕ Tambahan</option><option value="Set">🍱 Set</option><option value="Lain-lain">📦 Lain-lain</option><option value="__custom__">✏️ Kategori Lain (Taip)...</option></select><input type="text" class="form-input" id="emCatCustom" placeholder="Nama kategori..." style="display:none;margin-top:6px"></div></div><div class="form-group" id="emStationGroup" style="display:none"><label style="margin-bottom:8px;display:block">🍳 Stesen Dapur <span style="font-size:0.7rem;color:var(--gray-light);font-weight:500">(auto dari kategori, boleh override)</span></label><div id="emStationChecks" style="display:flex;flex-wrap:wrap;gap:8px"></div></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('menuModal')">Batal</button><button class="btn btn-success" onclick="saveMenu()">💾 Simpan</button></div></div></div>
+<div class="modal-overlay" id="menuModal"><div class="modal"><div class="modal-title">✏️ Edit Menu</div><input type="hidden" id="emId"><div class="form-group"><label>Nama</label><input type="text" class="form-input" id="emName"></div><div class="form-row"><div class="form-group"><label>Harga (RM)</label><input type="number" class="form-input" id="emPrice" step="0.50" min="0"></div><div class="form-group"><label>Kategori</label><select class="form-input" id="emCat" onchange="toggleCustomCat('em',this.value);autoAssignStation()"><option id="emCatFeatured" value="">⭐ (Kategori Utama)</option><option value="Makanan">🍚 Makanan</option><option value="Minuman">🥤 Minuman</option><option value="Kuih">🍰 Kuih</option><option value="Tambahan">➕ Tambahan</option><option value="Set">🍱 Set</option><option value="Lain-lain">📦 Lain-lain</option><option value="__custom__">✏️ Kategori Lain (Taip)...</option></select><input type="text" class="form-input" id="emCatCustom" placeholder="Nama kategori..." style="display:none;margin-top:6px"></div></div><div class="form-group" id="emStationGroup" style="display:none"><label style="margin-bottom:8px;display:block">🍳 Stesen Dapur <span style="font-size:0.7rem;color:var(--gray-light);font-weight:500">(auto dari kategori, boleh override)</span></label><div id="emStationChecks" style="display:flex;flex-wrap:wrap;gap:8px"></div></div><!-- MODIFIER SECTION -->
+<div class="form-group" id="emModifierGroup">
+    <label style="margin-bottom:8px;display:block">🎛️ Modifier / Add-on <span style="font-size:0.7rem;color:var(--gray-light);font-weight:500">(pilihan)</span></label>
+    <div id="emModifierList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
+    <button type="button" onclick="addModifierGroup()" style="background:var(--bg);border:1.5px dashed var(--border);border-radius:10px;padding:8px 16px;font-size:0.78rem;font-weight:700;color:var(--gray);cursor:pointer;width:100%">➕ Tambah Kumpulan Modifier</button>
+</div>
+<div class="modal-actions"><button class="btn btn-outline" onclick="closeM('menuModal')">Batal</button><button class="btn btn-success" onclick="saveMenu()">💾 Simpan</button></div></div></div>
 <div class="modal-overlay" id="receiptModal"><div class="modal"><div id="receiptBox"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('receiptModal')">Tutup</button><button class="btn btn-whatsapp" onclick="openWaModal()">📲 WhatsApp</button><button class="btn btn-info" onclick="printReceipt()">🖨️ Cetak</button></div></div></div>
 <div class="modal-overlay wa-modal" id="waModal"><div class="modal" style="max-width:380px"><div class="modal-title">📲 Hantar Resit ke WhatsApp</div><p style="font-size:0.82rem;color:var(--gray);margin-bottom:14px">Masukkan nombor telefon pelanggan</p><label style="font-weight:700;font-size:0.8rem;color:var(--dark-3);display:block;margin-bottom:6px">No. Telefon</label><div class="wa-phone-wrap"><span class="wa-prefix">🇲🇾 +60</span><input type="tel" class="wa-phone-input" id="waPhone" placeholder="123456789" maxlength="12" inputmode="tel" onkeyup="if(event.key==='Enter')sendWhatsApp()"></div><p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:14px">Contoh: 123456789 (tanpa 0 di depan)</p><div style="font-weight:700;font-size:0.8rem;color:var(--dark-3);margin-bottom:6px">📋 Pratonton Resit</div><div class="wa-receipt-preview" id="waReceiptPreview">-</div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('waModal')">Batal</button><button class="btn btn-whatsapp" onclick="sendWhatsApp()" id="btnSendWa">📲 Hantar</button></div></div></div>
 <div class="modal-overlay" id="completeModal"><div class="modal"><div class="modal-title">💰 Selesaikan Pesanan <span id="completeOrderNum"></span></div><div id="completeItems"></div><div class="total-bar"><span class="total-label">JUMLAH</span><span class="total-amount">RM <span id="completeTotal">0.00</span></span></div><div style="font-weight:700;font-size:0.82rem;margin:10px 0 6px">💰 Cara Bayar</div><div class="payment-methods"><button class="pay-btn active" id="cPayCash" onclick="pickCompletePay('cash')"><span class="pay-icon">💵</span>Tunai</button><button class="pay-btn" id="cPayQr" onclick="pickCompletePay('qr')"><span class="pay-icon">📱</span>QR</button><button class="pay-btn" id="cPayTransfer" onclick="pickCompletePay('transfer')"><span class="pay-icon">🏦</span>Transfer</button></div><div class="cash-calc show" id="completeCashCalc"><div class="cash-row"><label>💵 Diterima:</label><input type="number" class="cash-input" id="completeCashIn" oninput="calcCompleteChange()" placeholder="0.00" step="0.50"></div><div class="change-box" id="completeChangeBox">-</div></div><div class="pay-info-box" id="completeQrBox"></div><div class="pay-info-box" id="completeTransferBox"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeM('completeModal')">Batal</button><button class="btn btn-success" onclick="doCompleteOrder()" id="btnComplete">✅ Selesai & Bayar</button></div></div></div>
@@ -966,7 +972,27 @@ function renderCats(){const featured=S.featuredCat||'';const allCats=[...new Set
 function pickCat(c,el){S.cat=c;document.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderMenu()}
 function renderMenu(){const g=document.getElementById('menuGrid');const q=document.getElementById('menuSearch').value.toLowerCase();let l=S.menu;if(S.cat!=='Semua')l=l.filter(m=>m.category===S.cat);if(q)l=l.filter(m=>m.name.toLowerCase().includes(q));if(!l.length){g.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}g.innerHTML=l.map(m=>{const c=S.cart.find(x=>x.id===m.id);return'<div class="menu-item '+(c?'selected':'')+'" onclick="addCart(\''+esc(m.id)+'\')" data-id="'+esc(m.id)+'">'+(c?'<div class="item-badge">'+c.qty+'</div>':'')+'<div class="item-cat">'+esc(m.category)+'</div><div class="item-name">'+esc(m.name)+'</div><div class="item-price">RM '+m.price.toFixed(2)+'</div></div>'}).join('')}
 document.getElementById('menuSearch').addEventListener('input',debounce(renderMenu,250));
-function addCart(id){const m=S.menu.find(x=>x.id===id);if(!m)return;const c=S.cart.find(x=>x.id===id);if(c)c.qty++;else S.cart.push({id:m.id,name:m.name,price:m.price,origPrice:m.price,qty:1,note:''});beep(true);renderCart();renderMenu();const el=document.querySelector('.menu-item[data-id="'+id+'"]');if(el){el.classList.remove('just-added');void el.offsetWidth;el.classList.add('just-added')}}
+function addCart(id){
+    const m=S.menu.find(x=>x.id===id);
+    if(!m)return;
+    // Kalau ada modifier — tunjuk popup dulu
+    if(m.modifiers&&m.modifiers.length>0){
+        showModifierPopup(m,function(finalPrice,selectedMods){
+            var noteStr=selectedMods.map(function(s){return s.option+(s.price>0?' (+RM'+s.price.toFixed(2)+')':'');}).join(', ');
+            // Modifier item sentiasa jadi row baru (sebab harga berbeza)
+            S.cart.push({id:m.id,name:m.name,price:finalPrice,origPrice:m.price,qty:1,note:noteStr,modifiers:selectedMods});
+            beep(true);renderCart();renderMenu();
+        });
+        return;
+    }
+    // Tiada modifier — terus tambah
+    const c=S.cart.find(x=>x.id===id&&(!x.modifiers||!x.modifiers.length));
+    if(c)c.qty++;
+    else S.cart.push({id:m.id,name:m.name,price:m.price,origPrice:m.price,qty:1,note:'',modifiers:[]});
+    beep(true);renderCart();renderMenu();
+    const el=document.querySelector('.menu-item[data-id="'+id+'"]');
+    if(el){el.classList.remove('just-added');void el.offsetWidth;el.classList.add('just-added')}
+}
 function cartQty(id,d){const c=S.cart.find(x=>x.id===id);if(!c)return;c.qty+=d;if(c.qty<=0)S.cart=S.cart.filter(x=>x.id!==id);renderCart();renderMenu()}
 function cartNote(idx,val){if(S.cart[idx])S.cart[idx].note=val}
 function cartPrice(idx,val){if(S.cart[idx]){S.cart[idx].price=parseFloat(val)||S.cart[idx].origPrice;renderCart()}}
@@ -1142,10 +1168,10 @@ function renderMenuManage(l){const c=document.getElementById('menuManage');if(!l
 function openMenuEditById(id){
     const m=S.menu.find(x=>x.id===id);
     if(!m)return;
-    openMenuEdit(m.id,m.name,m.price,m.category,m.stations||[]);
+    openMenuEdit(m.id,m.name,m.price,m.category,m.stations||[],m.modifiers||[]);
 }
 async function addMenu(){const n=document.getElementById('newName').value.trim(),p=document.getElementById('newPrice').value;const c=getSelectedCat('new');if(!n||!p){toast('Isi nama & harga!','error');return}if(!c){toast('Pilih atau taip kategori!','error');return}const r=await api('addMenu',{name:n,price:parseFloat(p),category:c});if(r.success){toast('✅ '+r.message);document.getElementById('newName').value='';document.getElementById('newPrice').value='';document.getElementById('newCat').value='';document.getElementById('newCatCustom').value='';document.getElementById('newCatCustom').style.display='none';clearClientCache('getMenu');loadMenuManage();loadMenu()}else toast('❌ '+(r.error||'Gagal'),'error')}
-function openMenuEdit(id,n,p,c,stations){
+function openMenuEdit(id,n,p,c,stations,modifiers){
     document.getElementById('emId').value=id;
     document.getElementById('emName').value=n;
     document.getElementById('emPrice').value=p;
@@ -1164,6 +1190,8 @@ function openMenuEdit(id,n,p,c,stations){
     }
     // Load station checkboxes
     renderStationChecks(Array.isArray(stations)?stations:[],c);
+    // Load modifiers
+    renderModifierEditor(Array.isArray(modifiers)?modifiers:[]);
     document.getElementById('menuModal').classList.add('show');
 }
 
@@ -1212,11 +1240,13 @@ async function saveMenu(){
     const p=document.getElementById('emPrice').value;
     const c=getSelectedCat('em');
     const stations=getSelectedStations();
+    const modifiers=S._modifierData||[];
     if(!n||!p){toast('Isi semua!','error');return}
-    // Update menu + stations serentak
-    const [r1,r2]=await Promise.all([
+    // Update menu + stations + modifiers serentak
+    const [r1,r2,r3]=await Promise.all([
         api('updateMenu',{id,name:n,price:parseFloat(p),category:c}),
-        api('updateMenuStation',{id,stations})
+        api('updateMenuStation',{id,stations}),
+        api('updateMenuModifiers',{id,modifiers})
     ]);
     if(r1.success){
         toast('✅ '+r1.message);
@@ -2786,6 +2816,339 @@ function printStationClosingBrowser(stIdx){
             try{area.remove();style.remove();}catch(e){}
         },1000);
     },200);
+}
+
+
+// ============================================================
+// MODIFIER / ADD-ON SYSTEM
+// ============================================================
+
+// Render modifier editor dalam Tab Menu
+function renderModifierEditor(modifiers){
+    var list = document.getElementById('emModifierList');
+    if(!list) return;
+    list.innerHTML = '';
+    (modifiers||[]).forEach(function(grp,gIdx){
+        list.appendChild(buildModifierGroupEl(grp, gIdx));
+    });
+}
+
+function buildModifierGroupEl(grp, gIdx){
+    var div = document.createElement('div');
+    div.style.cssText = 'background:var(--bg);border-radius:12px;padding:12px;border:1.5px solid var(--border)';
+
+    // Header row
+    var header = document.createElement('div');
+    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px';
+
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = grp.name||'';
+    nameInput.placeholder = 'Nama kumpulan (cth: Tahap Pedas)';
+    nameInput.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:0.78rem;font-weight:700;width:160px';
+    nameInput.addEventListener('input', (function(gi){ return function(){ if(S._modifierData[gi]) S._modifierData[gi].name=this.value; }; })(gIdx));
+
+    var typeSelect = document.createElement('select');
+    typeSelect.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:0.75rem;font-weight:600;margin-left:6px';
+    typeSelect.innerHTML = '<option value="single"'+(grp.type==='single'?' selected':'')+'>Pilih 1 (Radio)</option>'
+        + '<option value="multi"'+(grp.type==='multi'?' selected':'')+'>Pilih Banyak (Checkbox)</option>';
+    typeSelect.addEventListener('change', (function(gi){ return function(){ if(S._modifierData[gi]) S._modifierData[gi].type=this.value; }; })(gIdx));
+
+    var leftWrap = document.createElement('div');
+    leftWrap.style.cssText = 'display:flex;align-items:center;gap:6px';
+    leftWrap.appendChild(nameInput);
+    leftWrap.appendChild(typeSelect);
+
+    var delBtn = document.createElement('button');
+    delBtn.textContent = 'Padam';
+    delBtn.style.cssText = 'background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:700;cursor:pointer';
+    delBtn.addEventListener('click', (function(gi){ return function(){ removeModifierGroup(gi); }; })(gIdx));
+
+    header.appendChild(leftWrap);
+    header.appendChild(delBtn);
+    div.appendChild(header);
+
+    // Options
+    var optList = document.createElement('div');
+    optList.id = 'modOpts_'+gIdx;
+    optList.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+
+    (grp.options||[]).forEach(function(opt, oIdx){
+        optList.appendChild(buildModifierOptionEl(gIdx, oIdx, opt));
+    });
+    div.appendChild(optList);
+
+    // Add option button
+    var addBtn = document.createElement('button');
+    addBtn.textContent = '+ Tambah Pilihan';
+    addBtn.style.cssText = 'margin-top:8px;background:none;border:1.5px dashed var(--border);border-radius:8px;padding:5px 12px;font-size:0.72rem;font-weight:600;color:var(--gray);cursor:pointer;width:100%';
+    addBtn.addEventListener('click', (function(gi){ return function(){ addModifierOption(gi); }; })(gIdx));
+    div.appendChild(addBtn);
+
+    return div;
+}
+
+function buildModifierOptionEl(gIdx, oIdx, opt){
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px';
+
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = opt.name||'';
+    nameInput.placeholder = 'Nama pilihan';
+    nameInput.style.cssText = 'flex:1;border:1.5px solid var(--border);border-radius:8px;padding:5px 9px;font-size:0.75rem';
+    nameInput.addEventListener('input', (function(gi,oi){ return function(){ if(S._modifierData[gi]&&S._modifierData[gi].options[oi]) S._modifierData[gi].options[oi].name=this.value; }; })(gIdx,oIdx));
+
+    var rmLabel = document.createElement('span');
+    rmLabel.textContent = '+RM';
+    rmLabel.style.cssText = 'font-size:0.7rem;color:var(--gray)';
+
+    var priceInput = document.createElement('input');
+    priceInput.type = 'number';
+    priceInput.value = opt.price||0;
+    priceInput.min = '0';
+    priceInput.step = '0.50';
+    priceInput.style.cssText = 'width:60px;border:1.5px solid var(--border);border-radius:8px;padding:5px 6px;font-size:0.75rem';
+    priceInput.addEventListener('input', (function(gi,oi){ return function(){ if(S._modifierData[gi]&&S._modifierData[gi].options[oi]) S._modifierData[gi].options[oi].price=parseFloat(this.value)||0; }; })(gIdx,oIdx));
+
+    var defCheck = document.createElement('input');
+    defCheck.type = 'checkbox';
+    defCheck.checked = opt.default||false;
+    defCheck.title = 'Default';
+    defCheck.style.cssText = 'width:14px;height:14px;accent-color:var(--primary)';
+    defCheck.addEventListener('change', (function(gi,oi){ return function(){ if(S._modifierData[gi]&&S._modifierData[gi].options[oi]) S._modifierData[gi].options[oi].default=this.checked; }; })(gIdx,oIdx));
+
+    var defLabel = document.createElement('span');
+    defLabel.textContent = 'Default';
+    defLabel.style.cssText = 'font-size:0.65rem;color:var(--gray)';
+
+    var delBtn = document.createElement('button');
+    delBtn.textContent = '✕';
+    delBtn.style.cssText = 'background:none;border:none;color:#94a3b8;cursor:pointer;font-size:0.85rem;padding:2px';
+    delBtn.addEventListener('click', (function(gi,oi){ return function(){ removeModifierOption(gi,oi); }; })(gIdx,oIdx));
+
+    var priceWrap = document.createElement('div');
+    priceWrap.style.cssText = 'display:flex;align-items:center;gap:4px';
+    priceWrap.appendChild(rmLabel);
+    priceWrap.appendChild(priceInput);
+
+    row.appendChild(nameInput);
+    row.appendChild(priceWrap);
+    row.appendChild(defCheck);
+    row.appendChild(defLabel);
+    row.appendChild(delBtn);
+    return row;
+}
+
+function getModifiersFromEditor(){
+    var list = document.getElementById('emModifierList');
+    if(!list) return [];
+    // Rebuild from S._modifierData
+    return S._modifierData || [];
+}
+
+// S._modifierData stores current modifier state
+function initModifierData(modifiers){
+    S._modifierData = JSON.parse(JSON.stringify(modifiers||[]));
+}
+
+function addModifierGroup(){
+    if(!S._modifierData) S._modifierData = [];
+    S._modifierData.push({name:'',type:'single',options:[{name:'',price:0,default:false}]});
+    renderModifierEditor(S._modifierData);
+}
+function removeModifierGroup(gIdx){
+    S._modifierData.splice(gIdx,1);
+    renderModifierEditor(S._modifierData);
+}
+function updateModifierGroup(gIdx,key,val){
+    if(!S._modifierData[gIdx]) return;
+    S._modifierData[gIdx][key] = val;
+}
+function addModifierOption(gIdx){
+    if(!S._modifierData[gIdx]) return;
+    S._modifierData[gIdx].options.push({name:'',price:0,default:false});
+    renderModifierEditor(S._modifierData);
+}
+function removeModifierOption(gIdx,oIdx){
+    S._modifierData[gIdx].options.splice(oIdx,1);
+    renderModifierEditor(S._modifierData);
+}
+function updateModifierOption(gIdx,oIdx,key,val){
+    if(!S._modifierData[gIdx]||!S._modifierData[gIdx].options[oIdx]) return;
+    S._modifierData[gIdx].options[oIdx][key] = val;
+}
+
+// ============================================================
+// MODIFIER POPUP — masa order
+// ============================================================
+var _modifierPopupCallback = null;
+
+function showModifierPopup(item, onConfirm){
+    var mods = item.modifiers||[];
+    if(!mods.length){
+        onConfirm(item.price, []);
+        return;
+    }
+    _modifierPopupCallback = onConfirm;
+
+    var modal = document.getElementById('modifierPopupModal');
+    if(!modal){
+        modal = document.createElement('div');
+        modal.id = 'modifierPopupModal';
+        modal.className = 'modal-overlay';
+        modal.style.cssText = 'display:none;align-items:center;justify-content:center;z-index:200';
+        modal.innerHTML = '<div class="modal" style="max-width:420px;width:95%;padding:0;overflow:hidden">'
+            + '<div style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:14px 18px;color:#fff;display:flex;justify-content:space-between;align-items:center">'
+            + '<div><div id="mpTitle" style="font-weight:800;font-size:0.95rem"></div>'
+            + '<div id="mpPrice" style="font-size:0.75rem;opacity:0.85;margin-top:2px"></div></div>'
+            + '<button onclick="closeModifierPopup()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.9rem">x</button>'
+            + '</div>'
+            + '<div id="mpBody" style="padding:14px 18px;max-height:55vh;overflow-y:auto"></div>'
+            + '<div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--white)">'
+            + '<button onclick="closeModifierPopup()" class="btn btn-outline" style="flex:1">Batal</button>'
+            + '<button onclick="confirmModifier()" class="btn btn-success" style="flex:2;justify-content:center" id="mpConfirmBtn">Tambah ke Troli — <span id="mpTotal"></span></button>'
+            + '</div></div>';
+        document.body.appendChild(modal);
+    }
+
+    document.getElementById('mpTitle').textContent = item.name;
+    document.getElementById('mpPrice').textContent = 'Harga asas: RM' + parseFloat(item.price).toFixed(2);
+
+    var body = document.getElementById('mpBody');
+    body.innerHTML = '';
+
+    mods.forEach(function(grp, gIdx){
+        var grpDiv = document.createElement('div');
+        grpDiv.style.cssText = 'margin-bottom:16px';
+
+        var label = document.createElement('div');
+        label.style.cssText = 'font-weight:700;font-size:0.82rem;margin-bottom:8px;color:var(--dark)';
+        label.textContent = grp.name;
+        if(grp.type==='single'){
+            var req = document.createElement('span');
+            req.textContent = ' WAJIB';
+            req.style.cssText = 'color:#ef4444;font-size:0.65rem;font-weight:700;margin-left:6px';
+            label.appendChild(req);
+        }
+        grpDiv.appendChild(label);
+
+        var optWrap = document.createElement('div');
+        optWrap.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+
+        (grp.options||[]).forEach(function(opt, oIdx){
+            var inputType = grp.type==='single' ? 'radio' : 'checkbox';
+            var lbl = document.createElement('label');
+            lbl.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--white)';
+            if(opt.default){
+                lbl.style.borderColor = 'var(--primary)';
+                lbl.style.background = '#fff7ed';
+            }
+
+            var inp = document.createElement('input');
+            inp.type = inputType;
+            inp.name = 'modGrp_'+gIdx;
+            inp.value = oIdx;
+            inp.checked = opt.default||false;
+            inp.style.cssText = 'width:16px;height:16px;accent-color:var(--primary);flex-shrink:0';
+            inp.addEventListener('change', function(){
+                // Update visual
+                optWrap.querySelectorAll('label').forEach(function(l){ l.style.borderColor='var(--border)'; l.style.background='var(--white)'; });
+                if(inputType==='radio'){
+                    if(this.checked){ lbl.style.borderColor='var(--primary)'; lbl.style.background='#fff7ed'; }
+                } else {
+                    if(this.checked){ lbl.style.borderColor='var(--primary)'; lbl.style.background='#fff7ed'; }
+                }
+                calcModifierTotal(item, parseFloat(item.price));
+            });
+
+            var nameSpan = document.createElement('span');
+            nameSpan.style.cssText = 'font-size:0.82rem;font-weight:600;flex:1';
+            nameSpan.textContent = opt.name;
+            if(opt.price>0){
+                var priceSpan = document.createElement('span');
+                priceSpan.textContent = ' +RM'+parseFloat(opt.price).toFixed(2);
+                priceSpan.style.cssText = 'color:var(--primary);font-weight:700';
+                nameSpan.appendChild(priceSpan);
+            }
+
+            lbl.appendChild(inp);
+            lbl.appendChild(nameSpan);
+            optWrap.appendChild(lbl);
+        });
+
+        grpDiv.appendChild(optWrap);
+        body.appendChild(grpDiv);
+    });
+
+    modal._currentItem = item;
+    calcModifierTotal(item, parseFloat(item.price));
+    modal.style.display = 'flex';
+}
+
+function calcModifierTotal(item, basePrice){
+    var modal = document.getElementById('modifierPopupModal');
+    if(!modal) return;
+    var total = basePrice;
+    (item.modifiers||[]).forEach(function(grp, gIdx){
+        modal.querySelectorAll('input[name="modGrp_'+gIdx+'"]:checked').forEach(function(inp){
+            var oIdx = parseInt(inp.value);
+            var opt = grp.options&&grp.options[oIdx];
+            if(opt) total += parseFloat(opt.price)||0;
+        });
+    });
+    var el = document.getElementById('mpTotal');
+    if(el) el.textContent = 'RM'+total.toFixed(2);
+    modal._currentTotal = total;
+}
+
+
+
+function confirmModifier(){
+    var modal = document.getElementById('modifierPopupModal');
+    if(!modal||!modal._currentItem) return;
+    var item = modal._currentItem;
+    var selectedMods = [];
+    var total = parseFloat(item.price);
+    var valid = true;
+
+    (item.modifiers||[]).forEach(function(grp,gIdx){
+        if(grp.type==='single'){
+            var checked = modal.querySelector('input[name="modGrp_'+gIdx+'"]:checked');
+            if(!checked && grp.options&&grp.options.length){
+                // Auto select default or first
+                var def = grp.options.findIndex(function(o){return o.default;});
+                var inp = modal.querySelector('input[name="modGrp_'+gIdx+'"][value="'+(def>=0?def:0)+'"]');
+                if(inp) inp.checked = true;
+                checked = modal.querySelector('input[name="modGrp_'+gIdx+'"]:checked');
+            }
+            if(checked){
+                var oIdx = parseInt(checked.value);
+                var opt = grp.options[oIdx];
+                if(opt){
+                    total += parseFloat(opt.price)||0;
+                    selectedMods.push({group:grp.name,option:opt.name,price:parseFloat(opt.price)||0});
+                }
+            }
+        } else {
+            modal.querySelectorAll('input[name="modGrp_'+gIdx+'"]:checked').forEach(function(inp){
+                var oIdx = parseInt(inp.value);
+                var opt = grp.options[oIdx];
+                if(opt){
+                    total += parseFloat(opt.price)||0;
+                    selectedMods.push({group:grp.name,option:opt.name,price:parseFloat(opt.price)||0});
+                }
+            });
+        }
+    });
+
+    closeModifierPopup();
+    if(_modifierPopupCallback) _modifierPopupCallback(total, selectedMods);
+}
+
+function closeModifierPopup(){
+    var modal = document.getElementById('modifierPopupModal');
+    if(modal) modal.style.display = 'none';
 }
 
 // Start router bila page load
