@@ -2598,28 +2598,129 @@ function getStationItemBreakdown(stIdx, orders){
         .map(function(e){return{name:e[0],qty:e[1].qty,total:e[1].total};});
 }
 
-async function printStationClosing(stIdx){
-    if(!btCharMain){
-        // Fallback: print to browser
-        printStationClosingBrowser(stIdx);
-        return;
+// Current closing index for modal
+var _closingStIdx = -1;
+var _closingAll   = false;
+
+function showClosingModal(stIdx){
+    var stData = window._stationSalesData;
+    if(!stData||!stData.length){toast('Tiada data stesen','error');return;}
+
+    var st = stIdx === 'all' ? null : stData[stIdx];
+    _closingStIdx = stIdx;
+    _closingAll   = stIdx === 'all';
+
+    var COLORS = ['#f97316','#3b82f6','#16a34a','#8b5cf6','#ec4899'];
+    var date = window._stationSalesDate||'';
+    var shop = S.shop||{};
+
+    var modalTitle = document.getElementById('closingModalTitle');
+    var modalSub   = document.getElementById('closingModalSubtitle');
+    var modalBody  = document.getElementById('closingModalBody');
+    var modalHdr   = document.getElementById('closingModalHeader');
+
+    if(_closingAll){
+        // All stations summary
+        modalTitle.textContent = '📊 Closing Semua Stesen';
+        modalSub.textContent   = date;
+        modalHdr.style.background = 'var(--dark)';
+
+        var grandTotal = stData.reduce(function(s,st){return s+st.totalRM;},0);
+        var rows = stData.map(function(st,i){
+            var col = COLORS[i%COLORS.length];
+            var breakdown = getStationItemBreakdown(i, window._currentReportOrders||[]);
+            var topStr = breakdown.slice(0,2).map(function(it){return it.name+' x'+it.qty;}).join(', ');
+            return '<div style="padding:12px 0;border-bottom:1px solid var(--bg)">'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+                + '<div style="display:flex;align-items:center;gap:8px">'
+                + '<span style="font-size:1.1rem">'+st.emoji+'</span>'
+                + '<div><div style="font-weight:700">'+esc(st.name)+'</div>'
+                + '<div style="font-size:0.68rem;color:var(--gray)">'+esc(topStr)+'</div></div>'
+                + '</div>'
+                + '<div style="text-align:right">'
+                + '<div style="font-weight:800;color:'+col+'">RM'+st.totalRM.toFixed(2)+'</div>'
+                + '<div style="font-size:0.7rem;color:var(--gray)">'+st.totalItems+' item</div>'
+                + '</div></div>'
+                + '<div style="background:var(--bg);border-radius:4px;height:6px;overflow:hidden">'
+                + '<div style="background:'+col+';height:100%;width:'+Math.round(grandTotal>0?(st.totalRM/grandTotal)*100:0)+'%;border-radius:4px"></div>'
+                + '</div></div>';
+        }).join('');
+
+        modalBody.innerHTML = rows
+            + '<div style="display:flex;justify-content:space-between;padding-top:14px;font-weight:800;font-size:1rem">'
+            + '<span>JUMLAH KESELURUHAN</span>'
+            + '<span style="color:var(--primary)">RM'+grandTotal.toFixed(2)+'</span>'
+            + '</div>';
+
+    } else {
+        // Single station detail
+        var col = COLORS[stIdx%COLORS.length];
+        var breakdown = getStationItemBreakdown(stIdx, window._currentReportOrders||[]);
+        st.itemBreakdown = breakdown;
+
+        modalTitle.textContent = st.emoji+' '+st.name;
+        modalSub.textContent   = 'Laporan Closing · '+date;
+        modalHdr.style.background = col;
+
+        var itemRows = breakdown.map(function(item){
+            return '<tr>'
+                + '<td style="padding:8px 4px;border-bottom:1px solid var(--bg)">'+esc(item.name)+'</td>'
+                + '<td style="padding:8px 4px;text-align:center;border-bottom:1px solid var(--bg);color:var(--gray);font-weight:600">x'+item.qty+'</td>'
+                + '<td style="padding:8px 4px;text-align:right;border-bottom:1px solid var(--bg);font-weight:700;color:'+col+'">RM'+item.total.toFixed(2)+'</td>'
+                + '</tr>';
+        }).join('');
+
+        modalBody.innerHTML = '<table style="width:100%;border-collapse:collapse">'
+            + '<thead><tr style="font-size:0.72rem;color:var(--gray);font-weight:700">'
+            + '<th style="text-align:left;padding:4px">ITEM</th>'
+            + '<th style="text-align:center;padding:4px">QTY</th>'
+            + '<th style="text-align:right;padding:4px">JUMLAH</th>'
+            + '</tr></thead><tbody>'+itemRows+'</tbody>'
+            + '</table>'
+            + '<div style="display:flex;justify-content:space-between;padding:12px 4px 4px;border-top:2px solid var(--bg);margin-top:8px">'
+            + '<div><div style="font-size:0.78rem;color:var(--gray)">Jumlah Item</div>'
+            + '<div style="font-weight:800;font-size:1.1rem">'+st.totalItems+'</div></div>'
+            + '<div style="text-align:right"><div style="font-size:0.78rem;color:var(--gray)">Jualan</div>'
+            + '<div style="font-weight:800;font-size:1.3rem;color:'+col+'">RM'+st.totalRM.toFixed(2)+'</div></div>'
+            + '</div>';
     }
-    var st = window._stationSalesData?window._stationSalesData[stIdx]:null;
-    if(!st){toast('Data stesen tidak dijumpai','error');return;}
-    st.itemBreakdown = getStationItemBreakdown(stIdx, window._currentReportOrders||[]);
-    var bytes = buildClosingBytes(st, window._stationSalesDate||'');
-    await sendBtBytes(bytes);
-    toast('✅ Closing '+st.name+' diprint!');
+
+    document.getElementById('stationClosingModal').style.display='flex';
+}
+
+async function doPrintClosing(){
+    if(_closingAll){
+        closeM('stationClosingModal');
+        for(var i=0;i<window._stationSalesData.length;i++){
+            var st=window._stationSalesData[i];
+            st.itemBreakdown=getStationItemBreakdown(i,window._currentReportOrders||[]);
+            if(btCharMain){
+                await sendBtBytes(buildClosingBytes(st,window._stationSalesDate||''));
+                await new Promise(function(r){setTimeout(r,800);});
+            } else {
+                printStationClosingBrowser(i);
+                await new Promise(function(r){setTimeout(r,500);});
+            }
+        }
+        toast('✅ Semua closing diprint!');
+    } else {
+        var st=window._stationSalesData[_closingStIdx];
+        closeM('stationClosingModal');
+        if(btCharMain){
+            await sendBtBytes(buildClosingBytes(st,window._stationSalesDate||''));
+            toast('✅ Closing '+st.name+' diprint!');
+        } else {
+            printStationClosingBrowser(_closingStIdx);
+        }
+    }
+}
+
+async function printStationClosing(stIdx){
+    showClosingModal(stIdx);
 }
 
 async function printAllStationsClosing(){
-    if(!window._stationSalesData||!window._stationSalesData.length){
-        toast('Tiada data stesen','error');return;
-    }
-    for(var i=0;i<window._stationSalesData.length;i++){
-        await printStationClosing(i);
-        await new Promise(function(r){setTimeout(r,800);});
-    }
+    showClosingModal('all');
 }
 
 function printStationClosingBrowser(stIdx){
@@ -2700,6 +2801,24 @@ routerInit();
 </div>
 
 <!-- ===== RENEW WARNING POPUP (7 hari sebelum luput) ===== -->
+<!-- Station Closing Modal -->
+<div class="modal-overlay" id="stationClosingModal" style="display:none;align-items:center;justify-content:center;z-index:1000">
+    <div class="modal" style="max-width:480px;width:95%;padding:0;overflow:hidden;border-radius:16px">
+        <div id="closingModalHeader" style="padding:16px 20px;background:var(--primary);display:flex;align-items:center;justify-content:space-between">
+            <div>
+                <div style="font-size:1rem;font-weight:800;color:white" id="closingModalTitle">Laporan Closing</div>
+                <div style="font-size:0.72rem;color:rgba(255,255,255,0.8)" id="closingModalSubtitle"></div>
+            </div>
+            <button onclick="closeM('stationClosingModal')" style="background:rgba(255,255,255,0.2);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;line-height:1">×</button>
+        </div>
+        <div id="closingModalBody" style="padding:16px 20px;max-height:55vh;overflow-y:auto"></div>
+        <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--white)">
+            <button onclick="closeM('stationClosingModal')" class="btn btn-outline" style="flex:1">Tutup</button>
+            <button id="closingPrintBtn" class="btn btn-primary" style="flex:2;justify-content:center" onclick="doPrintClosing()">🖨️ Print Closing</button>
+        </div>
+    </div>
+</div>
+
 <div id="renewPopup" class="renew-overlay" style="display:none">
     <div class="renew-modal">
         <div class="renew-header renew-header-warning">
