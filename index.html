@@ -1376,7 +1376,12 @@ function renderDapurOrders(pending){
     el.innerHTML='<div class="dapur-grid">'+cardsHtml+'</div>';
 }
 function applyPakejLimits(){const p=C.PAKEJ;if(p==='asas'){const t=document.querySelector('.table-row');if(t)t.style.display='none';const d=document.querySelector('.discount-section');if(d)d.style.display='none'}if(p==='pro'){const d=document.querySelector('.discount-section');if(d)d.style.display='none'}}
-function closeM(id){document.getElementById(id).classList.remove('show')}
+function closeM(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.classList.remove('show');
+    if(el.style.display==='flex') el.style.display='none';
+}
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show')})});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show'));if(e.ctrlKey&&e.key==='Enter')submitOrder();if(e.key==='Enter'&&document.getElementById('waModal').classList.contains('show')){const f=document.activeElement;if(f&&f.id==='waPhone')sendWhatsApp()}});
 function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('ms-MY',{timeZone:'Asia/Kuala_Lumpur',hour:'2-digit',minute:'2-digit'})}
@@ -2689,29 +2694,43 @@ function showClosingModal(stIdx){
 }
 
 async function doPrintClosing(){
+    // Check printer dulu
+    if(!btCharMain){
+        // Tunjuk warning dalam modal — sama macam resit customer
+        var existing=document.querySelector('#stationClosingModal .printer-warning');
+        if(existing)existing.remove();
+        var warn=document.createElement('div');
+        warn.className='printer-warning';
+        warn.style.cssText='background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:10px 14px;margin:0 20px 12px;font-size:0.78rem;color:#dc2626;font-weight:600;text-align:center';
+        warn.textContent='⚠️ Sambung printer dulu di Tetapan → Printer Dapur';
+        var footer=document.querySelector('#stationClosingModal .modal div:last-child');
+        if(footer)footer.parentNode.insertBefore(warn,footer);
+        setTimeout(function(){if(warn.parentNode)warn.remove();},3000);
+        toast('⚠️ Sambung printer dulu','error');
+        return;
+    }
+
     if(_closingAll){
         closeM('stationClosingModal');
         for(var i=0;i<window._stationSalesData.length;i++){
             var st=window._stationSalesData[i];
             st.itemBreakdown=getStationItemBreakdown(i,window._currentReportOrders||[]);
-            if(btCharMain){
-                await sendBtBytes(buildClosingBytes(st,window._stationSalesDate||''));
-                await new Promise(function(r){setTimeout(r,800);});
-            } else {
-                printStationClosingBrowser(i);
-                await new Promise(function(r){setTimeout(r,500);});
-            }
+            var initBytes=new Uint8Array([0x1B,0x40]);
+            await sendBtBytes(initBytes);
+            await new Promise(function(r){setTimeout(r,200);});
+            await sendBtBytes(buildClosingBytes(st,window._stationSalesDate||''));
+            await new Promise(function(r){setTimeout(r,800);});
         }
         toast('✅ Semua closing diprint!');
     } else {
         var st=window._stationSalesData[_closingStIdx];
+        st.itemBreakdown=getStationItemBreakdown(_closingStIdx,window._currentReportOrders||[]);
         closeM('stationClosingModal');
-        if(btCharMain){
-            await sendBtBytes(buildClosingBytes(st,window._stationSalesDate||''));
-            toast('✅ Closing '+st.name+' diprint!');
-        } else {
-            printStationClosingBrowser(_closingStIdx);
-        }
+        var initBytes=new Uint8Array([0x1B,0x40]);
+        await sendBtBytes(initBytes);
+        await new Promise(function(r){setTimeout(r,200);});
+        await sendBtBytes(buildClosingBytes(st,window._stationSalesDate||''));
+        toast('✅ Closing '+st.name+' diprint!');
     }
 }
 
