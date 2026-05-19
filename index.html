@@ -2701,10 +2701,10 @@ async function doPrintClosing(){
         if(existing)existing.remove();
         var warn=document.createElement('div');
         warn.className='printer-warning';
-        warn.style.cssText='background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:10px 14px;margin:0 20px 12px;font-size:0.78rem;color:#dc2626;font-weight:600;text-align:center';
+        warn.style.cssText='background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:10px 14px;margin:0 0 10px;font-size:0.78rem;color:#dc2626;font-weight:600;text-align:center';
         warn.textContent='⚠️ Sambung printer dulu di Tetapan → Printer Dapur';
-        var footer=document.querySelector('#stationClosingModal .modal div:last-child');
-        if(footer)footer.parentNode.insertBefore(warn,footer);
+        var footer=document.querySelector('#stationClosingModal > div > div:last-child');
+        if(footer)footer.insertBefore(warn,footer.firstChild);
         setTimeout(function(){if(warn.parentNode)warn.remove();},3000);
         toast('⚠️ Sambung printer dulu','error');
         return;
