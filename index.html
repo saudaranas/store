@@ -2850,8 +2850,8 @@ function buildModifierGroupEl(grp, gIdx){
 
     var typeSelect = document.createElement('select');
     typeSelect.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:0.75rem;font-weight:600;margin-left:6px';
-    typeSelect.innerHTML = '<option value="single"'+(grp.type==='single'?' selected':'')+'>Pilih 1 (Radio)</option>'
-        + '<option value="multi"'+(grp.type==='multi'?' selected':'')+'>Pilih Banyak (Checkbox)</option>';
+    typeSelect.innerHTML = '<option value="single"'+(grp.type==='single'?' selected':'')+'>Satu Pilihan</option>'
+        + '<option value="multi"'+(grp.type==='multi'?' selected':'')+'>Pilih Mana-mana</option>';
     typeSelect.addEventListener('change', (function(gi){ return function(){ if(S._modifierData[gi]) S._modifierData[gi].type=this.value; }; })(gIdx));
 
     var leftWrap = document.createElement('div');
@@ -3027,7 +3027,7 @@ function showModifierPopup(item, onConfirm){
         label.textContent = grp.name;
         if(grp.type==='single'){
             var req = document.createElement('span');
-            req.textContent = ' WAJIB';
+            req.textContent = ' (Wajib Pilih)';
             req.style.cssText = 'color:#ef4444;font-size:0.65rem;font-weight:700;margin-left:6px';
             label.appendChild(req);
         }
@@ -3037,7 +3037,7 @@ function showModifierPopup(item, onConfirm){
         optWrap.style.cssText = 'display:flex;flex-direction:column;gap:6px';
 
         (grp.options||[]).forEach(function(opt, oIdx){
-            var inputType = grp.type==='single' ? 'radio' : 'checkbox';
+            var inputType = grp.type==='single' ? 'radio' : 'checkbox'; // single=Satu Pilihan, multi=Pilih Mana-mana
             var lbl = document.createElement('label');
             lbl.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--white)';
             if(opt.default){
