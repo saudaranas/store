@@ -1027,14 +1027,50 @@ function openEditById(id){const o=getOrderById(id);if(o)openEdit(o)}
 function viewReceiptById(id){const o=getOrderById(id);if(o)viewReceipt(o)}
 async function cancelOrd(id){if(!confirm('Batalkan pesanan ini?'))return;const r=await api('cancelOrder',{orderId:id});if(r.success){beep(true);toast('✅ '+r.message);const idx=S.orders.findIndex(o=>o.orderId===id);if(idx!==-1){S.orders[idx].status='cancelled';renderOrders()}clearClientCache();loadOrders()}else toast('❌ '+(r.error||'Gagal'),'error')}
 let epActiveCat='Semua';
-function openEditPending(o){S.editPendingOid=o.orderId;S.editPendingItems=JSON.parse(JSON.stringify(o.items));document.getElementById('editPendingId').textContent='#'+(o.orderNo||o.orderId);document.getElementById('epMenuSearch').value='';epActiveCat='Semua';renderEpCatFilter();renderEpMenu();renderEditPendingItems();document.getElementById('editPendingModal').classList.add('show')}
+function openEditPending(o){S.editPendingOid=o.orderId;S.editPendingOrder=o;S.editPendingItems=JSON.parse(JSON.stringify(o.items));document.getElementById('editPendingId').textContent='#'+(o.orderNo||o.orderId);document.getElementById('epMenuSearch').value='';epActiveCat='Semua';renderEpCatFilter();renderEpMenu();renderEditPendingItems();document.getElementById('editPendingModal').classList.add('show')}
 function renderEpCatFilter(){const cats=['Semua',...new Set(S.menu.map(m=>m.category))];const ic={Semua:'🍽️',Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};document.getElementById('epCatFilter').innerHTML=cats.map(c=>'<button onclick="epPickCat(\''+esc(c)+'\')" style="padding:5px 12px;border-radius:20px;border:1px solid '+(c===epActiveCat?'var(--primary)':'var(--border)')+';background:'+(c===epActiveCat?'var(--primary)':'var(--white)')+';color:'+(c===epActiveCat?'white':'var(--gray)')+';font-size:0.72rem;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font);transition:all 0.2s">'+(ic[c]||'📦')+' '+esc(c)+'</button>').join('')}
 function epPickCat(c){epActiveCat=c;renderEpCatFilter();renderEpMenu()}
 function renderEpMenu(){const q=document.getElementById('epMenuSearch').value.toLowerCase();let l=S.menu;if(epActiveCat!=='Semua')l=l.filter(m=>m.category===epActiveCat);if(q)l=l.filter(m=>m.name.toLowerCase().includes(q));const el=document.getElementById('epMenuList');if(!l.length){el.innerHTML='<div style="font-size:0.75rem;color:var(--gray);padding:12px;grid-column:span 2;text-align:center">Tiada menu</div>';return}el.innerHTML=l.map(m=>{const inOrder=S.editPendingItems.find(x=>x.name===m.name);const badge=inOrder?'<span style="background:var(--primary);color:white;border-radius:10px;padding:1px 6px;font-size:0.65rem;font-weight:800;margin-left:4px">×'+inOrder.qty+'</span>':'';return'<button onclick="addToEditPending(\''+esc(m.id)+'\')" style="padding:10px 12px;background:'+(inOrder?'var(--primary-light)':'var(--white)')+';border:1.5px solid '+(inOrder?'var(--primary)':'var(--border)')+';border-radius:10px;cursor:pointer;text-align:left;font-family:var(--font);width:100%"><div style="font-weight:700;font-size:0.78rem;color:var(--dark-2)">'+esc(m.name)+badge+'</div><div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:0.65rem;color:var(--gray-light)">'+esc(m.category)+'</span><span style="font-weight:800;color:var(--primary);font-size:0.82rem">RM'+m.price.toFixed(2)+'</span></div></button>'}).join('')}
 function addToEditPending(id){const m=S.menu.find(x=>x.id===id);if(!m)return;const existing=S.editPendingItems.find(x=>x.name===m.name);if(existing)existing.qty++;else S.editPendingItems.push({name:m.name,price:m.price,qty:1});beep(true);renderEpMenu();renderEditPendingItems()}
 function epQty(idx,d){S.editPendingItems[idx].qty+=d;if(S.editPendingItems[idx].qty<=0)S.editPendingItems.splice(idx,1);renderEpMenu();renderEditPendingItems()}
 function renderEditPendingItems(){let total=0;const el=document.getElementById('editPendingItems');const countEl=document.getElementById('epItemCount');if(!S.editPendingItems.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-light);font-size:0.82rem;background:var(--bg-2);border-radius:12px">Tiada item. Tambah dari senarai atas.</div>';document.getElementById('editPendingTotal').textContent='0.00';if(countEl)countEl.textContent='0';return}const totalItems=S.editPendingItems.reduce((s,i)=>s+(parseInt(i.qty)||1),0);if(countEl)countEl.textContent=totalItems;el.innerHTML=S.editPendingItems.map((i,x)=>{const p=parseFloat(i.price)||0,q=parseInt(i.qty)||1;const st=p*q;total+=st;return'<div class="cart-item"><div class="cart-info"><div class="cart-name">'+esc(i.name||'')+'</div><div class="cart-price">RM'+p.toFixed(2)+' seunit</div></div><div class="cart-controls"><button class="qty-btn minus" onclick="epQty('+x+',-1)">−</button><span class="cart-qty">'+q+'</span><button class="qty-btn" onclick="epQty('+x+',1)">+</button></div><div class="cart-subtotal">RM'+st.toFixed(2)+'</div></div>'}).join('');document.getElementById('editPendingTotal').textContent=total.toFixed(2)}
-async function saveEditPending(){if(!S.editPendingItems.length){toast('Mesti ada 1 item!','error');return}const btn=document.querySelector('#editPendingModal .btn-success');btn.disabled=true;btn.textContent='⏳...';const r=await api('updateOrder',{orderId:S.editPendingOid,items:S.editPendingItems});btn.disabled=false;btn.textContent='💾 Simpan';if(r.success){beep(true);toast('✅ '+r.message);closeM('editPendingModal');clearClientCache();loadOrders()}else toast('❌ '+(r.error||'Gagal'),'error')}
+async function saveEditPending(){if(!S.editPendingItems.length){toast('Mesti ada 1 item!','error');return}const btn=document.querySelector('#editPendingModal .btn-success');btn.disabled=true;btn.textContent='⏳...';const r=await api('updateOrder',{orderId:S.editPendingOid,items:S.editPendingItems});btn.disabled=false;btn.textContent='💾 Simpan';if(r.success){
+    beep(true);
+    toast('✅ '+r.message);
+    // Cari item BARU sahaja — bandingkan dengan item asal
+    const originalItems=S.editPendingOrder?S.editPendingOrder.items||[]:[];
+    const newItems=S.editPendingItems.filter(function(item){
+        // Item baru = tak ada dalam original, atau qty lebih tinggi
+        const orig=originalItems.find(function(o){return o.name===item.name;});
+        if(!orig) return true; // item baru sepenuhnya
+        if(item.qty>orig.qty){
+            // Qty bertambah — print hanya tambahan
+            item._printQty=item.qty-orig.qty;
+            return true;
+        }
+        return false;
+    }).map(function(item){
+        return{
+            name:item.name,
+            price:item.price,
+            qty:item._printQty||item.qty,
+            note:item.note||''
+        };
+    });
+    closeM('editPendingModal');
+    clearClientCache();
+    loadOrders();
+    // Print slip hanya untuk item baru
+    if(newItems.length>0){
+        const editedOrder={
+            orderNo:S.editPendingOrder?S.editPendingOrder.orderNo:S.editPendingOid,
+            tableNo:S.editPendingOrder?S.editPendingOrder.tableNo:'-',
+            staffName:S.staff?S.staff.name:'-',
+            items:newItems
+        };
+        autoPrintKitchenSlips(editedOrder);
+    }
+}else toast('❌ '+(r.error||'Gagal'),'error')}
 function openComplete(o){S.completeOid=o.orderId;S.completePay='cash';S.completeOrderData=JSON.parse(JSON.stringify(o));const total=parseFloat(o.total)||0;const items=Array.isArray(o.items)?o.items:[];document.getElementById('completeOrderNum').textContent='#'+(o.orderNo||'?');document.getElementById('completeTotal').textContent=total.toFixed(2);document.getElementById('completeItems').innerHTML=items.map(i=>{const p=parseFloat(i.price)||0,q=parseInt(i.qty)||1;return'<div class="receipt-line" style="padding:5px 0"><span>'+esc(i.name||'')+' ×'+q+'</span><span>RM'+(p*q).toFixed(2)+'</span></div>'}).join('');document.querySelectorAll('#completeModal .pay-btn').forEach(b=>b.classList.remove('active'));document.getElementById('cPayCash').classList.add('active');document.getElementById('completeCashCalc').classList.add('show');document.getElementById('completeQrBox').classList.remove('show');document.getElementById('completeTransferBox').classList.remove('show');document.getElementById('completeCashIn').value='';document.getElementById('completeChangeBox').textContent='-';document.getElementById('completeChangeBox').className='change-box';document.getElementById('completeModal').classList.add('show')}
 function pickCompletePay(m){S.completePay=m;document.querySelectorAll('#completeModal .pay-btn').forEach(b=>b.classList.remove('active'));document.getElementById('cPay'+m.charAt(0).toUpperCase()+m.slice(1)).classList.add('active');document.getElementById('completeCashCalc').classList.toggle('show',m==='cash');document.getElementById('completeQrBox').classList.toggle('show',m==='qr');document.getElementById('completeTransferBox').classList.toggle('show',m==='transfer')}
 function calcCompleteChange(){const t=parseFloat(document.getElementById('completeTotal').textContent)||0;const g=parseFloat(document.getElementById('completeCashIn').value)||0;const b=document.getElementById('completeChangeBox');if(!g){b.textContent='-';b.className='change-box';return}const c=g-t;if(c>=0){b.textContent='Baki: RM '+c.toFixed(2);b.className='change-box ok'}else{b.textContent='Kurang: RM '+Math.abs(c).toFixed(2);b.className='change-box bad'}}
