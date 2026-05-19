@@ -419,18 +419,35 @@ async function init() {
     const stations = (r.stations || []);
 
     if (stationParam && stationParam !== 'semua') {
+      // Try exact match dulu
       STATION_OBJ = stations.find(s =>
-        (s.name || '').toLowerCase().trim() === stationParam ||
-        (s.name || '').toLowerCase().replace(/\s+/g,'') === stationParam.replace(/\s+/g,'')
+        (s.name || '').toLowerCase().trim() === stationParam
       );
-      if (!STATION_OBJ && stations.length > 0) {
-        // Try index
+      // Try without dash/space
+      if (!STATION_OBJ) {
+        STATION_OBJ = stations.find(s =>
+          (s.name || '').toLowerCase().replace(/[-\s]/g,'') === stationParam.replace(/[-\s]/g,'')
+        );
+      }
+      // Try partial match
+      if (!STATION_OBJ) {
+        STATION_OBJ = stations.find(s =>
+          (s.name || '').toLowerCase().includes(stationParam) ||
+          stationParam.includes((s.name || '').toLowerCase())
+        );
+      }
+      // Try index
+      if (!STATION_OBJ) {
         const idx = parseInt(stationParam);
         if (!isNaN(idx) && stations[idx]) STATION_OBJ = stations[idx];
       }
     }
 
     STATION_NAME = STATION_OBJ ? STATION_OBJ.name : (stationParam || 'Semua');
+    if(!STATION_OBJ && stationParam){
+        console.warn('[KDS] Station tidak dijumpai:', stationParam);
+        console.warn('[KDS] Senarai stesen:', stations.map(s=>s.name));
+    }
 
     // Update header
     const emojis = ['🍚','🥤','🔥','⭐','🍳','🫕'];
@@ -820,53 +837,79 @@ const CMD = {
   LF:          [0x0A],
 };
 
-function buildSlipBytes(order) {
-  const lines = [];
-  const enc   = new TextEncoder();
+function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,staffName,items){
+    const enc=new TextEncoder();
+    const parts=[];
+    const push=b=>parts.push(b);
+    const cmd=c=>push(new Uint8Array(c));
 
-  const push = (bytes) => lines.push(bytes);
-  const text = (str) => push(enc.encode(str + '\n'));
-  const cmd  = (c) => push(new Uint8Array(c));
+    // Buang semua non-ASCII (emoji, aksara khas) — printer thermal basic tak support
+    // Ini fix: emoji jadi kotak hitam & kacau alignment pada printer 58mm
+    function toAscii(str){
+        return String(str||'').replace(/[^\x00-\x7F]/g,'').trim();
+    }
 
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit' });
-  const dateStr = now.toLocaleDateString('ms-MY');
+    // INIT
+    cmd([0x1B,0x40]);
 
-  cmd(CMD.INIT);
-  cmd(CMD.ALIGN_CENTER);
-  cmd(CMD.BOLD_ON);
-  cmd(CMD.DOUBLE_ON);
-  text('DAPUR');
-  cmd(CMD.DOUBLE_OFF);
-  cmd(CMD.BOLD_OFF);
-  text(STATION_NAME.toUpperCase());
-  cmd(CMD.ALIGN_LEFT);
-  text('--------------------------------');
-  cmd(CMD.BOLD_ON);
-  text('Order #' + (order.orderNo || order.orderId?.substring(0,6)));
-  cmd(CMD.BOLD_OFF);
-  text('Meja  : ' + (order.tableNo || '-'));
-  text('Masa  : ' + timeStr + '  ' + dateStr);
-  text('Cashier: ' + (order.staffName || '-'));
-  text('--------------------------------');
+    // === TAJUK STESEN ===
+    // FIX 1: Buang GS double size (0x1D 0x21 0x11) — punca nama panjang wrap/overflow
+    // FIX 2: Buang emoji dari tajuk — printer tak support, jadi kotak hitam
+    // Guna bold + center sahaja — selamat untuk semua panjang nama stesen
+    cmd([0x1B,0x61,0x01]);  // center
+    cmd([0x1B,0x45,0x01]);  // bold on
+    push(enc.encode('*** '+toAscii(stationName).toUpperCase()+' ***\x0a'));
+    cmd([0x1B,0x45,0x00]);  // bold off
+    cmd([0x1B,0x61,0x00]);  // left align (lepas tajuk)
 
-  (order.items || []).forEach(item => {
-    cmd(CMD.BOLD_ON);
-    text(item.qty + 'x ' + (item.name || ''));
-    cmd(CMD.BOLD_OFF);
-    if (item.note) text('   ** ' + item.note + ' **');
-  });
+    // === ORDER INFO ===
+    push(enc.encode('--------------------------------\x0a'));
+    cmd([0x1B,0x45,0x01]);  // bold on
+    push(enc.encode('Order #'+orderNo+'    Meja: '+tableNo+'\x0a'));
+    cmd([0x1B,0x45,0x00]);  // bold off
+    push(enc.encode('Masa   : '+timeStr+'\x0a'));
+    push(enc.encode('Cashier: '+toAscii(staffName)+'\x0a'));
+    push(enc.encode('--------------------------------\x0a'));
 
-  text('--------------------------------');
-  cmd(CMD.FEED);
-  cmd(CMD.CUT);
+    // === ITEMS ===
+    // Wrap text — 58mm printer = 32 char per line
+    function wrapLine(str,maxLen){
+        const words=str.split(' ');
+        const lines=[];
+        let cur='';
+        words.forEach(function(w){
+            if((cur+' '+w).trim().length<=maxLen){
+                cur=(cur+' '+w).trim();
+            }else{
+                if(cur)lines.push(cur);
+                cur=w;
+            }
+        });
+        if(cur)lines.push(cur);
+        return lines.join('\x0a');
+    }
 
-  // Combine all bytes
-  const total = lines.reduce((s, b) => s + b.length, 0);
-  const buf   = new Uint8Array(total);
-  let offset  = 0;
-  lines.forEach(b => { buf.set(b, offset); offset += b.length; });
-  return buf;
+    items.forEach(function(item){
+        cmd([0x1B,0x45,0x01]);  // bold on
+        const itemLine=(item.qty||1)+'x  '+toAscii(item.name);
+        push(enc.encode(wrapLine(itemLine,32)+'\x0a'));
+        cmd([0x1B,0x45,0x00]);  // bold off
+        // FIX 3: Semak field 'note' DAN 'notes'
+        const nota=String(item.note||item.notes||'').trim();
+        if(nota){
+            push(enc.encode('   >> '+wrapLine(toAscii(nota),27)+'\x0a'));
+        }
+    });
+
+    push(enc.encode('--------------------------------\x0a'));
+    cmd([0x1B,0x64,0x04]);      // feed 4 lines
+    cmd([0x1D,0x56,0x42,0x00]); // full cut
+
+    const totalLen=parts.reduce(function(s,b){return s+b.length;},0);
+    const buf=new Uint8Array(totalLen);
+    let off=0;
+    parts.forEach(function(b){buf.set(b,off);off+=b.length;});
+    return buf;
 }
 
 async function toggleBluetooth() {
