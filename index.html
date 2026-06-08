@@ -234,7 +234,7 @@
         .api-error-box{background:var(--danger-light);border:1px solid var(--danger);border-radius:12px;padding:14px;margin:10px 0;font-size:0.8rem;color:var(--danger-dark)}.api-error-box strong{display:block;margin-bottom:4px}
         .menu-cat-section{margin-bottom:18px}
         .menu-cat-header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;margin-bottom:10px;font-weight:800;font-size:0.85rem}
-        .menu-cat-header.featured-section{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:var(--shadow-primary)}.menu-cat-header.normal-section{background:var(--bg-2);color:var(--dark-2);border:1px solid var(--border)}
+        .menu-cat-header.featured-section{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:var(--shadow-primary)}.menu-cat-header.normal-section{background:var(--primary-light);color:var(--primary-dark);border:1px solid rgba(249,115,22,0.2)}
         .menu-readonly-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
         .menu-readonly-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px;transition:box-shadow 0.2s}.menu-readonly-item:hover{box-shadow:var(--shadow)}
         .mri-cat{font-size:0.6rem;color:var(--gray-light);font-weight:600;text-transform:uppercase}.mri-name{font-weight:700;font-size:0.82rem;color:var(--dark-2);line-height:1.3}.mri-price{font-weight:800;color:var(--primary);font-size:0.9rem;margin-top:2px}
@@ -1127,7 +1127,7 @@ function toggleCustomCat(prefix,val){const customEl=document.getElementById(pref
 function getSelectedCat(prefix){const sel=document.getElementById(prefix==='new'?'newCat':'emCat');const custom=document.getElementById(prefix==='new'?'newCatCustom':'emCatCustom');if(sel.value==='__custom__')return(custom?custom.value.trim():'')||'Lain-lain';if(!sel.value)return S.featuredCat||'Lain-lain';return sel.value}
 async function loadMenuManage(){const r=await cachedApi('getMenu',{},60000);if(!r.success){document.getElementById('menuManage').innerHTML='<div class="api-error-box"><strong>❌ Gagal</strong>'+esc(r.error)+'</div>';return}const isAdmin=S.staff.role==='admin';if(isAdmin){document.getElementById('menuAdminView').style.display='';document.getElementById('menuStaffView').style.display='none';renderMenuManage(r.menu)}else{document.getElementById('menuAdminView').style.display='none';document.getElementById('menuStaffView').style.display='';renderMenuStaffView(r.menu)}}
 function renderMenuStaffView(menu){const el=document.getElementById('menuStaffList');if(!menu.length){el.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(menu.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};el.innerHTML=ordered.map(cat=>{const items=menu.filter(m=>m.category===cat);if(!items.length)return'';const isF=featured&&cat===featured;return'<div class="menu-cat-section"><div class="menu-cat-header '+(isF?'featured-section':'normal-section')+'"><span>'+(isF?'⭐':(ic[cat]||'📦'))+'</span> <span>'+esc(cat)+'</span>'+(isF?'<span class="featured-badge" style="margin-left:auto">UTAMA</span>':'')+'</div><div class="menu-readonly-grid">'+items.map(m=>'<div class="menu-readonly-item"><div class="mri-cat">'+esc(m.category)+'</div><div class="mri-name">'+esc(m.name)+'</div><div class="mri-price">RM '+m.price.toFixed(2)+'</div></div>').join('')+'</div></div>'}).join('')}
-function renderMenuManage(l){const c=document.getElementById('menuManage');if(!l.length){c.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(l.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};let html='';ordered.forEach(cat=>{const items=l.filter(m=>m.category===cat);if(!items.length)return;const isF=featured&&cat===featured;html+='<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-weight:800;font-size:0.82rem;'+(isF?'background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white':'background:var(--bg-2);color:var(--dark-3)')+'">'+(isF?'⭐':(ic[cat]||'📦'))+' '+esc(cat)+(isF?'<span style="margin-left:auto;font-size:0.65rem;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:8px">UTAMA</span>':'')+'</div>';items.forEach(m=>{
+function renderMenuManage(l){const c=document.getElementById('menuManage');if(!l.length){c.innerHTML='<div class="empty"><div class="empty-icon">🍽️</div>Tiada menu</div>';return}const featured=S.featuredCat||'';const cats=[...new Set(l.map(m=>m.category))];const ordered=featured?[featured,...cats.filter(c=>c!==featured)]:cats;const ic={Makanan:'🍚',Minuman:'🥤',Kuih:'🍰',Tambahan:'➕',Set:'🍱','Lain-lain':'📦'};let html='';ordered.forEach(cat=>{const items=l.filter(m=>m.category===cat);if(!items.length)return;const isF=featured&&cat===featured;html+='<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-weight:800;font-size:0.82rem;'+(isF?'background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white':'background:var(--primary-light);color:var(--primary-dark);border:1px solid rgba(249,115,22,0.2)')+'">'+(isF?'⭐':(ic[cat]||'📦'))+' '+esc(cat)+(isF?'<span style="margin-left:auto;font-size:0.65rem;background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:8px">UTAMA</span>':'')+'</div>';items.forEach(m=>{
         const safeId=esc(m.id);
         const safeName=esc(m.name).replace(/'/g,"\'");
         // Auto assign station badge — dari explicit assignment ATAU kategori
@@ -1543,7 +1543,8 @@ function renderDapurSplit(pending){
     ];
 
     const menuCatMap={};
-    S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase()});
+    const menuStationMap={};
+    S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase();if(m.stations&&m.stations.length)menuStationMap[m.name.toLowerCase()]=m.stations;});
 
     const cols=S.stations.map((st,si)=>{
         const color=COLORS[si%COLORS.length];
@@ -1552,8 +1553,10 @@ function renderDapurSplit(pending){
 
         const stOrders=pending.map(o=>{
             const filteredItems=(o.items||[]).filter(item=>{
+                const nm=item.name.toLowerCase();
+                if(menuStationMap[nm])return menuStationMap[nm].includes(st.name);
                 if(!cats.length)return true;
-                return cats.includes(menuCatMap[item.name.toLowerCase()]||'');
+                return cats.includes(menuCatMap[nm]||'');
             });
             if(!filteredItems.length)return null;
             return{...o,items:filteredItems};
@@ -1792,11 +1795,14 @@ function allStationsDone(orderId){
         const order=S.orders.find(o=>o.orderId===orderId);
         if(!order)return true;
         const menuCatMap={};
-        S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase()});
+        const menuStationMap={};
+        S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase();if(m.stations&&m.stations.length)menuStationMap[m.name.toLowerCase()]=m.stations;});
         const cats=(st.categories||[]).map(c=>c.toLowerCase());
         const stItems=order.items.filter(item=>{
+            const nm=item.name.toLowerCase();
+            if(menuStationMap[nm])return menuStationMap[nm].includes(st.name);
             if(!cats.length)return true;
-            return cats.includes(menuCatMap[item.name.toLowerCase()]||'');
+            return cats.includes(menuCatMap[nm]||'');
         });
         if(!stItems.length)return true;
         return stItems.every((_,i)=>ticks[i]);
@@ -2827,8 +2833,9 @@ function printStationClosingBrowser(stIdx){
 function renderModifierEditor(modifiers){
     var list = document.getElementById('emModifierList');
     if(!list) return;
+    S._modifierData = JSON.parse(JSON.stringify(modifiers||[]));
     list.innerHTML = '';
-    (modifiers||[]).forEach(function(grp,gIdx){
+    (S._modifierData).forEach(function(grp,gIdx){
         list.appendChild(buildModifierGroupEl(grp, gIdx));
     });
 }
