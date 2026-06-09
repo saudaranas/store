@@ -1370,8 +1370,10 @@ function renderDapurOrders(pending){
         let minsAgo='-',urgency='fresh';
         try{const tStr=String(o.time||'');const dStr=String(o.date||today());const tParts=tStr.split(':');const dParts=dStr.split('-');if(tParts.length>=2&&dParts.length===3){const orderTime=new Date(+dParts[0],+dParts[1]-1,+dParts[2],+tParts[0],+tParts[1]||0);const diff=Math.floor((now-orderTime.getTime())/60000);minsAgo=diff<1?'Baru':diff+'min';if(diff>=15)urgency='urgent';else if(diff>=8)urgency='medium'}}catch(e){}
         const kitchenDone=o.kitchenDone===true;
-        const ticks=S.itemTicks[o.orderId]||{};
-        const allTicked=allItemsTicked(o.orderId,-1,o.items||[]);
+        const kitchenItems=(o.kitchenItems&&o.kitchenItems['__ALL__'])?o.kitchenItems['__ALL__']:{};
+        const itemKeyOf=function(it){return (it.name||'')+'|'+(it.note||'');};
+        const isTicked=function(it){return kitchenItems[itemKeyOf(it)]===true;};
+        const allTicked=(o.items||[]).length>0&&(o.items||[]).every(it=>isTicked(it));
         // Color system
         const timeCls=urgency==='urgent'?'tb-urgent':urgency==='medium'?'tb-cooking':'tb-fresh';
         let cardCls;
@@ -1388,9 +1390,10 @@ function renderDapurOrders(pending){
             :'';
         // Items with tick
         const itemsHtml=(o.items||[]).map((item,idx)=>{
-            const ticked=ticks[idx]||false;
+            const ticked=isTicked(item);
+            const safeKey=itemKeyOf(item).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
             const noteHtml=item.note?'<div style="font-size:0.7rem;color:var(--warning-dark);font-weight:600;margin-top:2px">📝 '+esc(item.note)+'</div>':'';
-            return'<div class="dapur-item-row" onclick="tickItem(\''+safeOid+'\','+(-1)+','+idx+')" style="cursor:pointer;opacity:'+(ticked?'0.5':'1')+';background:'+(ticked?'var(--success-light)':'var(--bg-2)')+';transition:all 0.2s">'
+            return'<div class="dapur-item-row" onclick="tickItemBackend(\''+safeOid+'\',\'__ALL__\',\''+safeKey+'\','+(ticked?'false':'true')+')" style="cursor:pointer;opacity:'+(ticked?'0.5':'1')+';background:'+(ticked?'var(--success-light)':'var(--bg-2)')+';transition:all 0.2s">'
                 +'<div style="width:26px;height:26px;border-radius:8px;background:'+(ticked?'var(--success-dark)':'var(--primary)')+';color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.82rem;flex-shrink:0">'+(ticked?'✓':item.qty)+'</div>'
                 +'<div style="flex:1"><div class="dapur-item-name" style="text-decoration:'+(ticked?'line-through':'none')+';color:'+(ticked?'var(--gray)':'var(--dark-2)')+'">'+esc(item.name)+'</div>'+noteHtml+'</div>'
                 +'</div>';
@@ -1579,11 +1582,13 @@ function renderDapurSplit(pending){
                 }
             }catch(e){}
 
-            const stKey=o.orderId+'_st'+si;
-            const ticks=S.itemTicks[stKey]||{};
-            const allTicked=o.items.every((_,i)=>ticks[i]);
+            const stName=st.name||('Stesen '+(si+1));
+            const kitchenItems=(o.kitchenItems&&o.kitchenItems[stName])?o.kitchenItems[stName]:{};
+            const itemKeyOf=function(it){return (it.name||'')+'|'+(it.note||'');};
+            const isTicked=function(it){return kitchenItems[itemKeyOf(it)]===true;};
+            const allTicked=o.items.every(it=>isTicked(it));
             const kitchenDone=o.kitchenDone===true;
-            const doneCount=Object.values(ticks).filter(Boolean).length;
+            const doneCount=o.items.filter(it=>isTicked(it)).length;
             const totalCount=o.items.length;
             const allDone=allStationsDone(o.orderId);
 
@@ -1598,13 +1603,15 @@ function renderDapurSplit(pending){
             // Time badge
             const tbClass=urgency==='urgent'?'tb-urgent':urgency==='cooking'?'tb-cooking':allTicked?'tb-done':'tb-fresh';
 
-            const safeOid=String(o.orderId||'').replace(/'/g,"\'");
+            const safeOid=String(o.orderId||'').replace(/'/g,"\\'");
+            const safeStName=String(stName).replace(/'/g,"\\'");
 
             // Items
             const itemsHtml=o.items.map((item,idx)=>{
-                const ticked=ticks[idx]||false;
+                const ticked=isTicked(item);
+                const safeKey=itemKeyOf(item).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
                 const noteHtml=item.note?'<div style="font-size:0.68rem;color:#f59e0b;font-weight:600;margin-top:2px;padding-left:38px">📝 '+esc(item.note)+'</div>':'';
-                return'<div class="dk-item '+(ticked?'dk-item-ticked':'dk-item-unticked')+'" onclick="tickItemStation(\''+safeOid+'\','+si+','+idx+')">'
+                return'<div class="dk-item '+(ticked?'dk-item-ticked':'dk-item-unticked')+'" onclick="tickItemBackend(\''+safeOid+'\',\''+safeStName+'\',\''+safeKey+'\','+(ticked?'false':'true')+')">'
                     +'<div class="dk-qty '+(ticked?'dk-qty-ticked':'dk-qty-unticked')+'">'+(ticked?'✓':item.qty)+'</div>'
                     +'<div class="'+(ticked?'dk-item-name-ticked':'dk-item-name-unticked')+'">'+esc(item.name)+'</div>'
                     +'</div>'
@@ -1783,33 +1790,52 @@ function allItemsTicked(orderId,stationIdx,items){
 }
 
 function allStationsDone(orderId){
+    const order=(S.orders||[]).find(o=>o.orderId===orderId);
+    if(!order)return false;
+    const itemKeyOf=function(it){return (it.name||'')+'|'+(it.note||'');};
+    const ki=order.kitchenItems||{};
     const stations=S.stations||[];
     if(!stations.length){
-        const order=S.orders.find(o=>o.orderId===orderId);
-        if(!order)return false;
-        return allItemsTicked(orderId,-1,order.items||[]);
+        const done=ki['__ALL__']||{};
+        return (order.items||[]).length>0&&(order.items||[]).every(it=>done[itemKeyOf(it)]===true);
     }
-    return stations.every((st,si)=>{
-        const key=orderId+'_st'+si;
-        const ticks=S.itemTicks[key]||{};
-        const order=S.orders.find(o=>o.orderId===orderId);
-        if(!order)return true;
-        const menuCatMap={};
-        const menuStationMap={};
-        S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase();if(m.stations&&m.stations.length)menuStationMap[m.name.toLowerCase()]=m.stations;});
+    const menuCatMap={};
+    const menuStationMap={};
+    S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase();if(m.stations&&m.stations.length)menuStationMap[m.name.toLowerCase()]=m.stations;});
+    return stations.every((st)=>{
+        const stName=st.name;
+        const done=ki[stName]||{};
         const cats=(st.categories||[]).map(c=>c.toLowerCase());
-        const stItems=order.items.filter(item=>{
+        const stItems=(order.items||[]).filter(item=>{
             const nm=item.name.toLowerCase();
             if(menuStationMap[nm])return menuStationMap[nm].includes(st.name);
             if(!cats.length)return true;
             return cats.includes(menuCatMap[nm]||'');
         });
         if(!stItems.length)return true;
-        return stItems.every((_,i)=>ticks[i]);
+        return stItems.every(it=>done[itemKeyOf(it)]===true);
     });
 }
 
 
+function tickItemBackend(orderId,stationName,itemKey,makeDone){
+    // 1. Optimistic update — ubah o.kitchenItems dalam memori dulu supaya UI laju
+    const order=(S.orders||[]).find(o=>o.orderId===orderId);
+    if(order){
+        if(!order.kitchenItems)order.kitchenItems={};
+        if(!order.kitchenItems[stationName])order.kitchenItems[stationName]={};
+        if(makeDone)order.kitchenItems[stationName][itemKey]=true;
+        else delete order.kitchenItems[stationName][itemKey];
+    }
+    // 2. Render semula serta-merta
+    const pending=(S.orders||[]).filter(o=>o.status==='pending');
+    if(S.stations&&S.stations.length>0)renderDapurSplit(pending);
+    else renderDapurOrders(pending);
+    // 3. Hantar ke GAS (background) — supaya peranti lain nampak
+    api('markItemDone',{orderId:orderId,station:stationName,itemKey:itemKey,isDone:makeDone}).then(r=>{
+        if(r&&r.success&&order){order.kitchenItems=r.kitchenItems||order.kitchenItems;}
+    }).catch(()=>{});
+}
 function tickItem(orderId,stIdx,itemIdx){
     const key=stIdx>=0?orderId+'_st'+stIdx:orderId;
     if(!S.itemTicks[key])S.itemTicks[key]={};
