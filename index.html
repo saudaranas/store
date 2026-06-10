@@ -519,7 +519,7 @@
                     <div id="cartContent">
                         <div class="cart-scroll" id="cartScroll">
                             <div class="table-row"><label>🪑 Meja:</label><input type="text" class="table-input" id="tableNo" placeholder="-" maxlength="10"></div>
-                            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+                            <div id="custRow" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
                                 <div style="flex:1;min-width:130px"><label style="font-size:0.75rem;font-weight:700;color:var(--dark-3);display:block;margin-bottom:4px">👤 Nama Customer</label><input type="text" class="form-input" id="customerName" placeholder="(pilihan)" style="padding:9px 12px;font-size:0.85rem"></div>
                                 <div style="flex:1;min-width:110px"><label style="font-size:0.75rem;font-weight:700;color:var(--dark-3);display:block;margin-bottom:4px">📱 No. Tel</label><input type="tel" class="form-input" id="customerPhone" placeholder="(pilihan)" inputmode="numeric" style="padding:9px 12px;font-size:0.85rem"></div>
                             </div>
@@ -1014,7 +1014,7 @@ function applyOrderTypePricing(){
         it.price=base+delta;
     });
 }
-function pickOrderType(t,el){S.orderType=t;document.querySelectorAll('.ordertype-toggle .ot-btn').forEach(b=>{b.classList.remove('active');b.style.background='var(--bg)';b.style.color='var(--dark-3)';b.style.borderColor='var(--border)'});if(el){el.classList.add('active');el.style.background='var(--primary)';el.style.color='white';el.style.borderColor='var(--primary)'}const tr=document.querySelector('.table-row');if(tr)tr.style.display=(t==='takeaway')?'none':'';applyOrderTypePricing();renderCart();}
+function pickOrderType(t,el){S.orderType=t;document.querySelectorAll('.ordertype-toggle .ot-btn').forEach(b=>{b.classList.remove('active');b.style.background='var(--bg)';b.style.color='var(--dark-3)';b.style.borderColor='var(--border)'});if(el){el.classList.add('active');el.style.background='var(--primary)';el.style.color='white';el.style.borderColor='var(--primary)'}const tr=document.querySelector('.table-row');if(tr)tr.style.display=(t==='takeaway')?'none':'';const cr=document.getElementById('custRow');if(cr)cr.style.marginTop=(t==='takeaway')?'10px':'';applyOrderTypePricing();renderCart();}
 function pickPay(m,el){S.pay=m;document.querySelectorAll('#cartContent .pay-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('cashCalc').classList.toggle('show',m==='cash');document.getElementById('qrBox').classList.toggle('show',m==='qr');document.getElementById('transferBox').classList.toggle('show',m==='transfer')}
 function calcChange(){const t=parseFloat(document.getElementById('cartTotal').textContent)||0;const g=parseFloat(document.getElementById('cashIn').value)||0;const b=document.getElementById('changeBox');if(!g){b.textContent='-';b.className='change-box';return}const c=g-t;if(c>=0){b.textContent='Baki: RM '+c.toFixed(2);b.className='change-box ok'}else{b.textContent='Kurang: RM '+Math.abs(c).toFixed(2);b.className='change-box bad'}}
 async function loadPaymentInfo(){const r=await cachedApi('getSettings',{},120000);if(r.success){S.qrImage=r.qrImage||'';S.bankName=r.bankName||'';S.bankAccount=r.bankAccount||'';S.bankHolder=r.bankHolder||'';renderPaymentInfo();}}
