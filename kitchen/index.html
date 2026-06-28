@@ -530,25 +530,26 @@ function today() {
 
 // ============================================================
 // LOAD ORDERS
+// PATCH K1 + K4: ikut kitchenDone (bukan status), guna getOrders +
+//                filter stesen di frontend supaya order "dah bayar
+//                belum siap" tak hilang.
 // ============================================================
 async function loadOrders() {
   try {
-    let r;
-    if (STATION_OBJ) {
-      // Use station-filtered endpoint
-      r = await gasApi('getStationOrders', {
-        station: STATION_NAME,
-        date: today()
-      });
-    } else {
-      // All orders
-      r = await gasApi('getOrders', { date: today() });
+    // Sentiasa ambil SEMUA order — filter stesen di frontend supaya order
+    // "dah bayar belum siap" tak hilang (getStationOrders hanya pulang pending).
+    const r = await gasApi('getOrders', { date: today() });
+    if (!r.success) { console.error('[KDS] getOrders:', r.error); return; }
+    // Muat menu sekali untuk mapping stesen (cache)
+    if (STATION_OBJ && !window._kdsMenu) {
+      try { const mr = await gasApi('getMenu', {}); if (mr.success) window._kdsMenu = mr.menu || []; } catch(e){}
     }
 
-    if (!r.success) { console.error('[KDS] getOrders:', r.error); return; }
-
     const rawOrders = r.orders || [];
-    const pending   = rawOrders.filter(o => o.status === 'pending');
+    // KDS ikut kitchenDone — order kekal walaupun cashier dah bayar.
+    const kdsAll  = rawOrders.filter(o => o.status !== 'cancelled' && o.status !== 'deposit');
+    const pending = kdsAll.filter(o => !o.kitchenDone);
+    window._kdsDone = kdsAll.filter(o => o.kitchenDone);
 
     // Detect new orders
     const currentIds = new Set(pending.map(o => o.orderId));
@@ -563,10 +564,39 @@ async function loadOrders() {
 
     lastOrderIds = currentIds;
     firstLoad    = false;
-    orders       = pending;
+
+    // Filter ikut stesen (frontend) — guna station assignment / kategori
+    if (STATION_OBJ) {
+      const menu = window._kdsMenu || [];
+      const catMap = {}, stMap = {};
+      menu.forEach(m => {
+        catMap[(m.name||'').toLowerCase()] = (m.category||'').toLowerCase();
+        if (m.stations && m.stations.length) stMap[(m.name||'').toLowerCase()] = m.stations;
+      });
+      const cats = (STATION_OBJ.categories||[]).map(c=>c.toLowerCase());
+      const filt = (arr) => arr.map(o => {
+        const items = (o.items||[]).filter(it => {
+          let nm = (it.name||'').toLowerCase();
+          // Fallback: nama gabung modifier tak jumpa, cuba nama asal sebelum '('
+          if (!stMap[nm] && catMap[nm]===undefined) {
+            const base = nm.split(' (')[0].trim();
+            if (stMap[base] || catMap[base]!==undefined) nm = base;
+          }
+          if (stMap[nm]) return stMap[nm].includes(STATION_OBJ.name);
+          if (!cats.length) return true;
+          return cats.includes(catMap[nm]||'');
+        });
+        if (!items.length) return null;
+        return Object.assign({}, o, { items });
+      }).filter(Boolean);
+      orders = filt(pending);
+      window._kdsDone = filt(window._kdsDone||[]);
+    } else {
+      orders = pending;
+    }
 
     renderOrders();
-    updateBadge(pending.length);
+    updateBadge(orders.length);
 
   } catch(e) {
     console.error('[KDS] Poll error:', e.message);
@@ -575,10 +605,11 @@ async function loadOrders() {
 
 // ============================================================
 // RENDER
+// PATCH K3: tambah section "Siap Disediakan"
 // ============================================================
 function renderOrders() {
   const grid = document.getElementById('ordersGrid');
-  if (!orders.length) {
+  if (!orders.length && !(window._kdsDone||[]).length) {
     grid.innerHTML = `
       <div class="kds-empty">
         <div class="kds-empty-icon">✅</div>
@@ -589,7 +620,50 @@ function renderOrders() {
   }
 
   const now = Date.now();
-  grid.innerHTML = orders.map(o => renderCard(o, now)).join('');
+  let html = orders.length
+    ? orders.map(o => renderCard(o, now)).join('')
+    : '<div class="kds-empty"><div class="kds-empty-icon">✅</div><div class="kds-empty-title">Tiada pesanan menunggu</div><div class="kds-empty-sub">Semua dah disediakan</div></div>';
+
+  // Section "Siap Disediakan"
+  const done = window._kdsDone || [];
+  if (done.length) {
+    const doneCards = done.map(o => {
+      const items = (o.items||[]).map(it =>
+        '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:0.82rem;color:#6ee7b7"><span style="font-weight:800">✓</span><span style="text-decoration:line-through;opacity:0.75">'+esc(it.name)+' ×'+(it.qty||1)+'</span></div>'
+      ).join('');
+      const otBadge = o.orderType==='takeaway'
+        ? '<span style="background:#0ea5e9;color:white;padding:2px 8px;border-radius:7px;font-size:0.64rem;font-weight:800">🥡 BUNGKUS</span>'
+        : '<span style="background:#475569;color:#cbd5e1;padding:2px 8px;border-radius:7px;font-size:0.64rem;font-weight:700">🍽️ Sini</span>';
+      const paidBadge = o.status==='completed'
+        ? '<span style="background:#052e16;color:#6ee7b7;padding:2px 8px;border-radius:7px;font-size:0.62rem;font-weight:800">✅ Bayar</span>'
+        : '<span style="background:#78350f;color:#fde68a;padding:2px 8px;border-radius:7px;font-size:0.62rem;font-weight:700">⏳ Blm Bayar</span>';
+      return '<div style="background:#052e16;border:1.5px solid #16a34a;border-radius:14px;padding:12px 14px;margin-bottom:8px">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px;margin-bottom:6px">'
+        +'<span style="font-weight:900;color:#6ee7b7">✅ #'+(o.orderNo||oidShort(o))+'</span>'
+        +'<div style="display:flex;gap:5px;flex-wrap:wrap">'+otBadge+paidBadge+'</div>'
+        +'</div>'
+        +'<div style="font-size:0.68rem;color:#64748b;margin-bottom:5px">🪑 '+esc(o.tableNo||'-')+' · 👤 '+esc(o.staffName||'-')+'</div>'
+        +items
+        +'</div>';
+    }).join('');
+    html += '<div style="grid-column:1/-1;margin-top:14px">'
+      +'<div onclick="toggleKdsDone()" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:linear-gradient(135deg,#16a34a,#15803d);border-radius:12px;cursor:pointer;margin-bottom:10px">'
+      +'<span style="font-weight:800;color:white;font-size:0.9rem">✅ Siap Disediakan ('+done.length+')</span>'
+      +'<span id="kdsDoneArrow" style="color:white">'+(window._kdsDoneCollapsed?'▼':'▲')+'</span>'
+      +'</div>'
+      +'<div id="kdsDoneBody" style="display:'+(window._kdsDoneCollapsed?'none':'block')+'">'+doneCards+'</div>'
+      +'</div>';
+  }
+  grid.innerHTML = html;
+}
+function oidShort(o){return String(o.orderId||'').substring(0,6);}
+window._kdsDoneCollapsed = true;
+function toggleKdsDone(){
+  window._kdsDoneCollapsed = !window._kdsDoneCollapsed;
+  const b=document.getElementById('kdsDoneBody');
+  const a=document.getElementById('kdsDoneArrow');
+  if(b)b.style.display=window._kdsDoneCollapsed?'none':'block';
+  if(a)a.textContent=window._kdsDoneCollapsed?'▼':'▲';
 }
 
 function renderCard(o, now) {
@@ -669,6 +743,14 @@ function renderCard(o, now) {
     ? `🪑 Meja ${esc(o.tableNo)}`
     : 'No meja';
 
+  // PATCH K2: badge bungkus + status bayar
+  const otBadge = o.orderType==='takeaway'
+    ? '<span style="background:#0ea5e9;color:white;padding:3px 10px;border-radius:8px;font-size:0.7rem;font-weight:800">🥡 BUNGKUS</span>'
+    : '<span style="background:#f97316;color:white;padding:3px 10px;border-radius:8px;font-size:0.7rem;font-weight:700">🍽️ Makan Sini</span>';
+  const paidBadge = o.status==='completed'
+    ? '<span style="background:#052e16;color:#6ee7b7;padding:3px 9px;border-radius:8px;font-size:0.68rem;font-weight:800">✅ Dah Bayar</span>'
+    : '<span style="background:#78350f;color:#fde68a;padding:3px 9px;border-radius:8px;font-size:0.68rem;font-weight:700">⏳ Belum Bayar</span>';
+
   return `
     <div class="order-card ${cardClass}" id="card-${esc(oid)}">
       <div class="card-strip ${stripClass}">
@@ -679,6 +761,10 @@ function renderCard(o, now) {
         </span>
       </div>
       <div class="card-body">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+          ${otBadge}
+          ${paidBadge}
+        </div>
         <div class="card-staff">👤 ${esc(o.staffName||'-')} · ${esc(o.time||'-')}</div>
         ${itemsHtml}
       </div>
@@ -732,7 +818,8 @@ async function markSiap(oid, btn) {
       // Update local state
       const o = orders.find(x => x.orderId === oid);
       if (o) o.kitchenDone = true;
-      renderOrders();
+      // Pindah ke senarai siap serta-merta
+      loadOrders();
       ringBell(0); // success beep
     } else {
       btn.disabled = false;
@@ -837,73 +924,60 @@ const CMD = {
   LF:          [0x0A],
 };
 
-function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,staffName,items){
+function buildSlipBytes(order){
     const enc=new TextEncoder();
     const parts=[];
     const push=b=>parts.push(b);
     const cmd=c=>push(new Uint8Array(c));
+    const now=new Date();
+    const timeStr=now.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
 
-    // Buang semua non-ASCII (emoji, aksara khas) — printer thermal basic tak support
-    // Ini fix: emoji jadi kotak hitam & kacau alignment pada printer 58mm
     function toAscii(str){
         return String(str||'').replace(/[^\x00-\x7F]/g,'').trim();
     }
-
-    // INIT
-    cmd([0x1B,0x40]);
-
-    // === TAJUK STESEN ===
-    // FIX 1: Buang GS double size (0x1D 0x21 0x11) — punca nama panjang wrap/overflow
-    // FIX 2: Buang emoji dari tajuk — printer tak support, jadi kotak hitam
-    // Guna bold + center sahaja — selamat untuk semua panjang nama stesen
-    cmd([0x1B,0x61,0x01]);  // center
-    cmd([0x1B,0x45,0x01]);  // bold on
-    push(enc.encode('*** '+toAscii(stationName).toUpperCase()+' ***\x0a'));
-    cmd([0x1B,0x45,0x00]);  // bold off
-    cmd([0x1B,0x61,0x00]);  // left align (lepas tajuk)
-
-    // === ORDER INFO ===
-    push(enc.encode('--------------------------------\x0a'));
-    cmd([0x1B,0x45,0x01]);  // bold on
-    push(enc.encode('Order #'+orderNo+'    Meja: '+tableNo+'\x0a'));
-    cmd([0x1B,0x45,0x00]);  // bold off
-    push(enc.encode('Masa   : '+timeStr+'\x0a'));
-    push(enc.encode('Cashier: '+toAscii(staffName)+'\x0a'));
-    push(enc.encode('--------------------------------\x0a'));
-
-    // === ITEMS ===
-    // Wrap text — 58mm printer = 32 char per line
     function wrapLine(str,maxLen){
         const words=str.split(' ');
         const lines=[];
         let cur='';
         words.forEach(function(w){
-            if((cur+' '+w).trim().length<=maxLen){
-                cur=(cur+' '+w).trim();
-            }else{
-                if(cur)lines.push(cur);
-                cur=w;
-            }
+            if((cur+' '+w).trim().length<=maxLen){cur=(cur+' '+w).trim();}
+            else{if(cur)lines.push(cur);cur=w;}
         });
         if(cur)lines.push(cur);
         return lines.join('\x0a');
     }
 
-    items.forEach(function(item){
-        cmd([0x1B,0x45,0x01]);  // bold on
+    cmd([0x1B,0x40]);
+    cmd([0x1B,0x61,0x01]);cmd([0x1B,0x45,0x01]);
+    push(enc.encode('*** '+toAscii(STATION_NAME).toUpperCase()+' ***\x0a'));
+    cmd([0x1B,0x45,0x00]);cmd([0x1B,0x61,0x00]);
+
+    push(enc.encode('--------------------------------\x0a'));
+    cmd([0x1B,0x45,0x01]);
+    push(enc.encode('Order #'+(order.orderNo||'-')+'    Meja: '+(order.tableNo||'-')+'\x0a'));
+    cmd([0x1B,0x45,0x00]);
+    // Badge bungkus
+    if(order.orderType==='takeaway'){
+        cmd([0x1B,0x61,0x01]);cmd([0x1B,0x45,0x01]);
+        push(enc.encode('*** BUNGKUS / TAPAU ***\x0a'));
+        cmd([0x1B,0x45,0x00]);cmd([0x1B,0x61,0x00]);
+    }
+    push(enc.encode('Masa   : '+timeStr+'\x0a'));
+    push(enc.encode('Cashier: '+toAscii(order.staffName||'-')+'\x0a'));
+    push(enc.encode('--------------------------------\x0a'));
+
+    (order.items||[]).forEach(function(item){
+        cmd([0x1B,0x45,0x01]);
         const itemLine=(item.qty||1)+'x  '+toAscii(item.name);
         push(enc.encode(wrapLine(itemLine,32)+'\x0a'));
-        cmd([0x1B,0x45,0x00]);  // bold off
-        // FIX 3: Semak field 'note' DAN 'notes'
+        cmd([0x1B,0x45,0x00]);
         const nota=String(item.note||item.notes||'').trim();
-        if(nota){
-            push(enc.encode('   >> '+wrapLine(toAscii(nota),27)+'\x0a'));
-        }
+        if(nota){push(enc.encode('   >> '+wrapLine(toAscii(nota),27)+'\x0a'));}
     });
 
     push(enc.encode('--------------------------------\x0a'));
-    cmd([0x1B,0x64,0x04]);      // feed 4 lines
-    cmd([0x1D,0x56,0x42,0x00]); // full cut
+    cmd([0x1B,0x64,0x04]);
+    cmd([0x1D,0x56,0x42,0x00]);
 
     const totalLen=parts.reduce(function(s,b){return s+b.length;},0);
     const buf=new Uint8Array(totalLen);
@@ -1075,6 +1149,9 @@ function printSlipBrowser(order) {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit' });
   const dateStr = now.toLocaleDateString('ms-MY');
+  const bungkusHtml = order.orderType==='takeaway'
+    ? '<div style="text-align:center;font-weight:800;margin:4px 0">** BUNGKUS / TAPAU **</div>'
+    : '';
   const itemsHtml = (order.items || []).map(i =>
     '<div style="font-weight:700;margin:4px 0">' + i.qty + 'x ' + (i.name||'') + '</div>' +
     (i.note ? '<div style="padding-left:12px;font-style:italic;color:#555">** ' + i.note + ' **</div>' : '')
@@ -1084,6 +1161,7 @@ function printSlipBrowser(order) {
     '<div style="text-align:center;font-weight:900;font-size:16px;margin-bottom:4px">' + (document.getElementById('stationEmoji').textContent||'🍳') + ' ' + STATION_NAME.toUpperCase() + '</div>' +
     '<div style="border-top:2px dashed #000;margin:6px 0"></div>' +
     '<div style="font-weight:800;font-size:14px">Order #' + (order.orderNo||'-') + '   Meja: ' + (order.tableNo||'-') + '</div>' +
+    bungkusHtml +
     '<div>Masa: ' + timeStr + ' ' + dateStr + '</div>' +
     '<div>Cashier: ' + (order.staffName||'-') + '</div>' +
     '<div style="border-top:1px dashed #000;margin:6px 0"></div>' +
