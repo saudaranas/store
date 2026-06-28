@@ -591,7 +591,7 @@
         <div class="card"><div class="card-title">⭐ Kategori Utama</div><p style="font-size:0.8rem;color:var(--gray);margin-bottom:12px">Kategori ini akan muncul pertama dalam tab Pesanan dan Menu.</p><div class="form-group"><label>Nama Kategori Utama</label><input type="text" class="form-input" id="featuredCatInput" placeholder="contoh: Amazy, Chef Special, Signature..."></div><p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:10px">⚠️ Tukar nama akan auto-kemaskini semua menu dalam kategori ini.</p><button class="btn btn-success" style="width:100%;justify-content:center" onclick="saveFeaturedCat()">💾 Simpan Kategori Utama</button></div>
         <div class="card">
             <div class="card-title">🍳 Stesen Dapur</div>
-            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:14px">Tambah stesen dapur dan pilih kategori menu untuk setiap stesen. Max 4 stesen.</p>
+            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:14px">Tambah stesen dapur dan pilih kategori menu untuk setiap stesen.</p>
             <div id="stationBuilderList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
             <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:12px" onclick="addNewStation()" id="btnAddStation">➕ Tambah Stesen</button>
             <p style="font-size:0.72rem;color:var(--gray-light);margin-bottom:12px">💡 Setiap kategori hanya boleh dipilih untuk satu stesen</p>
@@ -1327,7 +1327,7 @@ async function loadDapur(){const dEl=document.getElementById('dapurDate');if(!dE
     }
     // Update count badge
     const dapurCnt=document.getElementById('dapurCount');
-    if(dapurCnt)dapurCnt.ttEl.textContent=pending.length+' menunggu';}
+    if(dapurCnt)dapurCnt.textContent=pending.length+(document.getElementById('dapurDate').value===today()?' menunggu':' pesanan');}
 async function markDapurSiap(orderId,btn){if(!orderId){toast('ID pesanan tidak sah!','error');return}btn.disabled=true;btn.textContent='⏳ Menyimpan...';const r=await api('markKitchenDone',{orderId:orderId});if(r.success){beep(true);toast('🍳 Masakan siap! Cashier perlu selesaikan bayaran.');const card=document.getElementById('dapur-card-'+orderId);if(card){card.classList.remove('urgent','normal');card.classList.add('kitchen-done');const banner=document.createElement('div');banner.className='kitchen-done-banner';banner.textContent='🍳 Masakan Siap — Tunggu Cashier Selesaikan Bayaran';card.insertBefore(banner,card.firstChild);btn.textContent='✅ Sudah Ditandakan Siap';btn.style.background='#6b7280';btn.style.cursor='not-allowed'}clearClientCache()}else{beep(false);toast('❌ '+(r.error||'Gagal tandakan pesanan'),'error');btn.disabled=false;btn.textContent='🍳 Tandakan Masakan Siap'}}
 // ── DAPUR REAL-TIME POLLING ────────────────────────────────
 let dapurLastOrderIds = new Set();
@@ -1351,7 +1351,7 @@ async function dapurSilentRefresh(){
         const r=await api('getOrders',{date:today()});
         if(!r.success)return;
         const orders=r.orders||[];
-        const pending=orders.filter(o=>o.status==='pending');
+        const dapurAll=orders.filter(o=>o.status!=='cancelled'&&o.status!=='deposit');const pending=dapurAll.filter(o=>!o.kitchenDone);
         S.orders=orders;
         const currentIds=new Set(pending.map(o=>o.orderId));
         const newOrders=pending.filter(o=>!dapurLastOrderIds.has(o.orderId));
@@ -1446,7 +1446,7 @@ function renderDapurOrders(pending){
             ?'<button style="width:100%;padding:10px;background:#6b7280;color:white;border:none;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:not-allowed;font-family:var(--font)">✅ Sudah Siap</button>'
             :allTicked
                 ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:10px;background:#065f46;color:white;border:none;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(6,95,70,0.3)">🍳 Hantar ke Cashier ✓</button>'
-                :'<div style="width:100%;padding:8px;background:var(--bg);border-radius:10px;font-size:0.78rem;color:var(--gray);text-align:center;font-weight:600">'+Object.values(ticks).filter(Boolean).length+'/'+((o.items||[]).length)+' siap — tap item untuk tick</div>';
+                :'<div style="width:100%;padding:8px;background:var(--bg);border-radius:10px;font-size:0.78rem;color:var(--gray);text-align:center;font-weight:600">'+(o.items||[]).filter(it=>isTicked(it)).length+'/'+((o.items||[]).length)+' siap — tap item untuk tick</div>';
         return'<div class="'+cardCls+'" style="border-radius:16px;padding:16px;margin-bottom:2px;transition:all 0.3s" id="dapur-card-'+esc(o.orderId)+'">'+kitchenBanner+'<div class="dapur-order-top"><span class="dapur-order-num">Pesanan #'+(o.orderNo||o.orderId)+'</span><span class="dapur-table-badge">🪑 '+esc(o.tableNo||'-')+'</span><span class="'+timeCls+'">🕐 '+minsAgo+(urgency==='urgent'&&!kitchenDone?' ⚠️':'')+'</span></div><div class="dapur-staff">👤 '+esc(o.staffName||'-')+'</div><div class="dapur-items-list">'+itemsHtml+'</div>'+btnSiap+'</div>';
     }).join('');
     el.innerHTML='<div class="dapur-grid">'+cardsHtml+'</div>';
@@ -1566,8 +1566,16 @@ const STATION_COLORS = [
     {bg:'#3b82f6',light:'#eff6ff',name:'blue'},
     {bg:'#10b981',light:'#ecfdf5',name:'green'},
     {bg:'#8b5cf6',light:'#f5f3ff',name:'purple'},
+    {bg:'#ec4899',light:'#fdf2f8',name:'pink'},
+    {bg:'#06b6d4',light:'#ecfeff',name:'cyan'},
+    {bg:'#f59e0b',light:'#fffbeb',name:'amber'},
+    {bg:'#ef4444',light:'#fef2f2',name:'red'},
+    {bg:'#14b8a6',light:'#f0fdfa',name:'teal'},
+    {bg:'#6366f1',light:'#eef2ff',name:'indigo'},
+    {bg:'#84cc16',light:'#f7fee7',name:'lime'},
+    {bg:'#a855f7',light:'#faf5ff',name:'violet'},
 ];
-const STATION_EMOJIS = ['🍚','🥤','🔥','⭐'];
+const STATION_EMOJIS = ['🍚','🥤','🔥','⭐','🍳','🫕','🍜','🍢','🧁','🥘','🍕','🥗'];
 
 function getStationColor(idx){return STATION_COLORS[idx%STATION_COLORS.length]}
 function getStationEmoji(idx){return STATION_EMOJIS[idx%STATION_EMOJIS.length]}
@@ -1586,8 +1594,16 @@ function renderDapurSplit(pending){
         {bg:'linear-gradient(135deg,#3b82f6,#2563eb)',shadow:'rgba(59,130,246,0.3)'},
         {bg:'linear-gradient(135deg,#8b5cf6,#7c3aed)',shadow:'rgba(139,92,246,0.3)'},
         {bg:'linear-gradient(135deg,#10b981,#059669)',shadow:'rgba(16,185,129,0.3)'},
+        {bg:'linear-gradient(135deg,#ec4899,#db2777)',shadow:'rgba(236,72,153,0.3)'},
+        {bg:'linear-gradient(135deg,#06b6d4,#0891b2)',shadow:'rgba(6,182,212,0.3)'},
+        {bg:'linear-gradient(135deg,#f59e0b,#d97706)',shadow:'rgba(245,158,11,0.3)'},
+        {bg:'linear-gradient(135deg,#ef4444,#dc2626)',shadow:'rgba(239,68,68,0.3)'},
+        {bg:'linear-gradient(135deg,#14b8a6,#0d9488)',shadow:'rgba(20,184,166,0.3)'},
+        {bg:'linear-gradient(135deg,#6366f1,#4f46e5)',shadow:'rgba(99,102,241,0.3)'},
+        {bg:'linear-gradient(135deg,#84cc16,#65a30d)',shadow:'rgba(132,204,22,0.3)'},
+        {bg:'linear-gradient(135deg,#a855f7,#9333ea)',shadow:'rgba(168,85,247,0.3)'},
     ];
-
+    
     const menuCatMap={};
     const menuStationMap={};
     S.menu.forEach(m=>{menuCatMap[m.name.toLowerCase()]=m.category.toLowerCase();if(m.stations&&m.stations.length)menuStationMap[m.name.toLowerCase()]=m.stations;});
@@ -1757,11 +1773,11 @@ function renderStationBuilder(){
     }).join('');
     
     const btn=document.getElementById('btnAddStation');
-    if(btn)btn.style.display=S.stations.length>=4?'none':'';
+    if(btn)btn.style.display='';
 }
 
 function addNewStation(){
-    if(S.stations.length>=4){toast('Max 4 stesen','error');return}
+    // tiada had stesen
     const idx=S.stations.length;
     S.stations.push({name:'Stesen '+(idx+1),emoji:getStationEmoji(idx),categories:[]});
     renderStationBuilder();
@@ -1884,7 +1900,7 @@ function tickItem(orderId,stIdx,itemIdx){
     if(!S.itemTicks[key])S.itemTicks[key]={};
     S.itemTicks[key][itemIdx]=!S.itemTicks[key][itemIdx];
     const orders=S.orders||[];
-    const pending=orders.filter(o=>o.status==='pending');
+    const dapurAll=orders.filter(o=>o.status!=='cancelled'&&o.status!=='deposit');const pending=dapurAll.filter(o=>!o.kitchenDone);
     if(S.stations&&S.stations.length>0)renderDapurSplit(pending);
     else renderDapurOrders(pending);
 }
