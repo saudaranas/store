@@ -1447,7 +1447,7 @@ function renderDapurOrders(pending){
             :allTicked
                 ?'<button onclick="markDapurSiap(\''+safeOid+'\',this)" style="width:100%;padding:10px;background:#065f46;color:white;border:none;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(6,95,70,0.3)">🍳 Hantar ke Cashier ✓</button>'
                 :'<div style="width:100%;padding:8px;background:var(--bg);border-radius:10px;font-size:0.78rem;color:var(--gray);text-align:center;font-weight:600">'+(o.items||[]).filter(it=>isTicked(it)).length+'/'+((o.items||[]).length)+' siap — tap item untuk tick</div>';
-        return'<div class="'+cardCls+'" style="border-radius:16px;padding:16px;margin-bottom:2px;transition:all 0.3s" id="dapur-card-'+esc(o.orderId)+'">'+kitchenBanner+'<div class="dapur-order-top"><span class="dapur-order-num">Pesanan #'+(o.orderNo||o.orderId)+'</span><span class="dapur-table-badge">🪑 '+esc(o.tableNo||'-')+'</span><span class="'+timeCls+'">🕐 '+minsAgo+(urgency==='urgent'&&!kitchenDone?' ⚠️':'')+'</span></div><div class="dapur-staff">👤 '+esc(o.staffName||'-')+'</div><div class="dapur-items-list">'+itemsHtml+'</div>'+btnSiap+'</div>';
+        return'<div class="'+cardCls+'" style="border-radius:16px;padding:16px;margin-bottom:2px;transition:all 0.3s" id="dapur-card-'+esc(o.orderId)+'">'+kitchenBanner+'<div class="dapur-order-top"><span class="dapur-order-num">Pesanan #'+(o.orderNo||o.orderId)+'</span><span class="dapur-table-badge">🪑 '+esc(o.tableNo||'-')+'</span>'+(o.orderType==='takeaway'?'<span style="background:#0ea5e9;color:white;padding:4px 10px;border-radius:8px;font-size:0.72rem;font-weight:800">🥡 BUNGKUS</span>':'')+'<span class="'+timeCls+'">🕐 '+minsAgo+(urgency==='urgent'&&!kitchenDone?' ⚠️':'')+'</span></div><div class="dapur-staff">👤 '+esc(o.staffName||'-')+'</div><div class="dapur-items-list">'+itemsHtml+'</div>'+btnSiap+'</div>';
     }).join('');
     el.innerHTML='<div class="dapur-grid">'+cardsHtml+'</div>';
 }
@@ -1701,7 +1701,7 @@ function renderDapurSplit(pending){
                 +'<div style="font-size:0.72rem;color:#64748b;margin-top:2px">👤 '+esc(o.staffName||'-')+'</div>'
                 +'</div>'
                 +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
-                +'<span style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:4px 10px;border-radius:8px;font-size:0.72rem;font-weight:700;box-shadow:0 2px 8px rgba(249,115,22,0.3)">🪑 '+esc(o.tableNo||'-')+'</span>'
+                +'<span style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:4px 10px;border-radius:8px;font-size:0.72rem;font-weight:700;box-shadow:0 2px 8px rgba(249,115,22,0.3)">🪑 '+esc(o.tableNo||'-')+'</span>'                 +(o.orderType==='takeaway'?'<span style="background:#0ea5e9;color:white;padding:3px 9px;border-radius:8px;font-size:0.7rem;font-weight:800;box-shadow:0 2px 8px rgba(14,165,233,0.3)">🥡 BUNGKUS</span>':'')
                 +'<span class="'+tbClass+'" style="font-size:0.7rem;padding:3px 9px;border-radius:8px">🕐 '+minsStr+'</span>'
                 +'</div>'
                 +'</div>'
@@ -2138,7 +2138,7 @@ async function sendBtBytes(bytes){
     }
 }
 
-function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,staffName,items){
+function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,staffName,items,orderType){
     const enc=new TextEncoder();
     const parts=[];
     const push=b=>parts.push(b);
@@ -2175,6 +2175,7 @@ function buildKitchenSlipBytes(stationName,stationEmoji,orderNo,tableNo,timeStr,
     cmd([0x1B,0x45,0x01]);  // bold on
     push(enc.encode('Order #'+orderNo+'    Meja: '+tableNo+'\x0a'));
     cmd([0x1B,0x45,0x00]);  // bold off
+    if(orderType==='takeaway'){cmd([0x1B,0x61,0x01]);cmd([0x1B,0x45,0x01]);push(enc.encode('*** BUNGKUS / TAPAU ***\x0a'));cmd([0x1B,0x45,0x00]);cmd([0x1B,0x61,0x00]);}
     push(enc.encode('Masa   : '+timeStr+'\x0a'));
     push(enc.encode('Cashier: '+toAscii(staffName)+'\x0a'));
     push(enc.encode('--------------------------------\x0a'));
@@ -2229,7 +2230,7 @@ async function autoPrintKitchenSlips(order){
         // Tiada stesen — print 1 slip semua item
         const now=new Date();
         const timeStr=now.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
-        const bytes=buildKitchenSlipBytes('DAPUR','🍳',order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',order.items||[]);
+        const bytes=buildKitchenSlipBytes('DAPUR','🍳',order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',order.items||[],order.orderType);
         await sendBtBytes(bytes);
         return;
     }
@@ -2257,7 +2258,7 @@ async function autoPrintKitchenSlips(order){
         });
         if(!stItems.length)continue; // skip stesen kalau tiada item
         const emoji=st.emoji||emojis[si%emojis.length];
-        const bytes=buildKitchenSlipBytes(st.name,emoji,order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',stItems);
+        const bytes=buildKitchenSlipBytes(st.name,emoji,order.orderNo||'-',order.tableNo||'-',timeStr,order.staffName||'-',stItems,order.orderType);
         await sendBtBytes(bytes);
         await new Promise(r=>setTimeout(r,500)); // gap antara slip — bagi masa cut
     }
